@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotels in Kolkata - TRIPSORUS</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="#">TRIPSORUS</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">List your Property</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Support</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Login</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Search Header -->
+    <section class="search-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h5 class="mb-2">Search Hotels, Location, Landmark</h5>
+                    <div class="d-flex align-items-center">
+                        <span class="badge bg-light text-dark me-2">1 Rooms, 2 Adults</span>
+                        <span class="badge bg-light text-dark">Thu, Mar 20 - Fri, Mar 21</span>
+                    </div>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <button class="btn btn-light">Modify Search</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container my-4">
+        <div class="row">
+            <!-- Filters Sidebar -->
+            <div class="col-lg-3">
+                <div class="filter-sidebar">
+                    <h4 class="mb-3">Filter by:</h4>
+                    
+                    <!-- Budget Filter -->
+                    <div class="filter-section">
+                        <h6 class="filter-title">Your budget (per night)</h6>
+                        <div class="range-slider mb-2">
+                            <input type="range" class="form-range" min="400" max="6000" step="100" id="budgetRange">
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>₹ 400</span>
+                            <span>₹ 6,000+</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Star Rating -->
+                    <div class="filter-section">
+                        <h6 class="filter-title">Star Rating</h6>
+                        <div class="filter-option form-check">
+                            <input class="form-check-input" type="checkbox" id="rating5">
+                            <label class="form-check-label" for="rating5">
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                            </label>
+                        </div>
+                        <div class="filter-option form-check">
+                            <input class="form-check-input" type="checkbox" id="rating4">
+                            <label class="form-check-label" for="rating4">
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="far fa-star text-warning"></i>
+                            </label>
+                        </div>
+                        <div class="filter-option form-check">
+                            <input class="form-check-input" type="checkbox" id="rating3">
+                            <label class="form-check-label" for="rating3">
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="far fa-star text-warning"></i>
+                                <i class="far fa-star text-warning"></i>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Bed Size -->
+                    <div class="filter-section">
+                        <h6 class="filter-title">Bed Size</h6>
+                        <div class="filter-option form-check">
+                            <input class="form-check-input" type="checkbox" id="bedQueen">
+                            <label class="form-check-label" for="bedQueen">Queen Bed</label>
+                        </div>
+                        <div class="filter-option form-check">
+                            <input class="form-check-input" type="checkbox" id="bedKing">
+                            <label class="form-check-label" for="bedKing">King Bed</label>
+                        </div>
+                        <div class="filter-option form-check">
+                            <input class="form-check-input" type="checkbox" id="bedDouble">
+                            <label class="form-check-label" for="bedDouble">Double Bed</label>
+                        </div>
+                        <div class="filter-option form-check">
+                            <input class="form-check-input" type="checkbox" id="bedTwin">
+                            <label class="form-check-label" for="bedTwin">Twin Beds</label>
+                        </div>
+                    </div>
+                    
+                    <!-- Popular Filters -->
+                    <div class="filter-section">
+                        <h6 class="filter-title">Popular Filters</h6>
+                        <div class="filter-option form-check">
+                            <input class="form-check-input" type="checkbox" id="breakfast">
+                            <label class="form-check-label" for="breakfast">Breakfast included <span class="text-muted">(359)</span></label>
+                        </div>
+                        <div class="filter-option form-check">
+                            <input class="form-check-input" type="checkbox" id="freeCancel">
+                            <label class="form-check-label" for="freeCancel">Free cancellation <span class="text-muted">(356)</span></label>
+                        </div>
+                        <div class="filter-option form-check">
+                            <input class="form-check-input" type="checkbox" id="aircon">
+                            <label class="form-check-label" for="aircon">Air conditioning <span class="text-muted">(157)</span></label>
+                        </div>
+                        <div class="filter-option form-check">
+                            <input class="form-check-input" type="checkbox" id="balcony">
+                            <label class="form-check-label" for="balcony">Balcony <span class="text-muted">(21)</span></label>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary w-100 mt-2">Apply Filters</button>
+                    <button class="btn btn-outline-secondary w-100 mt-2">Reset All</button>
+                </div>
+            </div>
+            
+            <!-- Results Column -->
+            <div class="col-lg-9">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0">Kolkata: 560 properties found</h4>
+                    <div class="sort-dropdown">
+                        <select class="form-select">
+                            <option selected>Sort by: Our top picks</option>
+                            <option>Price (low to high)</option>
+                            <option>Price (high to low)</option>
+                            <option>Star Rating</option>
+                            <option>Guest Rating</option>
+                            <option>Distance from center</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Hotel 1 -->
+                <div class="card hotel-card">
+                    <div class="row g-0">
+                        <div class="col-md-4"> 
+                          <img src="images/img1.jpg" " class="img-fluid hotel-img" alt="ITC Royal Bengal">
+                        </div>
+                        <div class="col-md-5">
+                            <div class="card-body">
+                                <h5 class="card-title">ITC Royal Bengal, a Luxury Collection Hotel, Kolkata *****</h5>
+                                <p class="card-text text-muted small">Kolkata - 3.5 km from downtown</p>
+                                <div class="mb-2">
+                                    <span class="badge bg-light text-dark me-1">Tower Exclusive</span>
+                                    <span class="badge bg-light text-dark">Guest room, 1 Queen</span>
+                                </div>
+                                <p class="card-text"><i class="fas fa-bed me-2"></i> 1 queen bed</p>
+                                <div class="d-flex flex-wrap gap-2 mb-2">
+                                    <span class="badge bg-success"><i class="fas fa-utensils me-1"></i> Breakfast included</span>
+                                    <span class="badge bg-success"><i class="fas fa-times-circle me-1"></i> Free cancellation</span>
+                                    <span class="badge bg-success"><i class="fas fa-money-bill-wave me-1"></i> Pay at property</span>
+                                </div>
+                                <p class="text-danger small"><i class="fas fa-exclamation-circle me-1"></i> Only 5 rooms left at this price on our site</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card-body h-100 d-flex flex-column justify-content-between">
+                                <div class="text-end">
+                                    <div class="hotel-rating mb-2">
+                                        <span class="badge bg-success">Excellent 8.7</span>
+                                        <p class="small mb-0">1,858 reviews</p>
+                                    </div>
+                                    <p class="small mb-1">1 night: 2 adults</p>
+                                    <h4 class="price-new">₹ 7,700</h4>
+                                    <p class="small text-muted">+ ₹ 1,356 taxes and fees</p>
+                                </div>
+                                <button class="btn btn-primary w-100">See availability</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Hotel 2 -->
+                <div class="card hotel-card">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                          <img src="images/img1.jpg" " class="img-fluid hotel-img" alt="ITC Sonar">
+                        </div>
+                        <div class="col-md-5">
+                            <div class="card-body">
+                                <h5 class="card-title">ITC Sonar, a Luxury Collection Hotel, Kolkata *****</h5>
+                                <p class="card-text text-muted small">Kolkata - 4.1 km from downtown</p>
+                                <div class="mb-2">
+                                    <span class="badge bg-success me-1"><i class="fas fa-leaf me-1"></i> Sustainability certified</span>
+                                    <span class="badge bg-light text-dark">Executive club, Guest room, 1 Queen</span>
+                                </div>
+                                <p class="card-text"><i class="fas fa-bed me-2"></i> 1 queen bed</p>
+                                <div class="d-flex flex-wrap gap-2 mb-2">
+                                    <span class="badge bg-success"><i class="fas fa-utensils me-1"></i> Breakfast included</span>
+                                    <span class="badge bg-success"><i class="fas fa-times-circle me-1"></i> Free cancellation</span>
+                                    <span class="badge bg-success"><i class="fas fa-money-bill-wave me-1"></i> Pay at property</span>
+                                </div>
+                                <p class="text-danger small"><i class="fas fa-exclamation-circle me-1"></i> Only 5 rooms left at this price on our site</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card-body h-100 d-flex flex-column justify-content-between">
+                                <div class="text-end">
+                                    <div class="hotel-rating mb-2">
+                                        <span class="badge bg-success">Excellent 8.7</span>
+                                        <p class="small mb-0">762 reviews</p>
+                                    </div>
+                                    <p class="small mb-1">1 night: 2 adults</p>
+                                    <h4 class="price-new">₹ 6,300</h4>
+                                    <p class="small text-muted">+ ₹ 1,134 taxes and fees</p>
+                                </div>
+                                <button class="btn btn-primary w-100">See availability</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Hotel 3 -->
+                <div class="card hotel-card">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                          <img src="images/img1.jpg" " class="img-fluid hotel-img" alt="The Lindsay">
+                        </div>
+                        <div class="col-md-5">
+                            <div class="card-body">
+                                <h5 class="card-title">The Lindsay ****</h5>
+                                <p class="card-text text-muted small">Kolkata - 1.2 km from downtown</p>
+                                <div class="mb-2">
+                                    <span class="badge bg-light text-dark">Deluxe room, 1 King</span>
+                                </div>
+                                <p class="card-text"><i class="fas fa-bed me-2"></i> 1 king bed</p>
+                                <div class="d-flex flex-wrap gap-2 mb-2">
+                                    <span class="badge bg-success"><i class="fas fa-times-circle me-1"></i> Free cancellation</span>
+                                    <span class="badge bg-success"><i class="fas fa-money-bill-wave me-1"></i> Pay at property</span>
+                                </div>
+                                <p class="text-danger small"><i class="fas fa-exclamation-circle me-1"></i> Only 3 rooms left at this price on our site</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card-body h-100 d-flex flex-column justify-content-between">
+                                <div class="text-end">
+                                    <div class="hotel-rating mb-2">
+                                        <span class="badge bg-success">Very Good 8.2</span>
+                                        <p class="small mb-0">532 reviews</p>
+                                    </div>
+                                    <p class="small mb-1">1 night: 2 adults</p>
+                                    <h4 class="price-new">₹ 4,500</h4>
+                                    <p class="small text-muted">+ ₹ 810 taxes and fees</p>
+                                </div>
+                                <button class="btn btn-primary w-100">See availability</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pagination -->
+                <nav aria-label="Search results pagination" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">Previous</a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5>TRIPSORUS</h5>
+                    <p>Find the perfect hotel for your next trip at the best prices.</p>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h5>Company</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white">About Us</a></li>
+                        <li><a href="#" class="text-white">Careers</a></li>
+                        <li><a href="#" class="text-white">Press</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h5>Support</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white">Help Center</a></li>
+                        <li><a href="#" class="text-white">Contact Us</a></li>
+                        <li><a href="#" class="text-white">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5>Subscribe to our newsletter</h5>
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control" placeholder="Your email">
+                        <button class="btn btn-primary" type="button">Subscribe</button>
+                    </div>
+                    <div class="social-icons">
+                        <a href="#" class="text-white me-2"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-white me-2"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white me-2"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="bg-light">
+            <div class="text-center">
+                <p class="mb-0">© 2023 TRIPSORUS. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

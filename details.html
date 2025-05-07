@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Sonnet, Jamshedpur - TRIPSORUS</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+   <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="#">TRIPSORUS</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">List your Property</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Support</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Login</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hotel Header -->
+    <section class="hotel-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    <h1>The Sonnet</h1>
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="hotel-rating me-2">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                            <span class="ms-1">4.5 (235 reviews)</span>
+                        </div>
+                        <span class="badge bg-success me-2">Excellent</span>
+                        <span><i class="fas fa-map-marker-alt me-1"></i> Jamshedpur, Jharkhand</span>
+                    </div>
+                    <p class="lead">A luxurious stay in the heart of Jamshedpur with world-class amenities and exceptional service.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            <!-- Left Column - Hotel Details -->
+            <div class="col-lg-8">
+                <!-- Hotel Gallery -->
+                <section class="hotel-gallery">
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                          <img src="images/img2.jpg" class="img-fluid main-image" alt="The Sonnet Hotel" id="mainImage">
+                        </div>
+                        <div class="col-md-4">
+                            <div class="row g-2">
+                                <div class="col-6">
+                                  <img src="images/img2.jpg" class="img-fluid thumbnail" alt="Room" onclick="changeMainImage(this)">
+                                </div>
+                                <div class="col-6">
+                                  <img src="images/pool.jpg" class="img-fluid thumbnail" alt="Pool" onclick="changeMainImage(this)">
+                                </div>
+                                <div class="col-6">
+                                  <img src="images/res.jpg" class="img-fluid thumbnail" alt="Restaurant" onclick="changeMainImage(this)">
+                                </div>
+                                <div class="col-6">
+                                  <img src="images/gym.jpg" class="img-fluid thumbnail" alt="Restaurant" onclick="changeMainImage(this)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Hotel Description -->
+                <section class="mb-5">
+                    <h2 class="mb-3">About The Sonnet</h2>
+                    <p>Located in the heart of Jamshedpur, The Sonnet offers a perfect blend of luxury and comfort. Our hotel features elegantly designed rooms, a state-of-the-art fitness center, an outdoor swimming pool, and multiple dining options.</p>
+                    <p>Whether you're visiting for business or leisure, our dedicated staff is committed to providing you with an unforgettable experience. Enjoy our complimentary high-speed WiFi, 24-hour room service, and convenient access to the city's major attractions.</p>
+                    
+                    <h3 class="mt-4 mb-3">Highlights</h3>
+                    <ul>
+                        <li>Centrally located with easy access to business districts and tourist attractions</li>
+                        <li>Spacious rooms with modern amenities and city views</li>
+                        <li>Multi-cuisine restaurant and rooftop bar</li>
+                        <li>24-hour fitness center and spa services</li>
+                        <li>Meeting and event spaces available</li>
+                    </ul>
+                </section>
+
+                <!-- Amenities -->
+                <section class="mb-5">
+                    <h2 class="mb-3">Amenities</h2>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="fas fa-wifi amenity-icon"></i>
+                                <span>Free High-Speed WiFi</span>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="fas fa-swimming-pool amenity-icon"></i>
+                                <span>Outdoor Swimming Pool</span>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="fas fa-dumbbell amenity-icon"></i>
+                                <span>Fitness Center</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="fas fa-utensils amenity-icon"></i>
+                                <span>Restaurant & Bar</span>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="fas fa-parking amenity-icon"></i>
+                                <span>Free Parking</span>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="fas fa-concierge-bell amenity-icon"></i>
+                                <span>24-Hour Room Service</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Location Map -->
+                <section class="mb-5">
+                    <h2 class="mb-3">Location</h2>
+                    <div class="map-container">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d117407.83115038672!2d86.1307841!3d22.8045665!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39f5e5f0a814fd89%3A0x5a1e5e5f0a814fd8!2sJamshedpur%2C%20Jharkhand!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                    </div>
+                    <p><i class="fas fa-map-marker-alt me-2"></i> 123 Luxury Street, Jamshedpur, Jharkhand 831001</p>
+                    <p><i class="fas fa-subway me-2"></i> 1.5 km from Jamshedpur Railway Station</p>
+                    <p><i class="fas fa-plane me-2"></i> 15 km from Sonari Airport</p>
+                </section>
+
+                <!-- Reviews Section -->
+                <section class="mb-5">
+                    <h2 class="mb-3">Guest Reviews</h2>
+                    
+                    <!-- Review 1 -->
+                    <div class="review-card">
+                        <div class="review-header">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Guest" class="review-avatar">
+                            <div>
+                                <h5 class="mb-0">Rahul Sharma</h5>
+                                <div class="hotel-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <span class="ms-1 text-muted">Reviewed 2 weeks ago</span>
+                                </div>
+                            </div>
+                        </div>
+                        <h5>Excellent Stay!</h5>
+                        <p>The Sonnet exceeded all my expectations. The room was spacious and clean, the staff was extremely helpful, and the location was perfect for both business meetings and exploring the city. Will definitely stay here again on my next visit to Jamshedpur.</p>
+                    </div>
+                    
+                    <!-- Review 2 -->
+                    <div class="review-card">
+                        <div class="review-header">
+                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Guest" class="review-avatar">
+                            <div>
+                                <h5 class="mb-0">Priya Patel</h5>
+                                <div class="hotel-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                    <span class="ms-1 text-muted">Reviewed 1 month ago</span>
+                                </div>
+                            </div>
+                        </div>
+                        <h5>Wonderful Experience</h5>
+                        <p>We had a lovely family vacation at The Sonnet. The kids loved the pool, and we enjoyed the rooftop restaurant with its amazing city views. The only minor issue was the slow WiFi in our room, but the staff quickly moved us to a different room with better connectivity.</p>
+                    </div>
+                    
+                    <!-- Review Form -->
+                    <div class="review-card">
+                        <h4 class="mb-3">Write a Review</h4>
+                        <form>
+                            <div class="mb-3">
+                                <label for="reviewRating" class="form-label">Your Rating</label>
+                                <div class="hotel-rating">
+                                    <i class="far fa-star" id="star1" onmouseover="hoverStar(1)" onmouseout="resetStars()" onclick="setRating(1)"></i>
+                                    <i class="far fa-star" id="star2" onmouseover="hoverStar(2)" onmouseout="resetStars()" onclick="setRating(2)"></i>
+                                    <i class="far fa-star" id="star3" onmouseover="hoverStar(3)" onmouseout="resetStars()" onclick="setRating(3)"></i>
+                                    <i class="far fa-star" id="star4" onmouseover="hoverStar(4)" onmouseout="resetStars()" onclick="setRating(4)"></i>
+                                    <i class="far fa-star" id="star5" onmouseover="hoverStar(5)" onmouseout="resetStars()" onclick="setRating(5)"></i>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="reviewTitle" class="form-label">Review Title</label>
+                                <input type="text" class="form-control" id="reviewTitle" placeholder="Summarize your experience">
+                            </div>
+                            <div class="mb-3">
+                                <label for="reviewText" class="form-label">Your Review</label>
+                                <textarea class="form-control" id="reviewText" rows="4" placeholder="Share details of your experience"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit Review</button>
+                        </form>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column - Booking Card -->
+            <div class="col-lg-4">
+                <div class="booking-card">
+                    <h3 class="mb-4">Book Your Stay</h3>
+                    <div class="mb-4">
+                        <span class="price-old">Rs. 3500</span>
+                        <span class="price-new">Rs. 2150 / Night</span>
+                        <small class="d-block text-success">Save 38%</small>
+                    </div>
+                    
+                    <form>
+                        <div class="mb-3">
+                            <label for="checkIn" class="form-label">Check-in Date</label>
+                            <input type="date" class="form-control" id="checkIn" value="2023-03-20">
+                        </div>
+                        <div class="mb-3">
+                            <label for="checkOut" class="form-label">Check-out Date</label>
+                            <input type="date" class="form-control" id="checkOut" value="2023-03-21">
+                        </div>
+                        <div class="mb-3">
+                            <label for="guests" class="form-label">Guests</label>
+                            <select class="form-select" id="guests">
+                                <option selected>1 Room, 2 Adults</option>
+                                <option>1 Room, 1 Adult</option>
+                                <option>1 Room, 2 Adults, 1 Child</option>
+                                <option>2 Rooms, 4 Adults</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Check Availability</button>
+                    </form>
+                    
+                    <hr class="my-4">
+                    
+                    <h5 class="mb-3">Room Types</h5>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="roomType" id="standardRoom" checked>
+                            <label class="form-check-label" for="standardRoom">
+                                <strong>Standard Room</strong> - Rs. 2150/night
+                            </label>
+                        </div>
+                        <small class="text-muted">25 sqm, 1 Double Bed, Free WiFi</small>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="roomType" id="deluxeRoom">
+                            <label class="form-check-label" for="deluxeRoom">
+                                <strong>Deluxe Room</strong> - Rs. 2850/night
+                            </label>
+                        </div>
+                        <small class="text-muted">35 sqm, 1 King Bed, City View</small>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="roomType" id="suiteRoom">
+                            <label class="form-check-label" for="suiteRoom">
+                                <strong>Executive Suite</strong> - Rs. 4500/night
+                            </label>
+                        </div>
+                        <small class="text-muted">55 sqm, Separate Living Area, Breakfast Included</small>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <h5 class="mb-3">Special Offers</h5>
+                    <div class="alert alert-success">
+                        <h6><i class="fas fa-gift me-2"></i> Weekend Special!</h6>
+                        <p class="mb-0">Book 2 nights or more and get 15% discount on your entire stay.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5>TRIPSORUS</h5>
+                    <p>Find the perfect hotel for your next trip at the best prices.</p>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h5>Company</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white">About Us</a></li>
+                        <li><a href="#" class="text-white">Careers</a></li>
+                        <li><a href="#" class="text-white">Press</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h5>Support</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white">Help Center</a></li>
+                        <li><a href="#" class="text-white">Contact Us</a></li>
+                        <li><a href="#" class="text-white">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5>Subscribe to our newsletter</h5>
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control" placeholder="Your email">
+                        <button class="btn btn-primary" type="button">Subscribe</button>
+                    </div>
+                    <div class="social-icons">
+                        <a href="#" class="text-white me-2"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-white me-2"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white me-2"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="bg-light">
+            <div class="text-center">
+                <p class="mb-0">© 2023 TRIPSORUS. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Change main image when thumbnail is clicked
+        function changeMainImage(thumbnail) {
+            document.getElementById('mainImage').src = thumbnail.src;
+        }
+        
+        // Star rating functionality
+        let currentRating = 0;
+        
+        function hoverStar(num) {
+            for (let i = 1; i <= 5; i++) {
+                const star = document.getElementById(`star${i}`);
+                if (i <= num) {
+                    star.classList.remove('far');
+                    star.classList.add('fas');
+                } else {
+                    star.classList.remove('fas');
+                    star.classList.add('far');
+                }
+            }
+        }
+        
+        function resetStars() {
+            for (let i = 1; i <= 5; i++) {
+                const star = document.getElementById(`star${i}`);
+                if (i <= currentRating) {
+                    star.classList.remove('far');
+                    star.classList.add('fas');
+                } else {
+                    star.classList.remove('fas');
+                    star.classList.add('far');
+                }
+            }
+        }
+        
+        function setRating(num) {
+            currentRating = num;
+        }
+    </script>
+</body>
+</html>

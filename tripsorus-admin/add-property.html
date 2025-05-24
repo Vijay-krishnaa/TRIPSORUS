@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Property - TRIPSORUS Admin</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles/style.css">
+</head>
+
+<body>
+  <!-- Sidebar Navigation -->
+  <div class="sidebar p-3">
+    <h4 class="text-center mb-4">TRIPSORUS Admin</h4>
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link" href="index.html">
+          <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="add-property.html">
+          <i class="fas fa-plus-circle"></i> <span>Add Property</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="properties.html">
+          <i class="fas fa-hotel"></i> <span>Manage Properties</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="bookings.html">
+          <i class="fas fa-calendar-check"></i> <span>Bookings</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">
+          <i class="fas fa-cog"></i> <span>Settings</span>
+        </a>
+      </li>
+      <li class="nav-item mt-3">
+        <a class="nav-link text-danger" href="#">
+          <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="container-fluid">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Add New Property</h2>
+        <a href="properties.html" class="btn btn-outline-secondary">
+          <i class="fas fa-arrow-left me-2"></i> Back to Properties
+        </a>
+      </div>
+
+      <!-- Property Form -->
+      <div class="card p-4">
+        <form id="propertyForm">
+          <!-- Basic Info -->
+          <h5 class="mb-3"><i class="fas fa-info-circle me-2"></i> Basic Information</h5>
+          <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+              <label for="propertyName" class="form-label">Property Name*</label>
+              <input type="text" class="form-control" id="propertyName" placeholder="e.g., The Grand Plaza Hotel"
+                required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="propertyType" class="form-label">Property Type*</label>
+              <select class="form-select" id="propertyType" required>
+                <option value="">Select Type</option>
+                <option value="hotel">Hotel</option>
+                <option value="resort">Resort</option>
+                <option value="villa">Villa</option>
+                <option value="apartment">Apartment</option>
+                <option value="guesthouse">Guest House</option>
+              </select>
+            </div>
+            <div class="col-md-12 mb-3">
+              <label for="propertyDescription" class="form-label">Description*</label>
+              <textarea class="form-control" id="propertyDescription" rows="4" placeholder="Describe the property..."
+                required></textarea>
+            </div>
+          </div>
+
+          <!-- Location -->
+          <h5 class="mb-3"><i class="fas fa-map-marker-alt me-2"></i> Location</h5>
+          <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+              <label for="propertyAddress" class="form-label">Address*</label>
+              <input type="text" class="form-control" id="propertyAddress" placeholder="Street, Landmark" required>
+            </div>
+            <div class="col-md-3 mb-3">
+              <label for="propertyCity" class="form-label">City*</label>
+              <input type="text" class="form-control" id="propertyCity" placeholder="e.g., Kolkata" required>
+            </div>
+            <div class="col-md-3 mb-3">
+              <label for="propertyCountry" class="form-label">Country*</label>
+              <input type="text" class="form-control" id="propertyCountry" placeholder="e.g., India" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="propertyLocation" class="form-label">Google Maps Link (Optional)</label>
+              <input type="url" class="form-control" id="propertyLocation" placeholder="https://maps.google.com/...">
+            </div>
+          </div>
+
+          <!-- Pricing -->
+          <h5 class="mb-3"><i class="fas fa-tag me-2"></i> Pricing & Availability</h5>
+          <div class="row mb-4">
+            <div class="col-md-4 mb-3">
+              <label for="basePrice" class="form-label">Base Price (₹ per night)*</label>
+              <input type="number" class="form-control" id="basePrice" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="discountPrice" class="form-label">Discount Price (Optional)</label>
+              <input type="number" class="form-control" id="discountPrice">
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="availableRooms" class="form-label">Available Rooms*</label>
+              <input type="number" class="form-control" id="availableRooms" required>
+            </div>
+          </div>
+
+          <!-- Amenities -->
+          <h5 class="mb-3"><i class="fas fa-star me-2"></i> Amenities</h5>
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="wifi">
+                <label class="form-check-label" for="wifi">Free WiFi</label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="pool">
+                <label class="form-check-label" for="pool">Swimming Pool</label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="parking">
+                <label class="form-check-label" for="parking">Free Parking</label>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="ac">
+                <label class="form-check-label" for="ac">Air Conditioning</label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="restaurant">
+                <label class="form-check-label" for="restaurant">Restaurant</label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="gym">
+                <label class="form-check-label" for="gym">Gym</label>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="breakfast">
+                <label class="form-check-label" for="breakfast">Breakfast Included</label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="spa">
+                <label class="form-check-label" for="spa">Spa</label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="bar">
+                <label class="form-check-label" for="bar">Bar</label>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="pets">
+                <label class="form-check-label" for="pets">Pets Allowed</label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="laundry">
+                <label class="form-check-label" for="laundry">Laundry</label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="concierge">
+                <label class="form-check-label" for="concierge">24/7 Concierge</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Images Upload -->
+          <h5 class="mb-3"><i class="fas fa-images me-2"></i> Property Images</h5>
+          <div class="mb-4">
+            <label for="propertyImages" class="form-label">Upload Images (Max 10)*</label>
+            <input class="form-control image-upload" type="file" id="propertyImages" data-preview="imagePreview"
+              data-max-files="10" multiple accept="image/*" required>
+            <small class="text-muted">Recommended size: 1200x800px (JPG/PNG)</small>
+
+            <!-- Image Preview -->
+            <div class="image-preview-container mt-3" id="imagePreview"></div>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="d-flex justify-content-end">
+            <button type="reset" class="btn btn-outline-danger me-3">Clear Form</button>
+            <button type="submit" class="btn btn-primary px-4">
+              <i class="fas fa-save me-2"></i> Save Property
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Custom Script -->
+  <script src="scripts/script.js"></script>
+</body>
+
+</html>

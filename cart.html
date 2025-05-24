@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Booking - TRIPSORUS</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles/style.css">
+   
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="#">TRIPSORUS</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">List your Property</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Support</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Login</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Booking Header -->
+    <section class="booking-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h3>Complete Your Booking</h3>
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <i class="fas fa-check-circle text-success me-1"></i>
+                            <span>1. Your Details</span>
+                        </div>
+                        <div class="me-3">
+                            <i class="fas fa-check-circle text-success me-1"></i>
+                            <span>2. Payment</span>
+                        </div>
+                        <div>
+                            <i class="fas fa-circle text-primary me-1"></i>
+                            <span class="fw-bold">3. Confirm</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container mb-5">
+        <div class="row">
+            <!-- Left Column - Booking Details -->
+            <div class="col-lg-8">
+                <!-- Hotel Summary -->
+                <div class="booking-card">
+                    <div class="row">
+                        <div class="col-md-4 mb-3 mb-md-0">
+                          <img src="images/img1.jpg" class="img-fluid hotel-img" alt="ITC Royal Bengal">
+                        </div>
+                        <div class="col-md-8">
+                            <h4>ITC Royal Bengal, a Luxury Collection Hotel, Kolkata</h4>
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="hotel-rating me-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                    <span class="ms-1">4.5 (1,858 reviews)</span>
+                                </div>
+                            </div>
+                            <p class="text-muted"><i class="fas fa-map-marker-alt me-1"></i> Kolkata - 3.5 km from downtown</p>
+                            
+                            <div class="mt-3">
+                                <h5>Your Room</h5>
+                                <p>Tower Exclusive, Guest room, 1 Queen</p>
+                                <p><i class="fas fa-bed me-2"></i> 1 queen bed</p>
+                                <p><i class="fas fa-calendar-alt me-2"></i> Thu, Mar 20 - Fri, Mar 21 (1 night)</p>
+                                <p><i class="fas fa-user me-2"></i> 2 Adults</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Guest Information -->
+                <div class="booking-card">
+                    <h4 class="mb-3">Guest Information</h4>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="firstName" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="firstName" value="Rahul" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="lastName" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="lastName" value="Sharma" readonly>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" value="rahul.sharma@example.com" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">Phone</label>
+                            <input type="tel" class="form-control" id="phone" value="+91 9876543210" readonly>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="specialRequests" class="form-label">Special Requests (Optional)</label>
+                        <textarea class="form-control" id="specialRequests" rows="3" placeholder="Any special requests?"></textarea>
+                    </div>
+                </div>
+
+                <!-- Payment Method -->
+                <div class="booking-card">
+                    <h4 class="mb-3">Payment Method</h4>
+                    
+                    <div class="payment-method active" onclick="selectPayment('credit')">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="creditCard" checked>
+                            <label class="form-check-label fw-bold" for="creditCard">
+                                Credit/Debit Card
+                            </label>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-6 mb-3">
+                                <label for="cardNumber" class="form-label">Card Number</label>
+                                <input type="text" class="form-control" id="cardNumber" placeholder="1234 5678 9012 3456">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="expiry" class="form-label">Expiry</label>
+                                <input type="text" class="form-control" id="expiry" placeholder="MM/YY">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="cvv" class="form-label">CVV</label>
+                                <input type="text" class="form-control" id="cvv" placeholder="123">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cardName" class="form-label">Name on Card</label>
+                            <input type="text" class="form-control" id="cardName" placeholder="RAHUL SHARMA">
+                        </div>
+                    </div>
+                    
+                    <div class="payment-method" onclick="selectPayment('upi')">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="upi">
+                            <label class="form-check-label fw-bold" for="upi">
+                                UPI
+                            </label>
+                        </div>
+                        <div class="mt-2" id="upiFields" style="display: none;">
+                            <div class="mb-3">
+                                <label for="upiId" class="form-label">UPI ID</label>
+                                <input type="text" class="form-control" id="upiId" placeholder="rahul.sharma@upi">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="payment-method" onclick="selectPayment('netbanking')">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="netBanking">
+                            <label class="form-check-label fw-bold" for="netBanking">
+                                Net Banking
+                            </label>
+                        </div>
+                        <div class="mt-2" id="netbankingFields" style="display: none;">
+                            <select class="form-select">
+                                <option selected>Select your bank</option>
+                                <option>State Bank of India</option>
+                                <option>HDFC Bank</option>
+                                <option>ICICI Bank</option>
+                                <option>Axis Bank</option>
+                                <option>Kotak Mahindra Bank</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column - Order Summary -->
+            <div class="col-lg-4">
+                <div class="booking-card">
+                    <h4 class="mb-3">Order Summary</h4>
+                    
+                    <div class="summary-item">
+                        <span>Room (1 night)</span>
+                        <span>₹ 7,700</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Taxes & Fees</span>
+                        <span>₹ 1,356</span>
+                    </div>
+                    
+                    <!-- Coupon Code -->
+                    <div class="mt-2">
+                        <div class="input mb-3 d-flex">
+                            <input type="text" class="form-control wd" id="couponCode" placeholder="Coupon code">
+                            <button class="btn btn-primary" type="button" onclick="applyCoupon()">Apply</button>
+                        </div>
+                        <div id="couponMessage"></div>
+                    </div>
+                    
+                    <div class="summary-item mt-3">
+                        <span>Coupon Discount</span>
+                        <span class="text-success" id="discountAmount">- ₹ 0</span>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="summary-item summary-total">
+                        <span>Total</span>
+                        <span id="totalAmount">₹ 9,056</span>
+                    </div>
+                    
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-info-circle me-2"></i> Free cancellation until Mar 18
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="termsCheck" required>
+                        <label class="form-check-label" for="termsCheck">
+                            I agree to the <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a>
+                        </label>
+                    </div>
+                    
+                    <button class="btn btn-primary w-100 py-2" onclick="completeBooking()">
+                        <i class="fas fa-lock me-2"></i> Complete Booking
+                    </button>
+                    
+                    <p class="text-muted small mt-2">
+                        <i class="fas fa-shield-alt me-1"></i> Your payment is secured with SSL encryption
+                    </p>
+                </div>
+                
+                <div class="booking-card mt-3">
+                    <h5 class="mb-3">Need help with your booking?</h5>
+                    <p><i class="fas fa-phone-alt me-2"></i> Call us: +91 1234567890</p>
+                    <p><i class="fas fa-envelope me-2"></i> Email: support@tripsorus.com</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5>TRIPSORUS</h5>
+                    <p>Find the perfect hotel for your next trip at the best prices.</p>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h5>Company</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white">About Us</a></li>
+                        <li><a href="#" class="text-white">Careers</a></li>
+                        <li><a href="#" class="text-white">Press</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h5>Support</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white">Help Center</a></li>
+                        <li><a href="#" class="text-white">Contact Us</a></li>
+                        <li><a href="#" class="text-white">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5>Subscribe to our newsletter</h5>
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control" placeholder="Your email">
+                        <button class="btn btn-primary" type="button">Subscribe</button>
+                    </div>
+                    <div class="social-icons">
+                        <a href="#" class="text-white me-2"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-white me-2"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white me-2"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="bg-light">
+            <div class="text-center">
+                <p class="mb-0">© 2023 TRIPSORUS. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Payment method selection
+        function selectPayment(method) {
+            document.querySelectorAll('.payment-method').forEach(el => {
+                el.classList.remove('active');
+                el.querySelector('input[type="radio"]').checked = false;
+            });
+            
+            event.currentTarget.classList.add('active');
+            event.currentTarget.querySelector('input[type="radio"]').checked = true;
+            
+            // Hide all fields first
+            document.getElementById('upiFields').style.display = 'none';
+            document.getElementById('netbankingFields').style.display = 'none';
+            
+            // Show fields for selected method
+            if (method === 'upi') {
+                document.getElementById('upiFields').style.display = 'block';
+            } else if (method === 'netbanking') {
+                document.getElementById('netbankingFields').style.display = 'block';
+            }
+        }
+        
+        // Coupon code application
+        function applyCoupon() {
+            const couponCode = document.getElementById('couponCode').value;
+            const couponMessage = document.getElementById('couponMessage');
+            const discountAmount = document.getElementById('discountAmount');
+            const totalAmount = document.getElementById('totalAmount');
+            
+            // Reset message
+            couponMessage.innerHTML = '';
+            couponMessage.className = '';
+            
+            // Validate coupon
+            if (!couponCode) {
+                couponMessage.innerHTML = 'Please enter a coupon code';
+                couponMessage.className = 'coupon-error';
+                return;
+            }
+            
+            // Simulate coupon validation
+            setTimeout(() => {
+                if (couponCode.toUpperCase() === 'TRIP20') {
+                    // Valid coupon
+                    const discount = 2000;
+                    discountAmount.textContent = `- ₹ ${discount.toLocaleString()}`;
+                    totalAmount.textContent = `₹ ${(9056 - discount).toLocaleString()}`;
+                    
+                    couponMessage.innerHTML = 'Coupon applied successfully! ₹2000 discount';
+                    couponMessage.className = 'coupon-success';
+                } else if (couponCode.toUpperCase() === 'WELCOME10') {
+                    // Valid coupon
+                    const discount = 905; // 10% of 9056
+                    discountAmount.textContent = `- ₹ ${discount.toLocaleString()}`;
+                    totalAmount.textContent = `₹ ${(9056 - discount).toLocaleString()}`;
+                    
+                    couponMessage.innerHTML = 'Coupon applied successfully! 10% discount';
+                    couponMessage.className = 'coupon-success';
+                } else {
+                    // Invalid coupon
+                    discountAmount.textContent = '- ₹ 0';
+                    totalAmount.textContent = '₹ 9,056';
+                    
+                    couponMessage.innerHTML = 'Invalid coupon code';
+                    couponMessage.className = 'coupon-error';
+                }
+            }, 500);
+        }
+        
+        // Complete booking
+        function completeBooking() {
+            if (!document.getElementById('termsCheck').checked) {
+                alert('Please agree to the Terms & Conditions');
+                return;
+            }
+            
+            // Simulate payment processing
+            alert('Booking confirmed! Thank you for choosing TRIPSORUS.');
+            // In a real app, you would submit the form to your backend
+        }
+    </script>
+</body>
+</html>

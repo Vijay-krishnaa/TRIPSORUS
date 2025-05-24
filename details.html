@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotels in Kolkata - TRIPSORUS</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="icon" href="images/favicon.ico" type="image/png">
+    <link rel="stylesheet" href="styles/style.css">
+</head>
+
+<body>
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Login to TRIPSORUS</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label">Login as</label>
+                            <div class="d-flex justify-content-between mb-3">
+                                <button type="button" class="btn btn-outline-primary user-type-btn active"
+                                    data-user-type="user">
+                                    <i class="bi bi-person me-1"></i> User
+                                </button>
+                                <button type="button" class="btn btn-outline-primary user-type-btn"
+                                    data-user-type="admin">
+                                    <i class="bi bi-shield-lock me-1"></i> Admin
+                                </button>
+                                <button type="button" class="btn btn-outline-primary user-type-btn"
+                                    data-user-type="superadmin">
+                                    <i class="bi bi-star-fill me-1"></i> Super Admin
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="loginEmail" class="form-label">Email address</label>
+                            <input type="email" class="form-control" id="loginEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="loginPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="loginPassword" required>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="rememberMe">
+                            <label class="form-check-label" for="rememberMe">Remember me</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Login</button>
+                    </form>
+                    <div class="text-center mt-3">
+                        <a href="#" class="text-decoration-none">Forgot password?</a>
+                    </div>
+                    <hr>
+                    <div class="text-center">
+                        <p class="mb-0">Don't have an account? <a href="#" class="text-primary" data-bs-toggle="modal"
+                                data-bs-target="#signupModal" data-bs-dismiss="modal">Sign up</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Modal remains the same as before -->
+    <div class="modal fade" id="signupModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create Your Account</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="firstName" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="firstName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="lastName" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="lastName" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="signupEmail" class="form-label">Email address</label>
+                            <input type="email" class="form-control" id="signupEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="signupPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="signupPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" id="confirmPassword" required>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="termsAgree" required>
+                            <label class="form-check-label" for="termsAgree">I agree to the <a href="#">Terms &
+                                    Conditions</a></label>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Create Account</button>
+                    </form>
+                    <hr>
+                    <div class="text-center">
+                        <p class="mb-0">Already have an account? <a href="#" class="text-primary" data-bs-toggle="modal"
+                                data-bs-target="#loginModal" data-bs-dismiss="modal">Login</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <img id="img_logo" class="img-fluid" src="images/logo.png" alt="Logo">
+            <a class="navbar-brand" href="#">TRIPSORUS</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-house-add me-1"></i> List your Property
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Login
+                        </a>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#signupModal">
+                            <i class="bi bi-person-plus me-1"></i> Sign Up
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1 class="hotel-title">The Golden Sand</h1>
+            <div class="hotel-location">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Candolim, Goa, India</span>
+                <a href="#">Show on map</a>
+            </div>
+            <div class="rating-badge">
+                <span class="rating-score">8.6</span>
+                <span>Excellent</span>
+            </div>
+
+            <!-- Image Gallery -->
+            <div class="gallery-grid">
+                <div class="gallery-item gallery-main">
+                    <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+                        alt="Hotel exterior">
+                    <a href="#" class="view-all-photos">View all photos <i class="fas fa-chevron-right"></i></a>
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1582719471387-6d7658a43b10?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+                        alt="Hotel lobby">
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1564501049412-61c2a3083791?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+                        alt="Hotel room">
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+                        alt="Hotel pool">
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1559314809-0d155014e29e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+                        alt="Hotel restaurant">
+                </div>
+            </div>
+        </section>
+
+        <!-- Booking Widget -->
+        <section class="booking-widget">
+            <div class="booking-header">
+                <div>
+                    <div class="price-display">₹5,200</div>
+                    <div class="price-period">for 1 night (2 adults)</div>
+                </div>
+                <div>
+                    <div class="rating-badge">
+                        <span class="rating-score">8.6</span>
+                        <span>Excellent</span>
+                    </div>
+                </div>
+            </div>
+            <form class="booking-form">
+                <div class="form-group">
+                    <label for="checkin">Check-in date</label>
+                    <input type="date" id="checkin" value="2025-05-16">
+                    <i class="fas fa-calendar-alt form-icon"></i>
+                </div>
+                <div class="form-group">
+                    <label for="checkout">Check-out date</label>
+                    <input type="date" id="checkout" value="2025-05-17">
+                    <i class="fas fa-calendar-alt form-icon"></i>
+                </div>
+                <div class="form-group">
+                    <label for="guests">Guests</label>
+                    <select id="guests">
+                        <option>2 Adults</option>
+                        <option>1 Adult</option>
+                        <option>2 Adults, 1 Child</option>
+                        <option>2 Adults, 2 Children</option>
+                    </select>
+                    <i class="fas fa-user-friends form-icon"></i>
+                </div>
+                <button type="submit" class="book-btn">Reserve now</button>
+            </form>
+        </section>
+
+        <!-- Enhanced Room Section -->
+        <section class="rooms-section">
+            <h2 class="section-title">Available rooms</h2>
+
+            <div class="room-card">
+                <div class="room-header">
+                    <h3 class="room-title">Deluxe Double Room with Balcony</h3>
+                    <div class="room-price-container">
+                        <div class="room-price">₹5,200</div>
+                        <div class="price-breakdown">+ ₹1,200 taxes & fees</div>
+                    </div>
+                </div>
+                <div class="room-details">
+                    <div>
+                        <div class="room-features">
+                            <span class="feature-badge"><i class="fas fa-bed"></i> 1 large double bed</span>
+                            <span class="feature-badge"><i class="fas fa-wifi"></i> Free WiFi</span>
+                            <span class="feature-badge"><i class="fas fa-snowflake"></i> Air conditioning</span>
+                            <span class="feature-badge"><i class="fas fa-tv"></i> Flat-screen TV</span>
+                        </div>
+                        <p class="room-description">This spacious double room features a private balcony, air
+                            conditioning and flat-screen TV. The room includes a minibar and electric kettle.</p>
+                        <ul class="room-amenities">
+                            <li><i class="fas fa-square"></i> 30 m² size</li>
+                            <li><i class="fas fa-door-open"></i> Garden view</li>
+                            <li><i class="fas fa-shower"></i> Private bathroom</li>
+                            <li><i class="fas fa-utensils"></i> Minibar</li>
+                            <li><i class="fas fa-mug-hot"></i> Electric kettle</li>
+                            <li><i class="fas fa-lock"></i> Safe</li>
+                        </ul>
+                        <p class="cancellation-policy"><i class="fas fa-check-circle"></i> Free cancellation before May
+                            10, 2025</p>
+                    </div>
+                    <div class="room-actions">
+                        <div>
+                            <button class="select-btn">Select room</button>
+                            <div class="room-availability">Only 2 rooms left at this price!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="room-card">
+                <div class="room-header">
+                    <h3 class="room-title">Premium Suite with Sea View</h3>
+                    <div class="room-price-container">
+                        <div class="room-price">₹8,400</div>
+                        <div class="price-breakdown">+ ₹1,800 taxes & fees</div>
+                    </div>
+                </div>
+                <div class="room-details">
+                    <div>
+                        <div class="room-features">
+                            <span class="feature-badge"><i class="fas fa-bed"></i> 1 extra large double bed</span>
+                            <span class="feature-badge"><i class="fas fa-wifi"></i> Free WiFi</span>
+                            <span class="feature-badge"><i class="fas fa-umbrella-beach"></i> Sea view</span>
+                            <span class="feature-badge"><i class="fas fa-hot-tub"></i> Bathtub</span>
+                        </div>
+                        <p class="room-description">This luxurious suite offers stunning sea views from a private
+                            balcony. Features include a separate living area, king-size bed, and marble bathroom with
+                            bathtub.</p>
+                        <ul class="room-amenities">
+                            <li><i class="fas fa-square"></i> 55 m² size</li>
+                            <li><i class="fas fa-door-open"></i> Sea view balcony</li>
+                            <li><i class="fas fa-bath"></i> Marble bathroom</li>
+                            <li><i class="fas fa-couch"></i> Separate living area</li>
+                            <li><i class="fas fa-coffee"></i> Coffee machine</li>
+                            <li><i class="fas fa-tshirt"></i> Bathrobes</li>
+                        </ul>
+                        <p class="cancellation-policy"><i class="fas fa-check-circle"></i> Free cancellation before May
+                            12, 2025</p>
+                    </div>
+                    <div class="room-actions">
+                        <div>
+                            <button class="select-btn">Select room</button>
+                            <div class="room-availability">Last room available!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="room-card">
+                <div class="room-header">
+                    <h3 class="room-title">Premium Suite with Sea View</h3>
+                    <div class="room-price-container">
+                        <div class="room-price">₹8,400</div>
+                        <div class="price-breakdown">+ ₹1,800 taxes & fees</div>
+                    </div>
+                </div>
+                <div class="room-details">
+                    <div>
+                        <div class="room-features">
+                            <span class="feature-badge"><i class="fas fa-bed"></i> 1 extra large double bed</span>
+                            <span class="feature-badge"><i class="fas fa-wifi"></i> Free WiFi</span>
+                            <span class="feature-badge"><i class="fas fa-umbrella-beach"></i> Sea view</span>
+                            <span class="feature-badge"><i class="fas fa-hot-tub"></i> Bathtub</span>
+                        </div>
+                        <p class="room-description">This luxurious suite offers stunning sea views from a private
+                            balcony. Features include a separate living area, king-size bed, and marble bathroom with
+                            bathtub.</p>
+                        <ul class="room-amenities">
+                            <li><i class="fas fa-square"></i> 55 m² size</li>
+                            <li><i class="fas fa-door-open"></i> Sea view balcony</li>
+                            <li><i class="fas fa-bath"></i> Marble bathroom</li>
+                            <li><i class="fas fa-couch"></i> Separate living area</li>
+                            <li><i class="fas fa-coffee"></i> Coffee machine</li>
+                            <li><i class="fas fa-tshirt"></i> Bathrobes</li>
+                        </ul>
+                        <p class="cancellation-policy"><i class="fas fa-check-circle"></i> Free cancellation before May
+                            12, 2025</p>
+                    </div>
+                    <div class="room-actions">
+                        <div>
+                            <button class="select-btn">Select room</button>
+                            <div class="room-availability">Last room available!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="room-card">
+                <div class="room-header">
+                    <h3 class="room-title">Premium Suite with Sea View</h3>
+                    <div class="room-price-container">
+                        <div class="room-price">₹8,400</div>
+                        <div class="price-breakdown">+ ₹1,800 taxes & fees</div>
+                    </div>
+                </div>
+                <div class="room-details">
+                    <div>
+                        <div class="room-features">
+                            <span class="feature-badge"><i class="fas fa-bed"></i> 1 extra large double bed</span>
+                            <span class="feature-badge"><i class="fas fa-wifi"></i> Free WiFi</span>
+                            <span class="feature-badge"><i class="fas fa-umbrella-beach"></i> Sea view</span>
+                            <span class="feature-badge"><i class="fas fa-hot-tub"></i> Bathtub</span>
+                        </div>
+                        <p class="room-description">This luxurious suite offers stunning sea views from a private
+                            balcony. Features include a separate living area, king-size bed, and marble bathroom with
+                            bathtub.</p>
+                        <ul class="room-amenities">
+                            <li><i class="fas fa-square"></i> 55 m² size</li>
+                            <li><i class="fas fa-door-open"></i> Sea view balcony</li>
+                            <li><i class="fas fa-bath"></i> Marble bathroom</li>
+                            <li><i class="fas fa-couch"></i> Separate living area</li>
+                            <li><i class="fas fa-coffee"></i> Coffee machine</li>
+                            <li><i class="fas fa-tshirt"></i> Bathrobes</li>
+                        </ul>
+                        <p class="cancellation-policy"><i class="fas fa-check-circle"></i> Free cancellation before May
+                            12, 2025</p>
+                    </div>
+                    <div class="room-actions">
+                        <div>
+                            <button class="select-btn">Select room</button>
+                            <div class="room-availability">Last room available!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Property Details -->
+        <section class="property-details">
+            <h2 class="section-title">Property details</h2>
+
+            <div class="detail-section">
+                <h3 class="detail-title">Description</h3>
+                <p>Located in Goa, a few steps from Candolim Beach, The Golden Sand provides accommodations with an
+                    outdoor swimming pool, free private parking, a garden and a terrace. Among the facilities at this
+                    property are room service and a 24-hour front desk, along with free WiFi throughout the property.
+                    The hotel features family rooms.</p>
+                <p>At the hotel, every room comes with a wardrobe. Complete with a private bathroom equipped with a
+                    shower and free toiletries, all guest rooms at The Golden Sand have a flat-screen TV and air
+                    conditioning, and selected rooms here will provide you with a balcony. All units will provide guests
+                    with a fridge.</p>
+            </div>
+
+            <div class="detail-section">
+                <h3 class="detail-title">Most popular amenities</h3>
+                <div class="amenities-grid">
+                    <div class="amenity-item"><i class="fas fa-swimming-pool"></i> 1 swimming pool</div>
+                    <div class="amenity-item"><i class="fas fa-wifi"></i> Free WiFi</div>
+                    <div class="amenity-item"><i class="fas fa-parking"></i> Free parking</div>
+                    <div class="amenity-item"><i class="fas fa-shuttle-van"></i> Airport shuttle</div>
+                    <div class="amenity-item"><i class="fas fa-users"></i> Family rooms</div>
+                    <div class="amenity-item"><i class="fas fa-smoking-ban"></i> Non-smoking rooms</div>
+                    <div class="amenity-item"><i class="fas fa-concierge-bell"></i> Room service</div>
+                    <div class="amenity-item"><i class="fas fa-clock"></i> 24-hour front desk</div>
+                    <div class="amenity-item"><i class="fas fa-umbrella-beach"></i> Beachfront</div>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <h3 class="detail-title">House rules</h3>
+                <div class="amenities-grid">
+                    <div class="amenity-item"><i class="fas fa-sign-in-alt"></i> Check-in: 2:00 PM - 11:30 PM</div>
+                    <div class="amenity-item"><i class="fas fa-sign-out-alt"></i> Check-out: Until 12:00 PM</div>
+                    <div class="amenity-item"><i class="fas fa-child"></i> Children of all ages are welcome</div>
+                    <div class="amenity-item"><i class="fas fa-paw"></i> No pets allowed</div>
+                    <div class="amenity-item"><i class="fas fa-glass-cheers"></i> No parties or events</div>
+                    <div class="amenity-item"><i class="fas fa-smoking-ban"></i> No smoking</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reviews Section -->
+        <section class="reviews-section">
+            <h2 class="section-title">Guest reviews</h2>
+
+            <div class="review-score">
+                <div class="score-circle">
+                    <span class="score-value">8.6</span>
+                    <span class="score-label">Excellent</span>
+                </div>
+                <div class="score-description">
+                    <p>Based on 428 verified guest reviews from actual stays at this property</p>
+                </div>
+            </div>
+
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-info">
+                        <div class="reviewer-avatar">JD</div>
+                        <div>
+                            <div class="reviewer-name">John D.</div>
+                            <div class="review-date">March 2024</div>
+                        </div>
+                    </div>
+                    <div class="review-rating">9.2</div>
+                </div>
+                <div class="review-content">
+                    <p>Excellent location right near the beach. The staff were very friendly and helpful. Room was clean
+                        and comfortable with a great view of the pool area. The breakfast buffet had a good variety of
+                        options. Would definitely stay here again on my next visit to Goa.</p>
+                </div>
+            </div>
+
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-info">
+                        <div class="reviewer-avatar">SM</div>
+                        <div>
+                            <div class="reviewer-name">Sarah M.</div>
+                            <div class="review-date">February 2024</div>
+                        </div>
+                    </div>
+                    <div class="review-rating">8.4</div>
+                </div>
+                <div class="review-content">
+                    <p>Great value for money. The pool area was lovely and well-maintained. The breakfast had good
+                        variety with both Western and Indian options. Only minor complaint was the WiFi was a bit slow
+                        at peak times. Housekeeping did an excellent job keeping our room clean throughout our stay.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Location Section -->
+        <section class="location-section">
+            <h2 class="section-title">Location</h2>
+            <p><i class="fas fa-map-marker-alt"></i> The Golden Sand, Beach Road, Candolim, Goa 403515, India</p>
+
+            <div class="map-container">
+                <div class="map-placeholder">
+                    <i class="fas fa-map-marked-alt" style="font-size: 24px; margin-right: 10px;"></i>
+                    Interactive map would appear here
+                </div>
+            </div>
+
+            <h3 class="detail-title">What's nearby</h3>
+            <ul class="nearby-list">
+                <li><i class="fas fa-umbrella-beach"></i> Candolim Beach - 2 min walk</li>
+                <li><i class="fas fa-monument"></i> Fort Aguada - 10 min drive</li>
+                <li><i class="fas fa-umbrella-beach"></i> Calangute Beach - 15 min walk</li>
+                <li><i class="fas fa-plane"></i> Dabolim Airport - 45 min drive</li>
+                <li><i class="fas fa-shopping-bag"></i> Candolim Market - 5 min walk</li>
+                <li><i class="fas fa-utensils"></i> Multiple restaurants within 5 min walk</li>
+            </ul>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-container">
+                <div class="footer-column">
+                    <h3>Booking.com</h3>
+                    <ul>
+                        <li><a href="#">About Booking.com</a></li>
+                        <li><a href="#">Customer Service Help</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Sustainability</a></li>
+                        <li><a href="#">Press Center</a></li>
+                        <li><a href="#">Safety Resource Center</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Terms &amp; Conditions</h3>
+                    <ul>
+                        <li><a href="#">Terms of use</a></li>
+                        <li><a href="#">Privacy &amp; Cookies</a></li>
+                        <li><a href="#">Privacy &amp; Cookies</a></li>
+                        <li><a href="#">Copyright Dispute Policy</a></li>
+                        <li><a href="#">How We Work</a></li>
+                        <li><a href="#">Corporate contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Explore</h3>
+                    <ul>
+                        <li><a href="#">Unique places to stay</a></li>
+                        <li><a href="#">Reviews</a></li>
+                        <li><a href="#">Travel Communities</a></li>
+                        <li><a href="#">Seasonal deals</a></li>
+                        <li><a href="#">Travel articles</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Get the app</h3>
+                    <ul>
+                        <li><a href="#"><i class="fab fa-apple"></i> iOS app</a></li>
+                        <li><a href="#"><i class="fab fa-android"></i> Android app</a></li>
+                    </ul>
+                    <h3 style="margin-top: 20px;">Connect with us</h3>
+                    <div style="display: flex; gap: 15px; margin-top: 10px;">
+                        <a href="#" style="font-size: 18px;"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" style="font-size: 18px;"><i class="fab fa-twitter"></i></a>
+                        <a href="#" style="font-size: 18px;"><i class="fab fa-instagram"></i></a>
+                        <a href="#" style="font-size: 18px;"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>Copyright © 2025 The Golden Sand - Luxury Beach Resort. All rights reserved.</p>
+                <p>This is a demo website for educational purposes only, not affiliated with Booking.com</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simple script to set tomorrow's date as checkout by default
+        document.addEventListener('DOMContentLoaded', function () {
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+
+            // Format dates as YYYY-MM-DD
+            const formatDate = (date) => {
+                return date.toISOString().split('T')[0];
+            };
+
+            document.getElementById('checkin').value = formatDate(today);
+            document.getElementById('checkout').value = formatDate(tomorrow);
+        });
+    </script>
+</body>
+
+</html>

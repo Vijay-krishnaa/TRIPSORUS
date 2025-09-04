@@ -48,11 +48,8 @@ if ($roomTypeId) {
     $roomTypeDetails = $roomTypeQuery->fetch(PDO::FETCH_ASSOC);
 }
 
-// Set date range 
 $startDate = $_GET['start_date'] ?? date('Y-m-d'); // today
 $endDate = $_GET['end_date'] ?? date('Y-m-d', strtotime('+6 days')); // next 7 days
-
-// Get inventory data for the selected room type and date range
 $inventoryData = [];
 if ($roomTypeId) {
     $inventoryQuery = $pdo->prepare("
@@ -87,9 +84,6 @@ $mealTypes = [
     'with_breakfast' => 'With Breakfast',
     'breakfast_lunch_dinner' => 'Breakfast + Lunch/Dinner'
 ];
-
-// Define room types with their base prices
-// Fetch all room types dynamically from DB for this property
 $allRoomTypes = [];
 if ($propertyId) {
     $roomTypesQuery = $pdo->prepare("
@@ -120,10 +114,9 @@ if ($propertyId) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Inventory Calendar - TRIPSORUS Admin</title>
-  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="../images/favicon.ico" type="image/ico" />
   <link rel="stylesheet" href="styles/style.css">
   <style>
     .room-type-section {

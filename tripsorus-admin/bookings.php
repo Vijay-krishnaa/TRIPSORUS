@@ -1,21 +1,41 @@
 <?php
 require_once '../db.php';
-$stmt = $pdo->query("
-    SELECT *
-    FROM bookings");
-$bookings = $stmt->fetchAll();
+session_start();
+
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_type']) || $_SESSION['user_type'] !== 'admin') {
+    header("Location: index.php");
+    exit();
+}
+$adminId = $_SESSION['user_id'];
+$adminName = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
 $limit = 6;
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int) $_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
-$totalStmt = $pdo->query("SELECT COUNT(*) FROM bookings");
+$totalStmt = $pdo->prepare("
+    SELECT COUNT(*) 
+    FROM bookings b
+    JOIN properties p ON b.property_id = p.id
+    WHERE p.admin_id = :admin_id
+");
+$totalStmt->bindValue(':admin_id', $adminId, PDO::PARAM_INT);
+$totalStmt->execute();
 $totalBookings = $totalStmt->fetchColumn();
 $totalPages = ceil($totalBookings / $limit);
-$stmt = $pdo->prepare("SELECT * FROM bookings ORDER BY created_at DESC LIMIT :limit OFFSET :offset");
+$stmt = $pdo->prepare("
+    SELECT b.* 
+    FROM bookings b
+    JOIN properties p ON b.property_id = p.id
+    WHERE p.admin_id = :admin_id
+    ORDER BY b.created_at DESC
+    LIMIT :limit OFFSET :offset
+");
+$stmt->bindValue(':admin_id', $adminId, PDO::PARAM_INT);
 $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
 $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
 $stmt->execute();
 $bookings = $stmt->fetchAll();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,12 +44,11 @@ $bookings = $stmt->fetchAll();
   <title>Bookings - TRIPSORUS Admin</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/ico" />
   <link rel="stylesheet" href="styles/style.css">
 </head>
 <body>
-  <!-- Sidebar Navigation -->
   <?php include 'sidebar.php'; ?>
-  <!-- Main Content -->
   <div class="main-content">
     <div class="container-fluid">
       <div class="d-flex justify-content-between align-items-center mb-4">

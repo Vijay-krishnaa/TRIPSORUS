@@ -1,16 +1,12 @@
 <?php
 require_once '../db.php';
 session_start();
-
-// Check if user is logged in and is admin
 if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'admin') {
     header('Location: ../login.php');
     exit();
 }
 
 $adminId = $_SESSION['user_id'];
-
-// Get properties for dropdown
 $propertiesQuery = $pdo->prepare("
     SELECT id, name 
     FROM properties 
@@ -19,10 +15,7 @@ $propertiesQuery = $pdo->prepare("
 ");
 $propertiesQuery->execute([':admin_id' => $adminId]);
 $properties = $propertiesQuery->fetchAll(PDO::FETCH_ASSOC);
-
 $propertyId = $_GET['property_id'] ?? ($properties[0]['id'] ?? null);
-
-// Get room types for selected property
 $roomTypes = [];
 if ($propertyId) {
     $roomTypesQuery = $pdo->prepare("
@@ -36,8 +29,6 @@ if ($propertyId) {
 }
 
 $roomTypeId = $_GET['room_type_id'] ?? (count($roomTypes) > 0 ? $roomTypes[0]['id'] : null);
-
-// Process form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $startDate = $_POST['start_date'];
     $endDate = $_POST['end_date'];
@@ -45,12 +36,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $mealType = $_POST['meal_type'];
     $singleRate = $_POST['single_rate'];
     $doubleRate = $_POST['double_rate'];
-
-    // Validate dates
     if (strtotime($startDate) > strtotime($endDate)) {
         $error = "End date must be after start date";
     } else {
-        // Generate dates between start and end
         $currentDate = $startDate;
         $datesToUpdate = [];
         
@@ -58,10 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $datesToUpdate[] = $currentDate;
             $currentDate = date('Y-m-d', strtotime($currentDate . ' +1 day'));
         }
-        
-        // Prepare SQL statement
         $successCount = 0;
-
         foreach ($datesToUpdate as $date) {
             $stmt = $pdo->prepare("
                 INSERT INTO room_inventory 
@@ -89,7 +74,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Define meal types
 $mealTypes = [
     'room_only' => 'Room Only',
     'with_breakfast' => 'With Breakfast',
@@ -104,10 +88,9 @@ $mealTypes = [
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bulk Rate Update - TRIPSORUS Admin</title>
-  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/ico" />
   <link rel="stylesheet" href="styles/style.css">
   <style>
     .card {

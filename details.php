@@ -609,8 +609,6 @@ $freeCancellation = $dt->format('F j, Y g:i A');
         <?php endfor; ?>
       </div>
     </section>
-
-    <!-- Property Description & Amenities Section -->
     <section class="property-info-section">
       <div class="container-fluid">
         <div class="row info-row">

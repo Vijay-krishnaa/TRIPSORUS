@@ -1,16 +1,12 @@
 <?php
 require_once '../db.php';
 session_start();
-
-// Check if user is logged in and is admin
 if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'admin') {
     header('Location: ../login.php');
     exit();
 }
 
 $adminId = $_SESSION['user_id'];
-
-// Get properties for dropdown
 $propertiesQuery = $pdo->prepare("
     SELECT id, name 
     FROM properties 
@@ -19,10 +15,7 @@ $propertiesQuery = $pdo->prepare("
 ");
 $propertiesQuery->execute([':admin_id' => $adminId]);
 $properties = $propertiesQuery->fetchAll(PDO::FETCH_ASSOC);
-
 $propertyId = $_GET['property_id'] ?? ($properties[0]['id'] ?? null);
-
-// Get room types for selected property
 $roomTypes = [];
 if ($propertyId) {
     $roomTypesQuery = $pdo->prepare("
@@ -36,8 +29,6 @@ if ($propertyId) {
 }
 
 $roomTypeId = $_GET['room_type_id'] ?? ($roomTypes[0]['id'] ?? null);
-
-// Get room type details
 $roomTypeDetails = null;
 if ($roomTypeId) {
     $roomTypeQuery = $pdo->prepare("
@@ -48,8 +39,8 @@ if ($roomTypeId) {
     $roomTypeDetails = $roomTypeQuery->fetch(PDO::FETCH_ASSOC);
 }
 
-$startDate = $_GET['start_date'] ?? date('Y-m-d'); // today
-$endDate = $_GET['end_date'] ?? date('Y-m-d', strtotime('+6 days')); // next 7 days
+$startDate = $_GET['start_date'] ?? date('Y-m-d'); 
+$endDate = $_GET['end_date'] ?? date('Y-m-d', strtotime('+6 days')); 
 $inventoryData = [];
 if ($roomTypeId) {
     $inventoryQuery = $pdo->prepare("
@@ -66,7 +57,6 @@ if ($roomTypeId) {
     $inventoryData = $inventoryQuery->fetchAll(PDO::FETCH_ASSOC);
 }
 
-// Get rate plans for the room type
 $ratePlans = [];
 if ($roomTypeId) {
     $ratePlansQuery = $pdo->prepare("
@@ -78,7 +68,6 @@ if ($roomTypeId) {
     $ratePlans = $ratePlansQuery->fetchAll(PDO::FETCH_ASSOC);
 }
 
-// Define meal types (removed map, ep, cp)
 $mealTypes = [
     'room_only' => 'Room Only',
     'with_breakfast' => 'With Breakfast',
@@ -116,84 +105,84 @@ if ($propertyId) {
   <title>Inventory Calendar - TRIPSORUS Admin</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon" href="../images/favicon.ico" type="image/ico" />
+  <link rel="icon" href="../images/favicon.ico" type="image/ico" />
   <link rel="stylesheet" href="styles/style.css">
   <style>
-    .room-type-section {
-      margin-bottom: 30px;
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
-      padding: 20px;
-      background-color: #f9f9f9;
-    }
+  .room-type-section {
+    margin-bottom: 30px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    background-color: #f9f9f9;
+  }
 
-    .room-type-header {
-      background-color: #e9ecef;
-      padding: 10px 15px;
-      border-radius: 6px;
-      margin-bottom: 15px;
-    }
+  .room-type-header {
+    background-color: #e9ecef;
+    padding: 10px 15px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+  }
 
-    .section-divider {
-      height: 1px;
-      background-color: #ddd;
-      margin: 20px 0;
-    }
+  .section-divider {
+    height: 1px;
+    background-color: #ddd;
+    margin: 20px 0;
+  }
 
-    .inventory-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
+  .inventory-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
 
-    .inventory-table th,
-    .inventory-table td {
-      border: 1px solid #dee2e6;
-      padding: 8px;
-      text-align: center;
-    }
+  .inventory-table th,
+  .inventory-table td {
+    border: 1px solid #dee2e6;
+    padding: 8px;
+    text-align: center;
+  }
 
-    .inventory-table th {
-      background-color: #f8f9fa;
-      font-weight: 600;
-    }
+  .inventory-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+  }
 
-    .inventory-table td[contenteditable="true"] {
-      background-color: #fff;
-      min-width: 80px;
-    }
+  .inventory-table td[contenteditable="true"] {
+    background-color: #fff;
+    min-width: 80px;
+  }
 
-    .inventory-table td[contenteditable="true"]:focus {
-      outline: 2px solid #0d6efd;
-      background-color: #f0f7ff;
-    }
+  .inventory-table td[contenteditable="true"]:focus {
+    outline: 2px solid #0d6efd;
+    background-color: #f0f7ff;
+  }
 
-    .availability-cell {
-      font-weight: bold;
-      cursor: pointer;
-    }
+  .availability-cell {
+    font-weight: bold;
+    cursor: pointer;
+  }
 
-    .availability-cell.available {
-      background-color: #d4edda;
-      color: #155724;
-    }
+  .availability-cell.available {
+    background-color: #d4edda;
+    color: #155724;
+  }
 
-    .availability-cell.not-available {
-      background-color: #f8d7da;
-      color: #721c24;
-    }
+  .availability-cell.not-available {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
 
-    .rate-type-header {
-      background-color: #f0f3f5;
-      font-weight: bold;
-    }
+  .rate-type-header {
+    background-color: #f0f3f5;
+    font-weight: bold;
+  }
 
-    .room-type-filter {
-      margin-bottom: 20px;
-    }
+  .room-type-filter {
+    margin-bottom: 20px;
+  }
 
-    .hidden {
-      display: none;
-    }
+  .hidden {
+    display: none;
+  }
   </style>
 </head>
 
@@ -580,144 +569,146 @@ if ($propertyId) {
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <!-- Replace the entire JavaScript section at the bottom of your file with this corrected version -->
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      // Handle property selection change
-      document.getElementById('propertySelect').addEventListener('change', function () {
-        const propertyId = this.value;
-        window.location.href = `inventory_calendar.php?property_id=${propertyId}`;
-      });
+  document.addEventListener('DOMContentLoaded', function() {
+    // Handle property selection change
+    document.getElementById('propertySelect').addEventListener('change', function() {
+      const propertyId = this.value;
+      window.location.href = `inventory_calendar.php?property_id=${propertyId}`;
+    });
 
-      // Handle room type selection change
-      document.getElementById('roomTypeSelect').addEventListener('change', function () {
-        const roomTypeId = this.value;
-        const propertyId = document.getElementById('propertySelect').value;
-        window.location.href = `inventory_calendar.php?property_id=${propertyId}&room_type_id=${roomTypeId}`;
-      });
+    // Handle room type selection change
+    document.getElementById('roomTypeSelect').addEventListener('change', function() {
+      const roomTypeId = this.value;
+      const propertyId = document.getElementById('propertySelect').value;
+      window.location.href = `inventory_calendar.php?property_id=${propertyId}&room_type_id=${roomTypeId}`;
+    });
 
-      // Handle room type display filter
-      document.getElementById('roomTypeDisplayFilter').addEventListener('change', function () {
-        const selectedRoomTypeId = this.value;
+    // Handle room type display filter
+    document.getElementById('roomTypeDisplayFilter').addEventListener('change', function() {
+      const selectedRoomTypeId = this.value;
 
-        // Show all room types if "All" is selected
-        if (selectedRoomTypeId === 'all') {
-          document.querySelectorAll('.room-type-section').forEach(section => {
-            section.style.display = 'block';
-          });
-        } else {
-          // Hide all room types
-          document.querySelectorAll('.room-type-section').forEach(section => {
-            section.style.display = 'none';
-          });
-
-          // Show only the selected room type
-          const selectedSection = document.getElementById(`room-type-${selectedRoomTypeId}`);
-          if (selectedSection) {
-            selectedSection.style.display = 'block';
-          }
-        }
-      });
-
-      // Toggle availability on click
-      document.querySelectorAll('.availability-cell').forEach(cell => {
-        cell.addEventListener('click', function () {
-          this.classList.toggle('available');
-          this.classList.toggle('not-available');
-          this.textContent = this.classList.contains('available') ? '✓' : '✗';
+      // Show all room types if "All" is selected
+      if (selectedRoomTypeId === 'all') {
+        document.querySelectorAll('.room-type-section').forEach(section => {
+          section.style.display = 'block';
         });
-      });
+      } else {
+        // Hide all room types
+        document.querySelectorAll('.room-type-section').forEach(section => {
+          section.style.display = 'none';
+        });
 
-      // Helper function to clean numbers
-      function cleanNumber(txt) {
-        if (!txt) return null;
-        return parseFloat(String(txt).replace(/[₹,\s]/g, '')) || null;
+        // Show only the selected room type
+        const selectedSection = document.getElementById(`room-type-${selectedRoomTypeId}`);
+        if (selectedSection) {
+          selectedSection.style.display = 'block';
+        }
+      }
+    });
+
+    // Toggle availability on click
+    document.querySelectorAll('.availability-cell').forEach(cell => {
+      cell.addEventListener('click', function() {
+        this.classList.toggle('available');
+        this.classList.toggle('not-available');
+        this.textContent = this.classList.contains('available') ? '✓' : '✗';
+      });
+    });
+
+    // Helper function to clean numbers
+    function cleanNumber(txt) {
+      if (!txt) return null;
+      return parseFloat(String(txt).replace(/[₹,\s]/g, '')) || null;
+    }
+
+    // Save inventory
+    // Replace the save inventory button event listener with this updated version
+    document.getElementById('saveInventoryBtn').addEventListener('click', function() {
+      const updates = [];
+      const propertyId = <?= $propertyId ?: 'null' ?>;
+      const selectedRoomTypeId = document.getElementById('roomTypeDisplayFilter').value;
+
+      if (!propertyId) {
+        alert('Please select a property first');
+        return;
       }
 
-      // Save inventory
-      // Replace the save inventory button event listener with this updated version
-      document.getElementById('saveInventoryBtn').addEventListener('click', function () {
-        const updates = [];
-        const propertyId = <?= $propertyId ?: 'null' ?>;
-        const selectedRoomTypeId = document.getElementById('roomTypeDisplayFilter').value;
+      // Collect all editable cells
+      const editableCells = document.querySelectorAll('td[contenteditable="true"]');
 
-        if (!propertyId) {
-          alert('Please select a property first');
-          return;
+      editableCells.forEach(cell => {
+        const date = cell.getAttribute('data-date');
+        const field = cell.getAttribute('data-field');
+        const mealType = cell.getAttribute('data-meal-type');
+        const roomTypeId = cell.getAttribute('data-room-type');
+        const rawValue = cell.textContent.trim();
+
+        // Only collect data for the selected room type (or all if "all" is selected)
+        if (selectedRoomTypeId === 'all' || roomTypeId === selectedRoomTypeId) {
+          let value;
+
+          if (field === 'single_rate' || field === 'double_rate') {
+            value = cleanNumber(rawValue);
+          } else {
+            value = parseInt(rawValue) || 0;
+          }
+
+          updates.push({
+            date: date,
+            field: field,
+            value: value,
+            meal_type: mealType,
+            room_type_id: roomTypeId,
+            property_id: propertyId
+          });
         }
+      });
 
-        // Collect all editable cells
-        const editableCells = document.querySelectorAll('td[contenteditable="true"]');
+      // Collect availability data
+      const availabilityCells = document.querySelectorAll('.availability-cell[data-field="available"]');
+      availabilityCells.forEach(cell => {
+        const date = cell.getAttribute('data-date');
+        const mealType = cell.getAttribute('data-meal-type');
+        const roomTypeId = cell.getAttribute('data-room-type');
+        const isAvailable = cell.classList.contains('available');
 
-        editableCells.forEach(cell => {
-          const date = cell.getAttribute('data-date');
-          const field = cell.getAttribute('data-field');
-          const mealType = cell.getAttribute('data-meal-type');
-          const roomTypeId = cell.getAttribute('data-room-type');
-          const rawValue = cell.textContent.trim();
+        if (selectedRoomTypeId === 'all' || roomTypeId === selectedRoomTypeId) {
+          updates.push({
+            date: date,
+            field: 'is_available',
+            value: isAvailable ? 1 : 0,
+            meal_type: mealType,
+            room_type_id: roomTypeId,
+            property_id: propertyId
+          });
+        }
+      });
 
-          // Only collect data for the selected room type (or all if "all" is selected)
-          if (selectedRoomTypeId === 'all' || roomTypeId === selectedRoomTypeId) {
-            let value;
-
-            if (field === 'single_rate' || field === 'double_rate') {
-              value = cleanNumber(rawValue);
-            } else {
-              value = parseInt(rawValue) || 0;
-            }
-
-            updates.push({
-              date: date,
-              field: field,
-              value: value,
-              meal_type: mealType,
-              room_type_id: roomTypeId,
-              property_id: propertyId
-            });
-          }
-        });
-
-        // Collect availability data
-        const availabilityCells = document.querySelectorAll('.availability-cell[data-field="available"]');
-        availabilityCells.forEach(cell => {
-          const date = cell.getAttribute('data-date');
-          const mealType = cell.getAttribute('data-meal-type');
-          const roomTypeId = cell.getAttribute('data-room-type');
-          const isAvailable = cell.classList.contains('available');
-
-          if (selectedRoomTypeId === 'all' || roomTypeId === selectedRoomTypeId) {
-            updates.push({
-              date: date,
-              field: 'is_available',
-              value: isAvailable ? 1 : 0,
-              meal_type: mealType,
-              room_type_id: roomTypeId,
-              property_id: propertyId
-            });
-          }
-        });
-
-        // Send updates to server
-        fetch('api/save_inventory.php', {
+      // Send updates to server
+      fetch('api/save_inventory.php', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ updates: updates })
-        })
-          .then(response => response.json())
-          .then(data => {
-            if (data.status === 'success') {
-              alert('Inventory saved successfully!');
-              window.location.reload();
-            } else {
-              alert('Error: ' + data.message);
-            }
+          body: JSON.stringify({
+            updates: updates
           })
-          .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while saving inventory');
-          });
-      });
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            alert('Inventory saved successfully!');
+            window.location.reload();
+          } else {
+            alert('Error: ' + data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('An error occurred while saving inventory');
+        });
     });
+  });
   </script>
 </body>
 

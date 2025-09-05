@@ -1,10 +1,7 @@
 <?php
 require_once '../db.php';
-
 header('Content-Type: application/json');
-
 session_start();
-
 error_log("Session data: " . print_r($_SESSION, true));
 error_log("Request method: " . $_SERVER['REQUEST_METHOD']);
 error_log("Files data: " . print_r($_FILES, true));
@@ -110,20 +107,14 @@ try {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         throw new Exception('Method not allowed', 405);
     }
-
     error_log("Checking authentication: user_id=" . (isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 'not set'));
     error_log("User role: " . (isset($_SESSION['user_type']) ? $_SESSION['user_type'] : 'not set'));
-
-    
     if (!isset($_SESSION['user_id'])) {
         throw new Exception('Authentication required: Please log in first', 401);
     }
-    
     if (!isset($_SESSION['user_type']) || $_SESSION['user_type'] !== 'admin') {
         throw new Exception('Permission denied: Only administrators can create properties', 403);
     }
-
-    
     $adminId = $_SESSION['user_id'];
     error_log("Admin ID: $adminId");
 
@@ -160,8 +151,9 @@ try {
         country, map_link, amenities, checkin_time, checkout_time, created_at
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
 ");
-$checkInTime = !empty($_POST['check_in_time']) ? sanitizeInput($_POST['check_in_time']) : '14:00';
-$checkOutTime = !empty($_POST['check_out_time']) ? sanitizeInput($_POST['check_out_time']) : '12:00';
+$checkInTime = !empty($_POST['checkin_time']) ? sanitizeInput($_POST['checkin_time']) : '14:00';
+$checkOutTime = !empty($_POST['checkout_time']) ? sanitizeInput($_POST['checkout_time']) : '12:00';
+
 
 if (!preg_match('/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/', $checkInTime)) {
     $checkInTime = '14:00';

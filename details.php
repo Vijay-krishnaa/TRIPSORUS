@@ -219,348 +219,360 @@ $freeCancellation = $dt->format('F j, Y g:i A');
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="styles/style.css">
   <style>
-    .room-options-container {
-      display: flex;
+  .room-options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 15px;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .room-option:hover {
+    border-color: #007bff;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px) scale(1.02);
+    cursor: pointer;
+  }
+
+  .room-option.highlighted {
+    border: 2px solid #0a55ff;
+    background-color: #f8fff8;
+    position: relative;
+  }
+
+  .room-option.highlighted::before {
+    content: "MOST POPULAR";
+    position: absolute;
+    top: -10px;
+    right: 15px;
+    background-color: #0a55ff;
+    color: white;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: bold;
+  }
+
+  .option-header {
+    margin-bottom: 12px;
+    flex: 1 1 65%;
+  }
+
+  .option-header h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    color: #333;
+  }
+
+  .free-cancellation {
+    font-size: 12px;
+    color: #0a55ff;
+    font-weight: 500;
+    margin-top: 5px;
+  }
+
+  .option-benefits {
+    margin: 15px 0;
+    padding-left: 0;
+    list-style: none;
+  }
+
+  .option-benefits li {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .option-benefits i {
+    color: #0a55ff;
+    font-size: 14px;
+    margin-top: 2px;
+  }
+
+  .room-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    gap: 20px;
+  }
+
+  .option-price-container {
+    flex: 0 0 30%;
+    margin-top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .price-display {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 5px;
+  }
+
+  .original-price {
+    font-size: 14px;
+    color: #999;
+    text-decoration: line-through;
+  }
+
+  .discounted-price {
+    font-size: 20px;
+    font-weight: 700;
+    color: #333;
+  }
+
+  .taxes {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 15px;
+    text-align: right;
+  }
+
+
+  .select-btn:hover {
+    background-color: #005999;
+  }
+
+  .bank-offer {
+    font-size: 12px;
+    color: #d23b38;
+    margin-top: 10px;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .room-availability {
+    font-size: 12px;
+    color: #d23b38;
+    margin-top: 10px;
+    text-align: center;
+    font-weight: 500;
+  }
+
+  .single-room-image {
+    height: 168px;
+    width: 250px;
+    border-radius: 15px;
+    object-fit: cover;
+    transition: transform 0.5s ease, box-shadow 0.5s ease, filter 0.5s ease;
+    will-change: transform, box-shadow;
+  }
+
+  .single-room-image:hover {
+    transform: rotateX(2deg) rotateY(2deg);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+    filter: brightness(1.08) saturate(1.05);
+    cursor: pointer;
+  }
+
+
+  @media (max-width: 900px) {
+    .room-option {
       flex-direction: column;
-      gap: 15px;
-      margin-top: 15px;
-      width: 100%;
       max-width: 100%;
-    }
-
-    .room-option:hover {
-      border-color: #007bff;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-      transform: translateY(-5px) scale(1.02);
-      cursor: pointer;
-    }
-
-    .room-option.highlighted {
-      border: 2px solid #0a55ff;
-      background-color: #f8fff8;
-      position: relative;
-    }
-
-    .room-option.highlighted::before {
-      content: "MOST POPULAR";
-      position: absolute;
-      top: -10px;
-      right: 15px;
-      background-color: #0a55ff;
-      color: white;
-      padding: 3px 10px;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: bold;
-    }
-
-    .option-header {
-      margin-bottom: 12px;
-      flex: 1 1 65%;
-    }
-
-    .option-header h4 {
-      font-size: 16px;
-      font-weight: 600;
-      margin: 0;
-      color: #333;
-    }
-
-    .free-cancellation {
-      font-size: 12px;
-      color: #0a55ff;
-      font-weight: 500;
-      margin-top: 5px;
-    }
-
-    .option-benefits {
-      margin: 15px 0;
-      padding-left: 0;
-      list-style: none;
-    }
-
-    .option-benefits li {
-      font-size: 13px;
-      color: #555;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-    }
-
-    .option-benefits i {
-      color: #0a55ff;
-      font-size: 14px;
-      margin-top: 2px;
+      padding: 20px;
     }
 
     .room-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      width: 100%;
-      gap: 20px;
+      flex-direction: column;
+      gap: 15px;
     }
 
     .option-price-container {
-      flex: 0 0 30%;
-      margin-top: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-    }
-
-    .price-display {
-      display: flex;
-      align-items: baseline;
-      gap: 10px;
-      margin-bottom: 5px;
-    }
-
-    .original-price {
-      font-size: 14px;
-      color: #999;
-      text-decoration: line-through;
-    }
-
-    .discounted-price {
-      font-size: 20px;
-      font-weight: 700;
-      color: #333;
+      align-items: flex-start;
+      width: 100%;
+      margin-top: 15px;
     }
 
     .taxes {
-      font-size: 12px;
-      color: #666;
-      margin-bottom: 15px;
-      text-align: right;
+      text-align: left;
     }
 
-
-    .select-btn:hover {
-      background-color: #005999;
+    .select-btn {
+      width: 100%;
     }
 
-    .bank-offer {
-      font-size: 12px;
-      color: #d23b38;
-      margin-top: 10px;
-      font-weight: 500;
-      text-align: center;
+    .room-option.highlighted::before {
+      right: auto;
+      left: 15px;
     }
+  }
 
-    .room-availability {
-      font-size: 12px;
-      color: #d23b38;
-      margin-top: 10px;
-      text-align: center;
-      font-weight: 500;
+  @media (max-width: 500px) {
+    .price-display {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 5px;
     }
 
     .single-room-image {
-      height: 168px;
-      width: 250px;
-      border-radius: 15px;
-      object-fit: cover;
-      transition: transform 0.5s ease, box-shadow 0.5s ease, filter 0.5s ease;
-      will-change: transform, box-shadow;
+      width: 100%;
+      height: auto;
+      max-height: 200px;
+    }
+  }
+
+  .guest-modal {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    z-index: 1000;
+    width: 250px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 5px;
+  }
+
+  .counter-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+
+  .counter-group span:first-child {
+    font-size: 14px;
+    color: #333;
+  }
+
+  .counter-btn {
+    background: #f2f2f2;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  .counter-btn:hover {
+    background: #e6e6e6;
+  }
+
+  #adultsCounter,
+  #childrenCounter,
+  #roomsCounter {
+    margin: 0 10px;
+    font-weight: 600;
+    min-width: 20px;
+    text-align: center;
+  }
+
+  .room-header {
+    margin: 10px;
+    padding: 5px;
+
+  }
+
+  .material-icons.small-icon {
+    font-size: 14px;
+    vertical-align: middle;
+  }
+
+  .property-info-section {
+    margin: 30px 0;
+  }
+
+  .info-row {
+    margin-bottom: -18px;
+    padding: 5px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .section-title {
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: #333;
+  }
+
+  .info-row p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #555;
+    margin-bottom: -18px;
+  }
+
+  .view-all-btn,
+  .read-more-btn {
+    display: contents;
+    align-items: center;
+    padding: 4px 8px;
+    font-size: 13px;
+    margin-left: 8px;
+    border: none;
+    background: none;
+    color: #0a55ff;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+
+  .amenities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+  }
+
+  .amenity-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+    background: #f8f9fa;
+    border-radius: 6px;
+  }
+
+  .amenity-item .material-icons {
+    font-size: 18px;
+    color: #0a55ff;
+    margin-right: 10px;
+  }
+
+  .amenity-text {
+    font-size: 14px;
+    color: #444;
+  }
+
+  @media (max-width: 768px) {
+    .amenities-grid {
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 10px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .amenities-grid {
+      grid-template-columns: repeat(2, 1fr);
     }
 
-    .single-room-image:hover {
-      transform: rotateX(2deg) rotateY(2deg);
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
-      filter: brightness(1.08) saturate(1.05);
-      cursor: pointer;
+    .gallery-grid {
+      display: block;
     }
 
-
-    @media (max-width: 900px) {
-      .room-option {
-        flex-direction: column;
-        max-width: 100%;
-        padding: 20px;
-      }
-
-      .room-content {
-        flex-direction: column;
-        gap: 15px;
-      }
-
-      .option-price-container {
-        align-items: flex-start;
-        width: 100%;
-        margin-top: 15px;
-      }
-
-      .taxes {
-        text-align: left;
-      }
-
-      .select-btn {
-        width: 100%;
-      }
-
-      .room-option.highlighted::before {
-        right: auto;
-        left: 15px;
-      }
+    .gallery-grid .gallery-main {
+      width: 100%;
+      margin-bottom: 0;
     }
 
-    @media (max-width: 500px) {
-      .price-display {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 5px;
-      }
-
-      .single-room-image {
-        width: 100%;
-        height: auto;
-        max-height: 200px;
-      }
+    .gallery-grid .rest-img {
+      display: none !important;
     }
 
-    .guest-modal {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      padding: 15px;
-      z-index: 1000;
-      width: 250px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      margin-top: 5px;
-    }
-
-    .counter-group {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-
-    .counter-group span:first-child {
-      font-size: 14px;
-      color: #333;
-    }
-
-    .counter-btn {
-      background: #f2f2f2;
-      border: 1px solid #ddd;
-      border-radius: 3px;
-      width: 25px;
-      height: 25px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .counter-btn:hover {
-      background: #e6e6e6;
-    }
-
-    #adultsCounter,
-    #childrenCounter,
-    #roomsCounter {
-      margin: 0 10px;
-      font-weight: 600;
-      min-width: 20px;
-      text-align: center;
-    }
-
-    .room-header {
-      margin: 10px;
-      padding: 5px;
-
-    }
-
-    .material-icons.small-icon {
-      font-size: 14px;
-      vertical-align: middle;
-    }
-  
-      .property-info-section {
-        margin: 30px 0;
-      }
-
-      .info-row {
-        margin-bottom: -18px;
-        padding: 5px;
-        background: #fff;
-        border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      .section-title {
-        font-size: 20px;
-        font-weight: 500;
-        margin-bottom: 4px;
-        color: #333;
-      }
-
-      .info-row p {
-        font-size: 15px;
-        line-height: 1.6;
-        color: #555;
-        margin-bottom: -18px;
-      }
-
-      .view-all-btn,
-      .read-more-btn {
-        display: contents;
-        align-items: center;
-        padding: 4px 8px;
-        font-size: 13px;
-        margin-left: 8px;
-        border: none;
-        background: none;
-        color: #0a55ff;
-        cursor: pointer;
-        font-weight: 500;
-      }
-
-
-      .amenities-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: 12px;
-      }
-
-      .amenity-item {
-        display: flex;
-        align-items: center;
-        padding: 8px 10px;
-        background: #f8f9fa;
-        border-radius: 6px;
-      }
-
-      .amenity-item .material-icons {
-        font-size: 18px;
-        color: #0a55ff;
-        margin-right: 10px;
-      }
-
-      .amenity-text {
-        font-size: 14px;
-        color: #444;
-      }
-
-      /* Responsive adjustments */
-      @media (max-width: 768px) {
-        .amenities-grid {
-          grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-          gap: 10px;
-        }
-      }
-
-      @media (max-width: 480px) {
-        .amenities-grid {
-          grid-template-columns: repeat(2, 1fr);
-        }
-      }
-    
+  }
   </style>
 </head>
 
@@ -601,7 +613,7 @@ $freeCancellation = $dt->format('F j, Y g:i A');
         </div>
         <?php for ($i = 1; $i < 5; $i++): ?>
         <?php if (isset($propertyImages[$i])): ?>
-        <div class="gallery-item">
+        <div class="gallery-item rest-img">
           <img src="tripsorus-admin/<?php echo htmlspecialchars($propertyImages[$i]['image_path']); ?>"
             alt="<?php echo htmlspecialchars($propertyName . ' - Image ' . ($i + 1)); ?>">
         </div>
@@ -725,27 +737,27 @@ $freeCancellation = $dt->format('F j, Y g:i A');
       </div>
     </div>
     <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        const viewAllBtn = document.getElementById('viewAllBtn');
-        const viewLessBtn = document.getElementById('viewLessBtn');
-        const moreAmenities = document.getElementById('moreAmenities');
+    document.addEventListener('DOMContentLoaded', function() {
+      const viewAllBtn = document.getElementById('viewAllBtn');
+      const viewLessBtn = document.getElementById('viewLessBtn');
+      const moreAmenities = document.getElementById('moreAmenities');
 
-        if (viewAllBtn) {
-          viewAllBtn.addEventListener('click', function () {
-            moreAmenities.style.display = 'grid';
-            viewAllBtn.style.display = 'none';
-            if (viewLessBtn) viewLessBtn.style.display = 'inline-block';
-          });
-        }
+      if (viewAllBtn) {
+        viewAllBtn.addEventListener('click', function() {
+          moreAmenities.style.display = 'grid';
+          viewAllBtn.style.display = 'none';
+          if (viewLessBtn) viewLessBtn.style.display = 'inline-block';
+        });
+      }
 
-        if (viewLessBtn) {
-          viewLessBtn.addEventListener('click', function () {
-            moreAmenities.style.display = 'none';
-            viewLessBtn.style.display = 'none';
-            if (viewAllBtn) viewAllBtn.style.display = 'inline-block';
-          });
-        }
-      });
+      if (viewLessBtn) {
+        viewLessBtn.addEventListener('click', function() {
+          moreAmenities.style.display = 'none';
+          viewLessBtn.style.display = 'none';
+          if (viewAllBtn) viewAllBtn.style.display = 'inline-block';
+        });
+      }
+    });
     </script>
     <!-- Booking Widget -->
     <section class="booking-widget">
@@ -1029,71 +1041,71 @@ $freeCancellation = $dt->format('F j, Y g:i A');
   <?php include 'footer.php'; ?>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const checkinInput = document.getElementById('checkin');
-      const checkoutInput = document.getElementById('checkout');
-      const today = new Date();
-      const tomorrow = new Date(today);
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      const formatDate = (date) => {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-      };
-      const todayFormatted = formatDate(today);
-      checkinInput.setAttribute('min', todayFormatted);
-      checkoutInput.setAttribute('min', formatDate(tomorrow));
-      if (!checkinInput.value) {
-        checkinInput.value = todayFormatted;
-      }
-
-      if (!checkoutInput.value) {
-        const tomorrowFormatted = formatDate(tomorrow);
-        checkoutInput.value = tomorrowFormatted;
-      }
-      checkinInput.addEventListener('change', function () {
-        const checkinDate = new Date(this.value);
-        const newMinCheckout = new Date(checkinDate);
-        newMinCheckout.setDate(newMinCheckout.getDate() + 1);
-        checkoutInput.setAttribute('min', formatDate(newMinCheckout));
-        const checkoutDate = new Date(checkoutInput.value);
-        if (checkoutDate <= checkinDate) {
-          checkoutInput.value = formatDate(newMinCheckout);
-        }
-      });
-    });
-
-    const discountedPriceEl = document.querySelector('.discounted-price');
-    const taxesEl = document.querySelector('.taxes');
-
-    if (discountedPriceEl && taxesEl) {
-      let discountedPrice = parseFloat(discountedPriceEl.textContent.replace(/[₹,]/g, ''));
-      let tax = (discountedPrice * 0.12).toFixed(2);
-      taxesEl.textContent = '+ ₹' + tax + ' Taxes & Fees per night';
+  document.addEventListener('DOMContentLoaded', function() {
+    const checkinInput = document.getElementById('checkin');
+    const checkoutInput = document.getElementById('checkout');
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const formatDate = (date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+    const todayFormatted = formatDate(today);
+    checkinInput.setAttribute('min', todayFormatted);
+    checkoutInput.setAttribute('min', formatDate(tomorrow));
+    if (!checkinInput.value) {
+      checkinInput.value = todayFormatted;
     }
 
-    document.addEventListener("DOMContentLoaded", function () {
-      const counters = {
-        adults: {
-          value: <?php echo(int)$adults; ?>,
+    if (!checkoutInput.value) {
+      const tomorrowFormatted = formatDate(tomorrow);
+      checkoutInput.value = tomorrowFormatted;
+    }
+    checkinInput.addEventListener('change', function() {
+      const checkinDate = new Date(this.value);
+      const newMinCheckout = new Date(checkinDate);
+      newMinCheckout.setDate(newMinCheckout.getDate() + 1);
+      checkoutInput.setAttribute('min', formatDate(newMinCheckout));
+      const checkoutDate = new Date(checkoutInput.value);
+      if (checkoutDate <= checkinDate) {
+        checkoutInput.value = formatDate(newMinCheckout);
+      }
+    });
+  });
+
+  const discountedPriceEl = document.querySelector('.discounted-price');
+  const taxesEl = document.querySelector('.taxes');
+
+  if (discountedPriceEl && taxesEl) {
+    let discountedPrice = parseFloat(discountedPriceEl.textContent.replace(/[₹,]/g, ''));
+    let tax = (discountedPrice * 0.12).toFixed(2);
+    taxesEl.textContent = '+ ₹' + tax + ' Taxes & Fees per night';
+  }
+
+  document.addEventListener("DOMContentLoaded", function() {
+    const counters = {
+      adults: {
+        value: <?php echo(int)$adults; ?>,
         min: 1,
         element: document.getElementById("adultsCounter"),
         input: document.getElementById("adultsInput")
       },
-        children: {
-          value: <?php echo (int)$children; ?>,
-            min: 0,
-              element: document.getElementById("childrenCounter"),
-                input: document.getElementById("childrenInput")
-    },
+      children: {
+        value: <?php echo (int)$children; ?>,
+        min: 0,
+        element: document.getElementById("childrenCounter"),
+        input: document.getElementById("childrenInput")
+      },
       rooms: {
         value: <?php echo(int)$rooms; ?>,
-      min: 1,
-      element: document.getElementById("roomsCounter"),
-      input: document.getElementById("roomsInput") 
-        }
-      };
+        min: 1,
+        element: document.getElementById("roomsCounter"),
+        input: document.getElementById("roomsInput")
+      }
+    };
 
     const guestSelector = document.getElementById("guest-selector");
     const guestModal = document.getElementById("guestModal");
@@ -1109,7 +1121,7 @@ $freeCancellation = $dt->format('F j, Y g:i A');
       guestModal.style.display = guestModal.style.display === "none" ? "block" : "none";
     });
     document.querySelectorAll(".counter-btn").forEach(btn => {
-      btn.addEventListener("click", function () {
+      btn.addEventListener("click", function() {
         const type = this.getAttribute("data-counter");
         const counter = counters[type];
         const increment = this.getAttribute("data-direction") === "+";
@@ -1125,7 +1137,7 @@ $freeCancellation = $dt->format('F j, Y g:i A');
         guestModal.style.display = "none";
       }
     });
-    });
+  });
   </script>
 </body>
 

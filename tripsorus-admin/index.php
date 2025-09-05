@@ -96,11 +96,12 @@ function safeOutput($value, $default = '') {
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" href="../images/favicon.ico" type="image/ico" />
+  <link rel="icon" href="../images/favicon.ico" type="image/ico" />
   <link rel="stylesheet" href="styles/style.css">
 </head>
+
 <body>
-    <?php include 'sidebar.php'; ?>
+  <?php include 'sidebar.php'; ?>
   <div class="main-content">
     <div class="container-fluid">
       <div class="d-flex justify-content-between align-items-center mb-4">
@@ -199,32 +200,32 @@ function safeOutput($value, $default = '') {
           </div>
         </div>
       </div>
-<!-- Recent Bookings -->
-<div class="row mt-4">
-  <div class="col-md-8">
-    <div class="card">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Recent Bookings</h5>
-        <a href="bookings.php" class="btn btn-sm btn-outline-primary">View All</a>
-      </div>
-      <div class="card-body">
-        <div class="table-responsive">
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Property</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Check-In</th>
-                <th>Check-Out</th>
-                <th>Amount</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <?php if (count($recentBookings) > 0): ?>
-                <?php foreach ($recentBookings as $booking): 
+      <!-- Recent Bookings -->
+      <div class="row mt-4">
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">Recent Bookings</h5>
+              <a href="bookings.php" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Property</th>
+                      <th>First Name</th>
+                      <th>Last Name</th>
+                      <th>Check-In</th>
+                      <th>Check-Out</th>
+                      <th>Amount</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php if (count($recentBookings) > 0): ?>
+                    <?php foreach ($recentBookings as $booking): 
                   $statusClass = '';
                   if (isset($booking['status'])) {
                       if ($booking['status'] == 'Confirmed') $statusClass = 'bg-success';
@@ -233,62 +234,62 @@ function safeOutput($value, $default = '') {
                       else $statusClass = 'bg-secondary';
                   }
                 ?>
-                <tr>
-                  <td><?php echo safeOutput($booking['booking_code'] ?? 'N/A'); ?></td>
-                  <td><?php echo safeOutput($booking['property_name'] ?? 'Unknown'); ?></td>
-                  <td><?php echo safeOutput($booking['first_name'] ?? 'N/A'); ?></td>
-                  <td><?php echo safeOutput($booking['last_name'] ?? 'N/A'); ?></td>
-                  <td>
-                    <?php 
+                    <tr>
+                      <td><?php echo safeOutput($booking['booking_code'] ?? 'N/A'); ?></td>
+                      <td><?php echo safeOutput($booking['property_name'] ?? 'Unknown'); ?></td>
+                      <td><?php echo safeOutput($booking['first_name'] ?? 'N/A'); ?></td>
+                      <td><?php echo safeOutput($booking['last_name'] ?? 'N/A'); ?></td>
+                      <td>
+                        <?php 
                     if (isset($booking['check_in'])) {
                         echo date('d M Y', strtotime($booking['check_in']));
                     } else {
                         echo 'N/A';
                     }
                     ?>
-                  </td>
-                  <td>
-                    <?php 
+                      </td>
+                      <td>
+                        <?php 
                     if (isset($booking['check_out'])) {
                         echo date('d M Y', strtotime($booking['check_out']));
                     } else {
                         echo 'N/A';
                     }
                     ?>
-                  </td>
-                  <td>₹<?php echo isset($booking['amount']) ? number_format($booking['amount']) : '0'; ?></td>
-                  <td>
-                    <span class="badge <?php echo $statusClass; ?>">
-                      <?php echo isset($booking['status']) ? safeOutput($booking['status']) : 'Unknown'; ?>
-                    </span>
-                  </td>
-                </tr>
-                <?php endforeach; ?>
-                <?php if (count($recentBookings) < 2): ?>
-                  <?php for ($i = count($recentBookings); $i < 2; $i++): ?>
-                  <tr>
-                    <td colspan="8" class="text-center text-muted py-3">
-                      <i class="fas fa-calendar-times me-2"></i>No booking data available
-                    </td>
-                  </tr>
-                  <?php endfor; ?>
-                <?php endif; ?>
-                
-              <?php else: ?>
-                <?php for ($i = 0; $i < 2; $i++): ?>
-                <tr>
-                  <td colspan="8" class="text-center text-muted py-3">
-                    <i class="fas fa-calendar-times me-2"></i>No bookings found
-                  </td>
-                </tr>
-                <?php endfor; ?>
-              <?php endif; ?>
-            </tbody>
-          </table>
+                      </td>
+                      <td>₹<?php echo isset($booking['amount']) ? number_format($booking['amount']) : '0'; ?></td>
+                      <td>
+                        <span class="badge <?php echo $statusClass; ?>">
+                          <?php echo isset($booking['status']) ? safeOutput($booking['status']) : 'Unknown'; ?>
+                        </span>
+                      </td>
+                    </tr>
+                    <?php endforeach; ?>
+                    <?php if (count($recentBookings) < 2): ?>
+                    <?php for ($i = count($recentBookings); $i < 2; $i++): ?>
+                    <tr>
+                      <td colspan="8" class="text-center text-muted py-3">
+                        <i class="fas fa-calendar-times me-2"></i>No booking data available
+                      </td>
+                    </tr>
+                    <?php endfor; ?>
+                    <?php endif; ?>
+
+                    <?php else: ?>
+                    <?php for ($i = 0; $i < 2; $i++): ?>
+                    <tr>
+                      <td colspan="8" class="text-center text-muted py-3">
+                        <i class="fas fa-calendar-times me-2"></i>No bookings found
+                      </td>
+                    </tr>
+                    <?php endfor; ?>
+                    <?php endif; ?>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
 
         <!-- Recent Properties -->
         <div class="col-md-4">
@@ -300,7 +301,7 @@ function safeOutput($value, $default = '') {
             <div class="card-body">
               <div class="list-group">
                 <?php if (count($recentProperties) > 0): ?>
-    <?php foreach ($recentProperties as $property): 
+                <?php foreach ($recentProperties as $property): 
         $addedTime = isset($property['updated_at']) ? strtotime($property['updated_at']) : time();
         $timeDiff = time() - $addedTime;
 
@@ -319,17 +320,17 @@ function safeOutput($value, $default = '') {
             $timeText = $months . ' month' . ($months > 1 ? 's' : '') . ' ago';
         }
     ?>
-    <a href="#" class="list-group-item list-group-item-action">
-        <div class="d-flex w-100 justify-content-between">
-          <small>ID: <?php echo safeOutput($property['id']); ?></small>
-            <h6 class="mb-1"><?php echo safeOutput($property['name'] ?? 'Unnamed Property'); ?></h6>
-            <small class="text-muted">Added: <?php echo $timeText; ?></small>
-        </div>
-    </a>
-    <?php endforeach; ?>
-<?php else: ?>
-    <div class="text-center py-4 text-muted">No properties found</div>
-<?php endif; ?>
+                <a href="#" class="list-group-item list-group-item-action">
+                  <div class="d-flex w-100 justify-content-between">
+                    <small>ID: <?php echo safeOutput($property['id']); ?></small>
+                    <h6 class="mb-1"><?php echo safeOutput($property['name'] ?? 'Unnamed Property'); ?></h6>
+                    <small class="text-muted">Added: <?php echo $timeText; ?></small>
+                  </div>
+                </a>
+                <?php endforeach; ?>
+                <?php else: ?>
+                <div class="text-center py-4 text-muted">No properties found</div>
+                <?php endif; ?>
 
               </div>
             </div>
@@ -355,36 +356,36 @@ function safeOutput($value, $default = '') {
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    const ctx = document.getElementById('revenueChart').getContext('2d');
-    const revenueChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-        datasets: [{
-          label: 'Revenue (₹)',
-          data: JSON.parse(`<?php echo json_encode($monthlyRevenues); ?>`),
+  const ctx = document.getElementById('revenueChart').getContext('2d');
+  const revenueChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      datasets: [{
+        label: 'Revenue (₹)',
+        data: JSON.parse(`<?php echo json_encode($monthlyRevenues); ?>`),
 
-          backgroundColor: 'rgba(54, 162, 235, 0.7)',
-          borderColor: 'rgba(54, 162, 235, 1)',
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              callback: function (value) {
-                return '₹' + value.toLocaleString();
-              }
+        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: function(value) {
+              return '₹' + value.toLocaleString();
             }
           }
         }
       }
-    });
-    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    }
+  });
+  const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+  const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
   </script>
 </body>
 

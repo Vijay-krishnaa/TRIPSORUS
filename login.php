@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         // Redirect based on user_type
         if ($user['user_type'] === 'super_admin') {
-            echo "<script>alert('Login successful'); window.location.href='super_admin.php';</script>";
+            echo "<script>alert('Login successful'); window.location.href='super_admin/index.php';</script>";
         } elseif ($user['user_type'] === 'admin') {
             echo "<script>alert('Login successful'); window.location.href='tripsorus-admin/index.php';</script>";
         } else {

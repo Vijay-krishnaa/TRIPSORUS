@@ -12,28 +12,28 @@
       </a>
     </li>
 
-      <li class="nav-item">
+    <li class="nav-item">
       <a class="nav-link" href="inventory_calendar.php">
         <i class="fas fa-money-bill-wave"></i> <span>Inventory</span>
       </a>
     </li>
-       <li class="nav-item">
+    <li class="nav-item">
       <a class="nav-link" href="rate_plans.php">
         <i class="fas fa-money-bill-wave"></i> <span>Rates Plans</span>
       </a>
     </li>
-       
+
     <li class="nav-item">
       <a class="nav-link" href="bulk_update.php">
         <i class="fas fa-hotel"></i> <span>Bulk Update</span>
       </a>
     </li>
-      <li class="nav-item">
+    <li class="nav-item">
       <a class="nav-link" href="seasonal_rates.php">
         <i class="fas fa-money-bill-wave"></i> <span>Seasonal Rates</span>
       </a>
     </li>
-   
+
     <li class="nav-item">
       <a class="nav-link" href="properties.php">
         <i class="fas fa-hotel"></i> <span>Manage Properties</span>
@@ -44,14 +44,19 @@
         <i class="fas fa-calendar-check"></i> <span>Bookings</span>
       </a>
     </li>
-       <li class="nav-item">
+    <li class="nav-item">
       <a class="nav-link" href="payment.php">
         <i class="fas fa-hotel"></i> <span>Payments</span>
       </a>
     </li>
-      <li class="nav-item">
+    <li class="nav-item">
       <a class="nav-link" href="voucher.php">
         <i class="fas fa-calendar-check"></i> <span>Vouchers</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="rule_and_regulations.php">
+        <i class="fas fa-money-bill-wave"></i> <span>Rules & Regulations</span>
       </a>
     </li>
     <li class="nav-item">

@@ -376,7 +376,7 @@
   <div class="notification" id="notification"></div>
 
   <script>
-  const API_BASE = 'api.php'; // Update this path if needed
+  const API_BASE = 'api/hotels_rule.php'; // Update this path if needed
 
   document.addEventListener('DOMContentLoaded', function() {
     // Show notification

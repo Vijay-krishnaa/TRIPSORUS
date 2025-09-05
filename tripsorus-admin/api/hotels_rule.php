@@ -4,7 +4,7 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
-require_once '../db.php'; 
+require_once '../../db.php'; 
 
 // Handle preflight request
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {

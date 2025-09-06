@@ -24,7 +24,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'super_admin') {
 }
 
 // Database connection using PDO
-require_once 'db.php';
+require_once '../db.php';
 
 // Initialize variables
 $admins = [];
@@ -377,7 +377,7 @@ $adminName = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active" href="admins.php">
+          <a class="nav-link active" href="admin_management.php">
             <i class="fas fa-users-cog me-2"></i>Manage Admins
           </a>
         </li>

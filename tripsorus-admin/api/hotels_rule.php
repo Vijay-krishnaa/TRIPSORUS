@@ -40,8 +40,6 @@ try {
                     ORDER BY c.name, r.title
                 ");
                 $rules = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                
-                // Format the items as arrays
                 foreach ($rules as &$rule) {
                     $rule['items'] = $rule['items'] ? explode('|||', $rule['items']) : [];
                 }

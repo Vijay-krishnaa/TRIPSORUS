@@ -201,6 +201,49 @@ $checkinDateTime = $checkin . ' ' . $propRow['checkin_time'];
 $dt = new DateTime($checkinDateTime);
 $dt->modify('-1 minute');
 $freeCancellation = $dt->format('F j, Y g:i A');
+$stmt = $pdo->prepare("
+    SELECT rc.id AS category_id, rc.name AS category_name, rc.slug,
+           r.id AS rule_id, r.title,
+           ri.id AS item_id, ri.content
+    FROM rule_categories rc
+    LEFT JOIN rules r ON rc.id = r.category_id
+    LEFT JOIN rule_items ri ON r.id = ri.rule_id
+    ORDER BY rc.id, r.id, ri.item_order
+");
+$stmt->execute();
+$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+$data = [];
+foreach ($rows as $row) {
+    $catId = $row['category_id'];
+    if (!isset($data[$catId])) {
+        $data[$catId] = [
+            'id' => $catId,
+            'name' => $row['category_name'],
+            'slug' => $row['slug'],
+            'rules' => []
+        ];
+    }
+
+    if ($row['rule_id']) {
+        if (!isset($data[$catId]['rules'][$row['rule_id']])) {
+            $data[$catId]['rules'][$row['rule_id']] = [
+                'id' => $row['rule_id'],
+                'title' => $row['title'],
+                'items' => []
+            ];
+        }
+        if ($row['item_id']) {
+            $data[$catId]['rules'][$row['rule_id']]['items'][] = $row['content'];
+        }
+    }
+}
+
+
+foreach ($data as &$cat) {
+    $cat['rules'] = array_values($cat['rules']);
+}
+$ruleCategories = array_values($data);
 
 ?>
 <!DOCTYPE html>
@@ -219,6 +262,271 @@ $freeCancellation = $dt->format('F j, Y g:i A');
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="styles/style.css">
   <style>
+  .property-info-section {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  }
+
+  .info-row {
+    margin-bottom: 30px;
+  }
+
+  .section-title {
+    font-size: 24px;
+    color: #2b6cb0;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e2e8f0;
+  }
+
+  .property-description {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #555;
+    margin-bottom: 15px;
+  }
+
+  .read-more-btn {
+    color: #1a73e8;
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 14px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .read-more-btn:hover {
+    text-decoration: underline;
+  }
+
+  .hotel-rules-container {
+    background: white;
+    width: 117%;
+    border-radius: 8px;
+    padding: 10px;
+
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .hotel-name {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: -4px;
+  }
+
+  .check-in-out {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 3px;
+  }
+
+  .rule-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: -14px;
+  }
+
+  .rule-text {
+    font-size: 15px;
+    color: #333;
+    line-height: 0.5rem;
+  }
+
+  .rules-categories {
+    display: flex;
+    margin: -1px -5px;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .category-link {
+    font-size: 14px;
+    text-decoration: none;
+    padding: 0 5px;
+  }
+
+  .category-link:hover {
+    text-decoration: underline;
+  }
+
+  .view-all-btn {
+    display: block;
+    width: 100%;
+    background: transparent;
+    color: #1a73e8;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    padding: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    margin-top: 15px;
+  }
+
+  .view-all-btn:hover {
+    background-color: #f8f9fa;
+  }
+
+  .divider {
+    height: 16px;
+    width: 1px;
+    background-color: #dadce0;
+    margin: 0 5px;
+  }
+
+  .amenities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+    margin-top: 15px;
+  }
+
+  .amenity-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+    background: #f8f9fa;
+    border-radius: 6px;
+  }
+
+  .amenity-item .material-icons {
+    font-size: 18px;
+    color: #0a55ff;
+    margin-right: 10px;
+  }
+
+  .amenity-text {
+    font-size: 14px;
+    color: #444;
+  }
+
+  .amenities-toggle-btn {
+    background: transparent;
+    color: #1a73e8;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    padding: 8px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    margin-top: 15px;
+  }
+
+  .amenities-toggle-btn:hover {
+    background-color: #f8f9fa;
+  }
+
+  /* Popup Styles */
+  .popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+  }
+
+  .popup-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .popup-content {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 30px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  }
+
+  .popup-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+  }
+
+  .popup-close:hover {
+    color: #333;
+  }
+
+  .popup-title {
+    font-size: 24px;
+    color: #2b6cb0;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .rules-category {
+    margin-bottom: 25px;
+  }
+
+  .rules-category-title {
+    font-size: 18px;
+    color: #2b6cb0;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .rules-list {
+    padding-left: 20px;
+  }
+
+  .rules-list li {
+    margin-bottom: 8px;
+    line-height: 1.5;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .property-info-section {
+      padding: 20px;
+    }
+
+    .amenities-grid {
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 10px;
+    }
+
+    .rules-categories {
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .divider {
+      display: none;
+    }
+
+    .popup-content {
+      padding: 20px;
+    }
+  }
+
   .room-options-container {
     display: flex;
     flex-direction: column;
@@ -956,6 +1264,34 @@ $freeCancellation = $dt->format('F j, Y g:i A');
       }
       ?>
     </section>
+    <section class="property-info-section">
+      <div class="hotel-rules-container">
+        <div class="hotel-name">Hotel Rules at The Riversidde Innnn</div>
+        <div class="check-in-out">Check-in: 12PM Check-out: 11 AM</div>
+        <hr>
+        <div class="rule-item">
+          <p>Primary Guest should be at least 18 years of age.</p>
+        </div>
+        <div class="rules-categories">
+          <a href="#" class="category-link btn btn-outline-secondary">Must Read Rules</a>
+
+          <div class="divider"></div>
+          <a href="#" class="category-link btn btn-outline-secondary">Guest Profile</a>
+          <div class="divider"></div>
+          <a href="#" class="category-link btn btn-outline-secondary">Guest Profile (Hourly)</a>
+          <button class="view-all-btn" id="viewAllRulesBtn">Read All Property Rules</button>
+
+        </div>
+      </div>
+    </section>
+    <div class="popup-overlay" id="rulesPopup">
+      <div class="popup-content">
+        <button class="popup-close" id="closePopup">&times;</button>
+        <h2 class="popup-title">House Rules & Information</h2>
+        <div id="rulesContent">
+        </div>
+      </div>
+    </div>
     <section class="reviews-section">
       <h2 class="section-title">Guest reviews</h2>
 
@@ -1136,6 +1472,70 @@ $freeCancellation = $dt->format('F j, Y g:i A');
       if (!guestSelector.contains(e.target) && !guestModal.contains(e.target)) {
         guestModal.style.display = "none";
       }
+    });
+  });
+  const ruleCategories = <?php echo json_encode($ruleCategories); ?>;
+
+  function populateRulesPopup(categoryId = null) {
+    const rulesContent = document.getElementById('rulesContent');
+    rulesContent.innerHTML = '';
+
+    const categories = categoryId ?
+      ruleCategories.filter(c => c.id == categoryId) :
+      ruleCategories;
+
+    categories.forEach(category => {
+      const categoryElement = document.createElement('div');
+      categoryElement.className = 'rules-category';
+
+      const titleElement = document.createElement('h3');
+      titleElement.className = 'rules-category-title';
+      titleElement.textContent = category.name.toUpperCase();
+      categoryElement.appendChild(titleElement);
+
+      category.rules.forEach(rule => {
+        const listElement = document.createElement('ul');
+        listElement.className = 'rules-list';
+
+        rule.items.forEach(item => {
+          const listItem = document.createElement('li');
+          listItem.textContent = item;
+          listElement.appendChild(listItem);
+        });
+
+        categoryElement.appendChild(listElement);
+      });
+
+      rulesContent.appendChild(categoryElement);
+    });
+  }
+
+  function showRulesPopup(categoryId = null) {
+    populateRulesPopup(categoryId);
+    document.getElementById('rulesPopup').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function hideRulesPopup() {
+    document.getElementById('rulesPopup').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('viewAllRulesBtn').addEventListener('click', () => showRulesPopup());
+
+  document.getElementById('closePopup').addEventListener('click', hideRulesPopup);
+
+  document.getElementById('rulesPopup').addEventListener('click', function(e) {
+    if (e.target === this) hideRulesPopup();
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') hideRulesPopup();
+  });
+  document.querySelectorAll('.category-link').forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const catId = this.getAttribute('data-id');
+      showRulesPopup(catId);
     });
   });
   </script>

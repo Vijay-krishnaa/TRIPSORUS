@@ -471,7 +471,7 @@ $ruleCategories = array_values($data);
 
   .popup-title {
     font-size: 24px;
-    color: #2b6cb0;
+    color: #333;
     margin-bottom: 20px;
     text-align: center;
   }
@@ -482,7 +482,7 @@ $ruleCategories = array_values($data);
 
   .rules-category-title {
     font-size: 18px;
-    color: #2b6cb0;
+    color: black;
     margin-bottom: 10px;
     padding-bottom: 5px;
     border-bottom: 1px solid #e2e8f0;
@@ -791,6 +791,7 @@ $ruleCategories = array_values($data);
 
   .info-row {
     margin-bottom: -18px;
+    width: 120%;
     padding: 5px;
     background: #fff;
     border-radius: 10px;
@@ -1210,12 +1211,7 @@ $ruleCategories = array_values($data);
 
                   <li><span class="material-icons small-icon">currency_rupee</span> Book with ₹0 payment</li>
                   <li><span class="material-icons small-icon">account_balance_wallet</span> Pay at property</li>
-                  <li><span class="material-icons small-icon">login</span> Check-in:
-                    <?= htmlspecialchars($propertyCheckin); ?>
-                  </li>
-                  <li><span class="material-icons small-icon">logout</span> Check-out:
-                    <?= htmlspecialchars($propertyCheckout); ?>
-                  </li>
+
                 </ul>
               </div>
               <div class="option-price-container">

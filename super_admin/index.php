@@ -1,28 +1,24 @@
 <?php
 session_start();
-
-$timeout_duration = 900; 
-
+$timeout_duration = 2700; 
 if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY']) > $timeout_duration) {
     session_unset();     
     session_destroy();   
     echo "<script>
         alert('Session expired due to inactivity. Please login again.');
-        window.location.href = 'index.php';
+        window.location.href = '../index.php';
     </script>";
     exit;
 }
-
 $_SESSION['LAST_ACTIVITY'] = time(); 
 
 if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'super_admin') {
     echo "<script>
         alert('Access denied. Super Admins only.');
-        window.location.href = 'index.php';
+        window.location.href = '../index.php';
     </script>";
     exit;
 }
-
 require_once '../db.php';
 $stats = [];
 $recentBookings = [];
@@ -232,7 +228,6 @@ try {
             </button>
           </div>
 
-          <!-- User Profile Dropdown -->
           <div class="dropdown">
             <button class="btn btn-primary dropdown-toggle user-dropdown d-flex align-items-center" type="button"
               id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -310,8 +305,6 @@ try {
         </div>
       </div>
 
-
-      <!-- Recent Bookings -->
       <div class="row mt-4">
         <div class="col-md-8">
           <div class="card">

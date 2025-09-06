@@ -132,17 +132,17 @@
                     </li>
 
                 <?php else: ?>
-                    <li class="nav-item fw-bold">
+                    <li class="nav-item fw-semibold">
                         <a class="nav-link" href="register-property-owner.php">
                             <i class="bi bi-house-add me-1"></i> List your Property
                         </a>
                     </li>
-                    <li class="nav-item fw-bold">
+                    <li class="nav-item fw-semibold">
                         <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">
                             <i class="bi bi-box-arrow-in-right me-1"></i> Login/Externet Login
                         </a>
                     </li>
-                    <li class="nav-item ms-2 fw-bold">
+                    <li class="nav-item ms-2 fw-semibold">
                         <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#signupModal">
                             <i class="bi bi-person-plus me-1"></i> Sign Up
                         </a>

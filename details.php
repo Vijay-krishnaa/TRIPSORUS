@@ -510,7 +510,7 @@ $ruleCategories = array_values($data);
 
     .rules-categories {
       flex-direction: column;
-      align-items: center;
+      align-items: flex-start;
       gap: 10px;
     }
 

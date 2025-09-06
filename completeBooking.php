@@ -27,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $gstNumber     = $_POST['gst_number'] ?? '';
         $gstCompany    = $_POST['gst_company_name'] ?? '';
         $gstAddress    = $_POST['gst_company_address'] ?? '';
+        
         $roomTypeName = 'Unknown Room Type';
         if ($roomTypeId) {
             $stmt = $pdo->prepare("SELECT name FROM room_types WHERE id = :room_type_id");
@@ -40,8 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $checkInDate = new DateTime($checkIn);
         $checkOutDate = new DateTime($checkOut);
         $nights = $checkOutDate->diff($checkInDate)->days;
-
-        $mealInput = trim($_POST['meal_type'] ?? $_GET['meal_name'] ?? 'EP');
+        $mealInput = trim($_POST['meal_type'] ?? 'EP');
         $mealMap = [
             "EP"  => "room_only",
             "CP"  => "with_breakfast",
@@ -62,12 +62,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $mealType = $value;
                 break;
             }
-        }
+        } 
         $stmt = $pdo->query("SELECT MAX(booking_id) as last_id FROM bookings");
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         $nextId = ($row && $row['last_id']) ? $row['last_id'] + 1 : 1;
         $bookingCode = "BKG" . str_pad($nextId, 4, "0", STR_PAD_LEFT);
         $paymentType = isset($_POST['payment_type']) ? $_POST['payment_type'] : 'pay_at_property';
+        
         $stmt = $pdo->prepare("
             INSERT INTO bookings
             (booking_code, user_id, property_id, room_type_id, room_type_name, meal_type, property_name, guest_name, 
@@ -177,10 +178,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ");
         $stmt->execute([':booking_id' => $lastId]);
         $booking = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+   
+$adminEmail = '';
+$stmt = $pdo->prepare("SELECT admin_id FROM properties WHERE id = :property_id LIMIT 1");
+$stmt->execute([':property_id' => $propertyId]);
+$propertyData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if ($propertyData && !empty($propertyData['admin_id'])) {
+    $stmt = $pdo->prepare("SELECT Email FROM user WHERE id = :admin_id LIMIT 1");
+    $stmt->execute([':admin_id' => $propertyData['admin_id']]);
+    $adminUser = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($adminUser && !empty($adminUser['Email'])) {
+        $adminEmail = $adminUser['Email'];
+    }
+}
         if (!$booking) {
             throw new Exception("Booking not found.");
         }
+        
         $bookingCode = $booking['booking_code'];
         $propertyName = $booking['property_name'];
         $guestName = $booking['guest_name'];
@@ -198,16 +213,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $gstNumber = $booking['gst_number'];
         $gstCompany = $booking['gst_company_name'];
         $gstAddress = $booking['gst_company_address'];
+        
         $checkInDate = new DateTime($checkIn);
         $checkOutDate = new DateTime($checkOut);
         $nights = $checkOutDate->diff($checkInDate)->days;
+        
         $options = new Options();
         $options->set('isRemoteEnabled', true);
         $dompdf = new Dompdf($options);
+        
         $pricePerNight = $nights > 0 ? $amount / $nights : $amount;
         $taxes = $amount * 0.18;
         $totalAmount = $amount + $taxes;
-   
+        $commission = $totalAmount * 0.14;     
+        $netPayout  = $totalAmount - $commission; 
+        
+        $commissionSection = "
+        <tr>
+            <td colspan='3'><span class='highlight'>Commission (14%):</span> Rs " . number_format($commission, 2) . "</td>
+        </tr>
+        <tr>
+            <td colspan='3'><span class='highlight'>Net Payout:</span> Rs " . number_format($netPayout, 2) . "</td>
+        </tr>
+        ";
+
         function getMealPlanDescription($mealType) {
             $descriptions = [
                 "room_only" => "Room Only",
@@ -221,278 +250,302 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $checkInDisplay = date("d M 'y", strtotime($checkIn));
         $checkOutDisplay = date("d M 'y", strtotime($checkOut));
         $bookedOn = date("d M 'y h:i A");
+        
         $gstSection = "
-        <table>
-           <tr>
-    <th colspan='3' class='section-title'>GST DETAILS</th>
-</tr>
-<tr>
-    <td width='33%'>
-        <span class='highlight'>GST Number:</span><br>
-        <?= !empty($gstNumber) ? $gstNumber : 'Not Provided'; ?>
-</td>
-<td width='33%'>
-  <span class='highlight'>Company Name:</span><br>
-  <?= !empty($gstCompany) ? $gstCompany : 'Not Provided'; ?>
-</td>
-<td width='33%'>
-  <span class='highlight'>Company Address:</span><br>
-  <?= !empty($gstAddress) ? $gstAddress : 'Not Provided'; ?>
-</td>
-</tr>
+        <table class='gst-section'>
+            <tr>
+                <th colspan='3' class='section-title'>GST DETAILS</th>
+            </tr>
+            <tr>
+                <td width='33%'><span class='highlight'>GST Number:</span><br>" . (!empty($gstNumber) ? $gstNumber : 'Not Provided') . "</td>
+                <td width='33%'><span class='highlight'>Company Name:</span><br>" . (!empty($gstCompany) ? $gstCompany : 'Not Provided') . "</td>
+                <td width='33%'><span class='highlight'>Company Address:</span><br>" . (!empty($gstAddress) ? $gstAddress : 'Not Provided') . "</td>
+            </tr>
+        </table>";
 
-</table>";
+        $html = "
+        <html>
+        <head>
+            <style>
+            body {
+                font-family: Arial, sans-serif;
+                font-size: 10px;
+                line-height: 1.2;
+                margin: 0;
+                padding: 10px;
+                color: #333;
+            }
 
-$html = "
-<html>
+            .voucher {
+                max-width: 800px;
+                margin: 0 auto;
+            }
 
-<head>
-  <style>
-  body {
-    font-family: Arial, sans-serif;
-    font-size: 10px;
-    line-height: 1.2;
-    margin: 0;
-    padding: 10px;
-    color: #333;
-  }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 10px;
+            }
 
-  .voucher {
-    max-width: 800px;
-    margin: 0 auto;
-  }
+            th, td {
+                padding: 5px;
+                border: 1px solid #ddd;
+                vertical-align: top;
+            }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 10px;
-  }
+            th {
+                background-color: #f5f5f5;
+                font-weight: bold;
+                text-align: left;
+            }
 
-  th,
-  td {
-    padding: 5px;
-    border: 1px solid #ddd;
-    vertical-align: top;
-  }
+            .header {
+                text-align: center;
+                margin-bottom: 10px;
+                padding-bottom: 8px;
+                border-bottom: 1px solid #ddd;
+            }
 
-  th {
-    background-color: #f5f5f5;
-    font-weight: bold;
-    text-align: left;
-  }
+            .header h1 {
+                font-size: 14px;
+                margin: 0;
+                color: #2c3e50;
+            }
 
-  .header {
-    text-align: center;
-    margin-bottom: 10px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #ddd;
-  }
+            .header p {
+                font-size: 9px;
+                margin: 2px 0 0 0;
+                color: #666;
+            }
 
-  .header h1 {
-    font-size: 14px;
-    margin: 0;
-    color: #2c3e50;
-  }
+            .section-title {
+                font-weight: bold;
+                background-color: #f0f0f0;
+                font-size: 11px;
+            }
 
-  .header p {
-    font-size: 9px;
-    margin: 2px 0 0 0;
-    color: #666;
-  }
+            .booking-id {
+                font-size: 11px;
+                font-weight: bold;
+                color: #e74c3c;
+                text-align: center;
+                margin: 5px 0;
+            }
 
-  .section-title {
-    font-weight: bold;
-    background-color: #f0f0f0;
-    font-size: 11px;
-  }
+            .status {
+                font-size: 9px;
+                padding: 2px 5px;
+                background: #27ae60;
+                color: white;
+                border-radius: 2px;
+                display: inline-block;
+            }
 
-  .booking-id {
-    font-size: 11px;
-    font-weight: bold;
-    color: #e74c3c;
-    text-align: center;
-    margin: 5px 0;
-  }
+            .footer {
+                text-align: center;
+                margin-top: 10px;
+                padding-top: 8px;
+                border-top: 1px solid #ddd;
+                font-size: 9px;
+                color: #666;
+            }
 
-  .status {
-    font-size: 9px;
-    padding: 2px 5px;
-    background: #27ae60;
-    color: white;
-    border-radius: 2px;
-    display: inline-block;
-  }
+            .notes {
+                font-size: 9px;
+                background: #f9f9f9;
+                padding: 5px;
+            }
 
-  .footer {
-    text-align: center;
-    margin-top: 10px;
-    padding-top: 8px;
-    border-top: 1px solid #ddd;
-    font-size: 9px;
-    color: #666;
-  }
+            .highlight {
+                font-weight: bold;
+            }
 
-  .notes {
-    font-size: 9px;
-    background: #f9f9f9;
-    padding: 5px;
-  }
+            .gst-section {
+                background: #f0f8ff;
+                padding: 8px;
+                border: 1px solid #b9d6e6;
+                margin-bottom: 10px;
+            }
+            </style>
+        </head>
 
-  .highlight {
-    font-weight: bold;
-  }
+        <body>
+            <div class='voucher'>
+                <div class='header'>
+                    <h1>TRIPSORUS BOOKING VOUCHER</h1>
+                    <p>Official Booking Confirmation</p>
+                </div>
 
-  .gst-section {
-    background: #f0f8ff;
-    padding: 8px;
-    border: 1px solid #b9d6e6;
-    margin-bottom: 10px;
-  }
-  </style>
-</head>
+                <div class='booking-id'>Booking ID: $bookingCode</div>
 
-<body>
-  <div class='voucher'>
-    <div class='header'>
-      <h1>TRIPSORUS BOOKING VOUCHER</h1>
-      <p>Official Booking Confirmation</p>
-    </div>
+                <table>
+                    <tr>
+                        <th colspan='3' class='section-title'>GUEST INFORMATION</th>
+                    </tr>
+                    <tr>
+                        <td width='33%'><span class='highlight'>Guest Name:</span><br>$firstName $lastName</td>
+                        <td width='33%'><span class='highlight'>Contact:</span><br>" . ($guestPhone ?? 'N/A') . "</td>
+                        <td width='33%'><span class='highlight'>Email:</span><br>" . ($guestEmail ?? 'N/A') . "</td>
+                    </tr>
+                    <tr>
+                        <td colspan='3'><span class='highlight'>Status:</span> <span class='status'>$status</span></td>
+                    </tr>
+                </table>
 
-    <div class='booking-id'>Booking ID: $bookingCode</div>
+                <table>
+                    <tr>
+                        <th colspan='3' class='section-title'>STAY DETAILS</th>
+                    </tr>
+                    <tr>
+                        <td width='33%'><span class='highlight'>Check-in:</span><br>$checkInDisplay<br>12:00 PM</td>
+                        <td width='33%'><span class='highlight'>Check-out:</span><br>$checkOutDisplay<br>11:00 AM</td>
+                        <td width='33%'><span class='highlight'>Duration:</span><br>$nights Night" . ($nights > 1 ? 's' : '') . "<br>$guests Adult" . ($guests > 1 ? 's' : '') . "</td>
+                    </tr>
+                </table>
 
-    <table>
-      <tr>
-        <th colspan='3' class='section-title'>GUEST INFORMATION</th>
-      </tr>
-      <tr>
-        <td width='33%'><span class='highlight'>Guest Name:</span><br>$firstName $lastName</td>
-        <td width='33%'><span class='highlight'>Contact:</span><br>" . ($guestPhone ?? 'N/A') . "</td>
-        <td width='33%'><span class='highlight'>Email:</span><br>" . ($guestEmail ?? 'N/A') . "</td>
-      </tr>
-      <tr>
-        <td colspan='3'><span class='highlight'>Status:</span> <span class='status'>$status</span></td>
-      </tr>
-    </table>
+                <table>
+                    <tr>
+                        <th colspan='3' class='section-title'>PROPERTY INFORMATION</th>
+                    </tr>
+                    <tr>
+                        <td width='33%'><span class='highlight'>Property:</span><br>$propertyName</td>
+                        <td width='33%'><span class='highlight'>Location:</span><br>$city</td>
+                        <td width='33%'><span class='highlight'>Room Type:</span><br>$roomType</td>
+                    </tr>
+                    <tr>
+                        <td colspan='3'><span class='highlight'>Meal Plan:</span> " . getMealPlanDescription($mealType) . "</td>
+                    </tr>
+                </table>
+                
+                <table>
+                    <tr>
+                        <th colspan='3' class='section-title'>PAYMENT DETAILS</th>
+                    </tr>
+                    <tr>
+                        <td width='33%'><span class='highlight'>Room Charges:</span><br>Rs " . number_format($amount, 2) . "</td>
+                        <td width='33%'><span class='highlight'>Taxes & Fees:</span><br>Rs " . number_format($taxes, 2) . "</td>
+                        <td width='33%'><span class='highlight'>Total Amount:</span><br>Rs " . number_format($totalAmount, 2) . "</td>
+                    </tr>
+                    <tr>
+                        <td colspan='3'><span class='highlight'>Payment Method:</span> $paymentType</td>
+                    </tr>
+                    " . (!empty($adminEmail) ? $commissionSection : "") . "
+                </table>
 
-    <table>
-      <tr>
-        <th colspan='3' class='section-title'>STAY DETAILS</th>
-      </tr>
-      <tr>
-        <td width='33%'><span class='highlight'>Check-in:</span><br>$checkInDisplay<br>12:00 PM</td>
-        <td width='33%'><span class='highlight'>Check-out:</span><br>$checkOutDisplay<br>11:00 AM</td>
-        <td width='33%'><span class='highlight'>Duration:</span><br>$nights Night" . ($nights > 1 ? 's' : '') .
-          "<br>$guests Adult" . ($guests > 1 ? 's' : '') . "</td>
-      </tr>
-    </table>
-
-    <table>
-      <tr>
-        <th colspan='3' class='section-title'>PROPERTY INFORMATION</th>
-      </tr>
-      <tr>
-        <td width='33%'><span class='highlight'>Property:</span><br>$propertyName</td>
-        <td width='33%'><span class='highlight'>Location:</span><br>$city</td>
-        <td width='33%'><span class='highlight'>Room Type:</span><br>$roomType</td>
-      </tr>
-      <tr>
-        <td colspan='3'><span class='highlight'>Meal Plan:</span> " . getMealPlanDescription($mealType) . "</td>
-      </tr>
-    </table>
-
-    <table>
-      <tr>
-        <th colspan='3' class='section-title'>PAYMENT DETAILS</th>
-      </tr>
-      <tr>
-        <td width='33%'><span class='highlight'>Room Charges:</span><br>Rs " . number_format($amount, 2) . "</td>
-        <td width='33%'><span class='highlight'>Taxes & Fees:</span><br>Rs " . number_format($taxes, 2) . "</td>
-        <td width='33%'><span class='highlight'>Total Amount:</span><br>Rs " . number_format($totalAmount, 2) . "</td>
-      </tr>
-      <tr>
-        <td colspan='3'><span class='highlight'>Payment Method:</span> $paymentType</td>
-      </tr>
-    </table>
-    $gstSection
-    <table>
-      <tr>
-        <th class='section-title'>IMPORTANT NOTES</th>
-      </tr>
-      <tr>
-        <td class='notes'>
-          <p><strong>Check-in:</strong> Present this voucher and valid ID at reception</p>
-          <p><strong>Cancellation:</strong> Free until 24 hours before check-in</p>
-          <p><strong>Meals:</strong> " . getMealPlanDescription($mealType) . " included as specified</p>
-          <p><strong>Special Requests:</strong> " . (isset($_POST['special_requests']) &&
-            !empty($_POST['special_requests']) ? htmlspecialchars($_POST['special_requests']) : 'None') . "</p>
-        </td>
-      </tr>
-    </table>
-    <div class='footer'>
-      <p>Generated on " . date('M j, Y \a\t g:i A') . " | For support: support@tripsorus.com</p>
-    </div>
-  </div>
-</body>
-
-</html>";
-
-$dompdf->loadHtml($html);
-$dompdf->setPaper('A4', 'portrait');
-$dompdf->render();
-$pdfPath = __DIR__ . "/Booking_$bookingCode.pdf";
-file_put_contents($pdfPath, $dompdf->output());
-$mail = new PHPMailer(true);
-try {
-$mail->isSMTP();
-$mail->Host = 'smtpout.secureserver.net';
-$mail->SMTPAuth = true;
-$mail->Username = 'noreply@tripsorus.com';
-$mail->Password = $_ENV['MAIL_PASSWORD'];
-$mail->SMTPSecure = 'tls';
-$mail->Port = 587;
-$mail->setFrom("noreply@tripsorus.com", "Tripsorus");
-
-if (!empty($guestEmail)) {
-$mail->addAddress($guestEmail, "$firstName $lastName");
+                $gstSection
+                
+                <table>
+                    <tr>
+                        <th class='section-title'>IMPORTANT NOTES</th>
+                    </tr>
+                    <tr>
+                        <td class='notes'>
+                            <p><strong>Check-in:</strong> Present this voucher and valid ID at reception</p>
+                            <p><strong>Cancellation:</strong> Free until 24 hours before check-in</p>
+                            <p><strong>Meals:</strong> " . getMealPlanDescription($mealType) . " included as specified</p>
+                            <p><strong>Special Requests:</strong> " . (isset($_POST['special_requests']) && !empty($_POST['special_requests']) ? htmlspecialchars($_POST['special_requests']) : 'None') . "</p>
+                        </td>
+                    </tr>
+                </table>
+                
+                <div class='footer'>
+                    <p>Generated on " . date('M j, Y \a\t g:i A') . " | For support: support@tripsorus.com</p>
+                </div>
+            </div>
+        </body>
+        </html>";
+$htmlAdmin = $html;
+$htmlGuest = str_replace($commissionSection, '', $htmlAdmin);
+$dompdfGuest = new Dompdf($options);
+$dompdfGuest->loadHtml($htmlGuest);
+$dompdfGuest->setPaper('A4', 'portrait');
+$dompdfGuest->render();
+$pdfPathGuest = __DIR__ . "/Booking_{$bookingCode}_Guest.pdf";
+file_put_contents($pdfPathGuest, $dompdfGuest->output());
+$pdfPathAdmin = '';
+if (!empty($adminEmail)) {
+    $dompdfAdmin = new Dompdf($options);
+    $dompdfAdmin->loadHtml($htmlAdmin);
+    $dompdfAdmin->setPaper('A4', 'portrait');
+    $dompdfAdmin->render();
+    $pdfPathAdmin = __DIR__ . "/Booking_{$bookingCode}_Admin.pdf";
+    file_put_contents($pdfPathAdmin, $dompdfAdmin->output());
+}
+        // Send email to guest
+        if (!empty($guestEmail)) {
+            $guestMail = new PHPMailer(true);
+            try {
+                $guestMail->isSMTP();
+                $guestMail->Host = 'smtpout.secureserver.net';
+                $guestMail->SMTPAuth = true;
+                $guestMail->Username = 'noreply@tripsorus.com';
+                $guestMail->Password = $_ENV['MAIL_PASSWORD'];
+                $guestMail->SMTPSecure = 'tls';
+                $guestMail->Port = 587;
+                $guestMail->setFrom("noreply@tripsorus.com", "Tripsorus");
+                $guestMail->addAddress($guestEmail, "$firstName $lastName");
+               if (!empty($pdfPathGuest) && file_exists($pdfPathGuest)) {
+    $guestMail->addAttachment($pdfPathGuest);
 }
 
-$adminEmail = 'noreply@tripsorus.com';
-$stmt = $pdo->prepare("SELECT admin_id FROM properties WHERE id = :property_id LIMIT 1");
-$stmt->execute([':property_id' => $propertyId]);
-$propertyData = $stmt->fetch(PDO::FETCH_ASSOC);
-if ($propertyData && !empty($propertyData['admin_id'])) {
-$stmt = $pdo->prepare("SELECT email FROM user WHERE id = :admin_id LIMIT 1");
-$stmt->execute([':admin_id' => $propertyData['admin_id']]);
-$adminUser = $stmt->fetch(PDO::FETCH_ASSOC);
-if ($adminUser && !empty($adminUser['email'])) {
-$adminEmail = $adminUser['email'];
-}
+                $guestMail->isHTML(true);
+                $guestMail->Subject = "Booking Confirmation - $propertyName";
+                $guestMail->Body = "<p>Dear $firstName $lastName,</p>
+                <p>Your booking at <strong>$propertyName</strong> is confirmed.</p>
+                <p>Booking Code: $bookingCode</p>
+                <p>Check-in: $checkIn<br>Check-out: $checkOut</p>
+                <p>Total: Rs " . number_format($totalAmount, 2) . "</p>
+                <p>We've attached your booking confirmation PDF.</p>";
+                $guestMail->send();
+            } catch (Exception $e) {
+                error_log("Guest email could not be sent: {$guestMail->ErrorInfo}");
+            }
+        }
+
+        if (!empty($adminEmail)) {
+            $adminMail = new PHPMailer(true);
+            try {
+                $adminMail->isSMTP();
+                $adminMail->Host = 'smtpout.secureserver.net';
+                $adminMail->SMTPAuth = true;
+                $adminMail->Username = 'noreply@tripsorus.com';
+                $adminMail->Password = $_ENV['MAIL_PASSWORD'];
+                $adminMail->SMTPSecure = 'tls';
+                $adminMail->Port = 587;
+                $adminMail->setFrom("noreply@tripsorus.com", "Tripsorus");
+                $adminMail->addAddress($adminEmail, "Property Owner");
+                $adminMail->addAddress("noreply@tripsorus.com", "Admin");
+              if (!empty($pdfPathAdmin) && file_exists($pdfPathAdmin)) {
+    $adminMail->addAttachment($pdfPathAdmin);
 }
 
-$mail->addAddress("noreply@tripsorus.com", "Tripsorus");
-$mail->addAddress($adminEmail, "Property Owner");
-$mail->addAttachment($pdfPath);
-$mail->isHTML(true);
-$mail->Subject = "Booking Confirmation - $propertyName";
-$mail->Body = "<p>Dear $firstName $lastName,</p>
-<p>Your booking at <strong>$propertyName</strong> is confirmed.</p>
-<p>Booking Code: $bookingCode</p>
-<p>Check-in: $checkIn<br>Check-out: $checkOut</p>
-<p>Total: Rs " . number_format($totalAmount, 2) . "</p>
-<p>We've attached your booking confirmation PDF.</p>";
+                $adminMail->isHTML(true);
+                $adminMail->Subject = "New Booking Received - $propertyName";
+                $adminMail->Body = "<p>Dear Property Owner,</p>
+                <p>A new booking has been made at <strong>$propertyName</strong>.</p>
+                <p>Booking Code: $bookingCode</p>
+                <p>Guest Name: $firstName $lastName</p>
+                <p>Check-in: $checkIn<br>Check-out: $checkOut</p>
+                <p>Total: Rs " . number_format($totalAmount, 2) . "</p>";
+                $adminMail->send();
+            } catch (Exception $e) {
+                error_log("Admin email could not be sent: {$adminMail->ErrorInfo}");
+            }
+        }
+    if (!empty($pdfPathGuest) && file_exists($pdfPathGuest)) {
+    @unlink($pdfPathGuest);
+}
+if (!empty($pdfPathAdmin) && file_exists($pdfPathAdmin)) {
+    @unlink($pdfPathAdmin);
+}
 
-$mail->send();
-} catch (Exception $e) {
-error_log("Email could not be sent: {$mail->ErrorInfo}");
-}
-unlink($pdfPath);
-header("Location: confirmation.php?booking_id=" . $lastId);
-exit;
-} catch (Exception $e) {
-die("Error: " . $e->getMessage());
-}
+        header("Location: confirmation.php?booking_id=" . $lastId);
+        exit;
+    } catch (Exception $e) {
+        die("Error: " . $e->getMessage());
+    }
 } else {
-header("Location: index.php");
-exit();
+    header("Location: index.php");
+    exit();
 }
 ?>

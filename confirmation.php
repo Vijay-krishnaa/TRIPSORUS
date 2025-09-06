@@ -25,7 +25,6 @@ $stmt = $pdo->prepare("
 
 $stmt->execute(['booking_id' => $bookingId]);
 $booking = $stmt->fetch(PDO::FETCH_ASSOC);
-
 if (!$booking) {
   die("Booking not found.");
 }
@@ -45,7 +44,7 @@ $roomPrice = $nights > 0 ? $booking['amount'] / $nights : $booking['amount'];
 $taxes = $booking['amount'] * 0.18;
 $totalAmount = $booking['amount'] + $taxes;
 $bookingRef = $booking['booking_code'] ?? $booking['booking_id'];
-$guestName = $booking['guest_name'] ?? ($booking['first_name'] . " " . $booking['last_name']);
+$guestName = trim($booking['first_name'] . " " . $booking['last_name']);
 $guests = 2;
 $roomTypeName = $booking['room_type_name'] ?? "Deluxe Room";
 $city = $booking['city'] ?? "Not specified";
@@ -150,7 +149,6 @@ $country = $booking['country'] ?? "India";
   <div class="container my-5">
     <div class="row">
       <div class="col-lg-8">
-        <!-- Booking Details -->
         <div class="confirmation-card mb-4 p-4 border rounded shadow-sm">
           <h3 class="mb-4"><i class="fas fa-hotel me-2"></i>Booking Details</h3>
           <div class="row">
@@ -165,7 +163,6 @@ $country = $booking['country'] ?? "India";
                 <?php echo htmlspecialchars($city); ?>,
                 <?php echo htmlspecialchars($country); ?>
               </p>
-
               <div class="row mt-3">
                 <div class="col-6 col-md-4">
                   <p class="detail-label">Check-in</p>
@@ -201,17 +198,26 @@ $country = $booking['country'] ?? "India";
           <h3 class="mb-4"><i class="fas fa-user me-2"></i>Guest Information</h3>
           <div class="row">
             <div class="col-md-6 mb-3">
-              <p class="detail-label">Full Name</p>
-              <p><strong><?php echo htmlspecialchars($guestName); ?></strong></p>
+              <p class="detail-label">First Name</p>
+              <p><strong><?php echo htmlspecialchars($booking['first_name']); ?></strong></p>
+            </div>
+            <div class="col-md-6 mb-3">
+              <p class="detail-label">Last Name</p>
+              <p><strong><?php echo htmlspecialchars($booking['last_name']); ?></strong></p>
             </div>
             <div class="col-md-6 mb-3">
               <p class="detail-label">Contact Number</p>
-              <p><strong><?php echo htmlspecialchars($booking['phone'] ?? 'Not provided'); ?></strong></p>
+              <p>
+                <strong><?php echo htmlspecialchars($booking['phone'] ?? $booking['guest_phone'] ?? 'Not provided'); ?></strong>
+              </p>
             </div>
             <div class="col-md-12">
               <p class="detail-label">Email Address</p>
-              <p><strong><?php echo htmlspecialchars($booking['email'] ?? 'Not provided'); ?></strong></p>
+              <p>
+                <strong><?php echo htmlspecialchars($booking['email'] ?? $booking['guest_email'] ?? 'Not provided'); ?></strong>
+              </p>
             </div>
+
           </div>
         </div>
 

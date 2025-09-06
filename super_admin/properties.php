@@ -204,7 +204,6 @@ $adminName = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
           </div>
         </form>
       </div>
-
       <!-- Properties Grid -->
       <div class="row">
         <?php if (count($properties) > 0): ?>
@@ -214,15 +213,12 @@ $adminName = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
             $imagePath = !empty($property['property_image'])
               ? "../tripsorus-admin/" . $property['property_image']
               : "../assets/default-hotel.jpg";
-
             ?>
             <div class="col-md-6 col-lg-4 mb-4">
               <div class="card property-card h-100">
                 <div class="position-relative">
                   <img src="<?php echo htmlspecialchars($imagePath); ?>" class="card-img-top property-img"
                     alt="<?php echo htmlspecialchars($property['name']); ?>">
-
-
                   <span class="badge bg-primary property-type-badge"><?php echo ucfirst($property['type']); ?></span>
                 </div>
                 <div class="card-body">
@@ -234,7 +230,6 @@ $adminName = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
                   <p class="card-text">
                     <?php echo strlen($property['description']) > 100 ? substr($property['description'], 0, 100) . '...' : $property['description']; ?>
                   </p>
-
                   <div class="d-flex justify-content-between mb-2">
                     <span class="stats-badge bg-info">
                       <i class="fas fa-bed me-1"></i> <?php echo $property['room_types_count']; ?> Room Types
@@ -243,7 +238,6 @@ $adminName = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
                       <i class="fas fa-calendar-check me-1"></i> <?php echo $property['bookings_count']; ?> Bookings
                     </span>
                   </div>
-
                   <div class="d-flex justify-content-between align-items-center">
                     <small class="text-muted">Added: <?php echo $createdDate; ?></small>
                     <small class="text-muted">By:
@@ -264,7 +258,6 @@ $adminName = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
                 </div>
               </div>
             </div>
-
             <!-- Delete Confirmation Modal -->
             <div class="modal fade" id="deleteModal<?php echo $property['id']; ?>" tabindex="-1" aria-hidden="true">
               <div class="modal-dialog">

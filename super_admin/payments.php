@@ -23,10 +23,8 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'super_admin') {
   exit;
 }
 
-// Database connection using PDO
 require_once '../db.php';
 
-// Initialize variables
 $payments = [];
 $error = "";
 $success = "";
@@ -35,8 +33,6 @@ $status_filter = isset($_GET['status']) ? $_GET['status'] : 'all';
 $type_filter = isset($_GET['type']) ? $_GET['type'] : 'all';
 $date_from = isset($_GET['date_from']) ? $_GET['date_from'] : '';
 $date_to = isset($_GET['date_to']) ? $_GET['date_to'] : '';
-
-// Handle payment status update
 if (isset($_POST['update_status'])) {
   $payment_id = $_POST['payment_id'];
   $new_status = $_POST['status'];
@@ -50,8 +46,6 @@ if (isset($_POST['update_status'])) {
     $error = "Error updating payment status: " . $e->getMessage();
   }
 }
-
-// Fetch payments with filters
 try {
   $query = "
         SELECT b.*, p.name as property_name, 
@@ -64,8 +58,6 @@ try {
 
   $conditions = [];
   $params = [];
-
-  // Add search condition
   if (!empty($search)) {
     $conditions[] = "(b.booking_code LIKE ? OR b.first_name LIKE ? OR b.last_name LIKE ? OR p.name LIKE ?)";
     $search_term = "%$search%";
@@ -75,19 +67,14 @@ try {
     $params[] = $search_term;
   }
 
-  // Add status condition
   if ($status_filter !== 'all') {
     $conditions[] = "b.status = ?";
     $params[] = $status_filter;
   }
-
-  // Add payment type condition
   if ($type_filter !== 'all') {
     $conditions[] = "b.payment_type = ?";
     $params[] = $type_filter;
   }
-
-  // Add date range condition
   if (!empty($date_from) && !empty($date_to)) {
     $conditions[] = "DATE(b.created_at) BETWEEN ? AND ?";
     $params[] = $date_from;
@@ -99,20 +86,14 @@ try {
     $conditions[] = "DATE(b.created_at) <= ?";
     $params[] = $date_to;
   }
-
-  // Add WHERE clause if there are conditions
   if (!empty($conditions)) {
     $query .= " WHERE " . implode(" AND ", $conditions);
   }
-
-  // Add ORDER BY
   $query .= " ORDER BY b.created_at DESC";
 
   $stmt = $pdo->prepare($query);
   $stmt->execute($params);
   $payments = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-  // Calculate totals
   $total_revenue = 0;
   $confirmed_revenue = 0;
   $pending_revenue = 0;
@@ -129,8 +110,6 @@ try {
 } catch (PDOException $e) {
   $error = "Unable to load payments: " . $e->getMessage();
 }
-
-// Get admin name
 $adminName = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
 ?>
 
@@ -141,11 +120,8 @@ $adminName = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Payments Management - TRIPSORUS Super Admin</title>
-  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Flatpickr for date range -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" href="style.css">
 
@@ -154,19 +130,15 @@ $adminName = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
 <body>
   <!-- Sidebar -->
   <?php include 'sidebar.php'; ?>
-
   <!-- Main Content -->
   <div class="main-content">
     <div class="container-fluid">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Payments Management <span class="admin-id-badge">Super Admin</span></h2>
         <div class="d-flex">
-          <!-- Export Button -->
           <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#exportModal">
             <i class="fas fa-file-export me-2"></i>Export
           </button>
-
-          <!-- User Profile Dropdown -->
           <div class="dropdown">
             <button class="btn btn-primary dropdown-toggle user-dropdown d-flex align-items-center" type="button"
               id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">

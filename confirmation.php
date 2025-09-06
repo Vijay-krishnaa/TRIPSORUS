@@ -235,7 +235,6 @@ $country = $booking['country'] ?? "India";
           </ul>
         </div>
       </div>
-
       <!-- RIGHT SIDE -->
       <div class="col-lg-4">
         <div class="confirmation-card mb-4 p-4 border rounded shadow-sm">
@@ -254,7 +253,6 @@ $country = $booking['country'] ?? "India";
           </div>
           <p class="mt-3"><span class="badge bg-success">Payment Completed</span></p>
         </div>
-
         <div class="confirmation-card mb-4 p-4 border rounded shadow-sm">
           <h3 class="mb-4"><i class="fas fa-question-circle me-2"></i>Need Help?</h3>
           <p><i class="fas fa-phone-alt me-2"></i> +91 1234567890</p>
@@ -264,7 +262,6 @@ $country = $booking['country'] ?? "India";
       </div>
     </div>
   </div>
-
   <?php include 'footer.php'; ?>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>

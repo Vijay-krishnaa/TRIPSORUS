@@ -360,51 +360,8 @@ $adminName = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
 
 <body>
   <!-- Sidebar -->
-  <nav class="sidebar" id="sidebar">
-    <div class="position-sticky pt-3">
-      <h4 class="text-white text-center mb-4">
-        <i class="fas fa-crown me-2"></i>Super Admin
-      </h4>
-      <ul class="nav flex-column">
-        <li class="nav-item">
-          <a class="nav-link" href="dashboard.php">
-            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="properties.php">
-            <i class="fas fa-hotel me-2"></i>All Properties
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" href="admin_management.php">
-            <i class="fas fa-users-cog me-2"></i>Manage Admins
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="bookings.php">
-            <i class="fas fa-calendar-check me-2"></i>Bookings
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="reports.php">
-            <i class="fas fa-chart-bar me-2"></i>Reports
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="settings.php">
-            <i class="fas fa-cog me-2"></i>Settings
-          </a>
-        </li>
-        <li class="nav-item mt-3">
-          <a class="nav-link text-danger" href="../logout.php">
-            <i class="fas fa-sign-out-alt me-2"></i>Logout
-          </a>
-        </li>
-      </ul>
-    </div>
-  </nav>
 
+  <?php include 'sidebar.php'; ?>
   <!-- Main Content -->
   <div class="main-content">
     <div class="container-fluid">
@@ -514,18 +471,18 @@ $adminName = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
               <?php if (count($admins) > 0): ?>
               <?php foreach ($admins as $admin): 
                   // Determine status badge class
-                  $statusClass = $admin['status'] == 'active' ? 'bg-active' : 'bg-inactive';
-                  $statusText = $admin['status'] == 'active' ? 'Active' : 'Inactive';
-                  
-                  // Determine role badge class
+           $statusClass = (!isset($admin['status']) || $admin['status'] === '' || $admin['status'] === 'active') 
+    ? 'bg-active' 
+    : 'bg-inactive';
+
+               $statusText = (!isset($admin['status']) || $admin['status'] === '' || $admin['status'] === 'active') 
+    ? 'Active' 
+    : 'Inactive';
+
                   $roleClass = $admin['user_type'] == 'super_admin' ? 'bg-super-admin' : 'bg-admin';
                   $roleText = $admin['user_type'] == 'super_admin' ? 'Super Admin' : 'Admin';
-                  
-                  // Format dates
                   $createdDate = date('M j, Y', strtotime($admin['created_at']));
                   $lastLogin = !empty($admin['last_login']) ? date('M j, Y', strtotime($admin['last_login'])) : 'Never';
-                  
-                  // Get initials for avatar
                   $initials = substr($admin['first_name'], 0, 1) . substr($admin['last_name'], 0, 1);
                 ?>
               <tr>
@@ -562,10 +519,12 @@ $adminName = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
                       <i class="fas fa-edit"></i>
                     </button>
                     <?php if ($admin['id'] != $_SESSION['user_id']): ?>
-                    <a href="admins.php?toggle_status=<?php echo $admin['id']; ?>&current_status=<?php echo $admin['status']; ?>"
-                      class="btn btn-sm <?php echo $admin['status'] == 'active' ? 'btn-outline-warning' : 'btn-outline-success'; ?>">
-                      <i class="fas <?php echo $admin['status'] == 'active' ? 'fa-times' : 'fa-check'; ?>"></i>
+                    <a href="admins.php?toggle_status=<?php echo $admin['id']; ?>&current_status=<?php echo ($admin['status'] ?? 'active'); ?>"
+                      class="btn btn-sm <?php echo (($admin['status'] ?? 'active') === 'active') ? 'btn-outline-warning' : 'btn-outline-success'; ?>">
+                      <i
+                        class="fas <?php echo (($admin['status'] ?? 'active') === 'active') ? 'fa-times' : 'fa-check'; ?>"></i>
                     </a>
+
                     <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
                       data-bs-target="#deleteModal<?php echo $admin['id']; ?>">
                       <i class="fas fa-trash"></i>
@@ -706,8 +665,11 @@ $adminName = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
           <div class="card text-center">
             <div class="card-body">
               <h3 class="card-title">
-                <?php echo count(array_filter($admins, function($a) { return $a['status'] == 'active'; })); ?></h3>
-              <p class="card-text">Active Admins</p>
+                <?php echo count(array_filter($admins, function($a) { 
+    return !isset($a['status']) || $a['status'] === '' || $a['status'] === 'active'; 
+})); ?>
+
+                <p class="card-text">Active Admins</p>
             </div>
           </div>
         </div>
@@ -715,8 +677,11 @@ $adminName = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
           <div class="card text-center">
             <div class="card-body">
               <h3 class="card-title">
-                <?php echo count(array_filter($admins, function($a) { return $a['status'] == 'inactive'; })); ?></h3>
-              <p class="card-text">Inactive Admins</p>
+                <?php echo count(array_filter($admins, function($a) { 
+    return isset($a['status']) && $a['status'] === 'inactive'; 
+})); ?>
+
+                <p class="card-text">Inactive Admins</p>
             </div>
           </div>
         </div>

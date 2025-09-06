@@ -238,13 +238,10 @@ foreach ($rows as $row) {
         }
     }
 }
-
-
 foreach ($data as &$cat) {
     $cat['rules'] = array_values($cat['rules']);
 }
 $ruleCategories = array_values($data);
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -340,7 +337,6 @@ $ruleCategories = array_values($data);
 
   .rules-categories {
     display: flex;
-    margin: -1px -5px;
     flex-wrap: wrap;
     gap: 5px;
   }
@@ -1266,8 +1262,13 @@ $ruleCategories = array_values($data);
     </section>
     <section class="property-info-section">
       <div class="hotel-rules-container">
-        <div class="hotel-name">Hotel Rules at The Riversidde Innnn</div>
-        <div class="check-in-out">Check-in: 12PM Check-out: 11 AM</div>
+        <div class="hotel-name">Hotel Rules at <?php echo htmlspecialchars($propertyName); ?></div>
+
+        <div class="check-in-out">
+          Check-in: <?php echo $propertyCheckin; ?>
+          | Check-out: <?php echo $propertyCheckout; ?>
+        </div>
+
         <hr>
         <div class="rule-item">
           <p>Primary Guest should be at least 18 years of age.</p>

@@ -113,11 +113,8 @@ $adminName = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bookings Management - TRIPSORUS Super Admin</title>
-  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- DataTables CSS -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
   <style>
   :root {
@@ -274,50 +271,7 @@ $adminName = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
 
 <body>
   <!-- Sidebar -->
-  <nav class="sidebar" id="sidebar">
-    <div class="position-sticky pt-3">
-      <h4 class="text-white text-center mb-4">
-        <i class="fas fa-crown me-2"></i>Super Admin
-      </h4>
-      <ul class="nav flex-column">
-        <li class="nav-item">
-          <a class="nav-link" href="dashboard.php">
-            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="properties.php">
-            <i class="fas fa-hotel me-2"></i>All Properties
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="admins.php">
-            <i class="fas fa-users-cog me-2"></i>Manage Admins
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" href="bookings.php">
-            <i class="fas fa-calendar-check me-2"></i>Bookings
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="reports.php">
-            <i class="fas fa-chart-bar me-2"></i>Reports
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="settings.php">
-            <i class="fas fa-cog me-2"></i>Settings
-          </a>
-        </li>
-        <li class="nav-item mt-3">
-          <a class="nav-link text-danger" href="../logout.php">
-            <i class="fas fa-sign-out-alt me-2"></i>Logout
-          </a>
-        </li>
-      </ul>
-    </div>
-  </nav>
+  <?php include 'sidebar.php'; ?>
 
   <!-- Main Content -->
   <div class="main-content">

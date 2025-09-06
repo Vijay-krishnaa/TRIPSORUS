@@ -5,7 +5,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 if (!isset($_GET['booking_id'])) {
-    die("Booking ID is required.");
+  die("Booking ID is required.");
 }
 $bookingId = $_GET['booking_id'];
 $stmt = $pdo->prepare("
@@ -27,7 +27,7 @@ $stmt->execute(['booking_id' => $bookingId]);
 $booking = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$booking) {
-    die("Booking not found.");
+  die("Booking not found.");
 }
 $stmtImg = $pdo->prepare("
     SELECT image_path 
@@ -37,19 +37,16 @@ $stmtImg = $pdo->prepare("
 ");
 $stmtImg->execute(['property_id' => $booking['property_id']]);
 $image = $stmtImg->fetch(PDO::FETCH_ASSOC);
-
 $hotelImage = $image ? "tripsorus-admin/" . $image['image_path'] : "assets/default-hotel.jpg";
-
-$checkIn  = new DateTime($booking['check_in']);
+$checkIn = new DateTime($booking['check_in']);
 $checkOut = new DateTime($booking['check_out']);
-$nights   = $checkOut->diff($checkIn)->days;
-$roomPrice    = $nights > 0 ? $booking['amount'] / $nights : $booking['amount'];
-$taxes        = $booking['amount'] * 0.18;
-$totalAmount  = $booking['amount'] + $taxes;
-
+$nights = $checkOut->diff($checkIn)->days;
+$roomPrice = $nights > 0 ? $booking['amount'] / $nights : $booking['amount'];
+$taxes = $booking['amount'] * 0.18;
+$totalAmount = $booking['amount'] + $taxes;
 $bookingRef = $booking['booking_code'] ?? $booking['booking_id'];
-$guestName  = $booking['guest_name'] ?? ($booking['first_name'] . " " . $booking['last_name']);
-$guests = 2; 
+$guestName = $booking['guest_name'] ?? ($booking['first_name'] . " " . $booking['last_name']);
+$guests = 2;
 $roomTypeName = $booking['room_type_name'] ?? "Deluxe Room";
 $city = $booking['city'] ?? "Not specified";
 $country = $booking['country'] ?? "India";
@@ -67,61 +64,61 @@ $country = $booking['country'] ?? "India";
   <link rel="icon" href="images/favicon.ico" type="image/ico" />
   <link rel="stylesheet" href="styles/style.css">
   <style>
-  .confirmation-hero {
-    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('<?php echo $hotelImage; ?>') center/cover no-repeat;
-  }
-
-  .confirmation-card {
-    background-color: #fff;
-    border-radius: 10px;
-  }
-
-  .detail-label {
-    font-size: 0.9rem;
-    color: #6c757d;
-    margin-bottom: 0.25rem;
-  }
-
-  .summary-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #eee;
-  }
-
-  .summary-total {
-    font-weight: bold;
-    border-top: 2px solid #ddd;
-    margin-top: 0.5rem;
-    padding-top: 1rem;
-    font-size: 1.1rem;
-  }
-
-  .amenity-badge {
-    display: inline-block;
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
-    border-radius: 4px;
-    padding: 0.25rem 0.5rem;
-    margin: 0.25rem;
-    font-size: 0.85rem;
-  }
-
-  @media print {
-    .no-print {
-      display: none !important;
-    }
-
-    body {
-      background-color: #fff !important;
-    }
-
     .confirmation-hero {
-      background: none !important;
-      color: #000 !important;
-      padding: 1rem 0 !important;
+      background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('<?php echo $hotelImage; ?>') center/cover no-repeat;
     }
-  }
+
+    .confirmation-card {
+      background-color: #fff;
+      border-radius: 10px;
+    }
+
+    .detail-label {
+      font-size: 0.9rem;
+      color: #6c757d;
+      margin-bottom: 0.25rem;
+    }
+
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .summary-total {
+      font-weight: bold;
+      border-top: 2px solid #ddd;
+      margin-top: 0.5rem;
+      padding-top: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .amenity-badge {
+      display: inline-block;
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+      padding: 0.25rem 0.5rem;
+      margin: 0.25rem;
+      font-size: 0.85rem;
+    }
+
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+
+      body {
+        background-color: #fff !important;
+      }
+
+      .confirmation-hero {
+        background: none !important;
+        color: #000 !important;
+        padding: 1rem 0 !important;
+      }
+    }
   </style>
 </head>
 
@@ -152,7 +149,6 @@ $country = $booking['country'] ?? "India";
 
   <div class="container my-5">
     <div class="row">
-      <!-- LEFT SIDE -->
       <div class="col-lg-8">
         <!-- Booking Details -->
         <div class="confirmation-card mb-4 p-4 border rounded shadow-sm">
@@ -224,10 +220,12 @@ $country = $booking['country'] ?? "India";
           <h3 class="mb-4"><i class="fas fa-list-alt me-2"></i>What's Next?</h3>
           <ul class="list-unstyled">
             <li class="mb-3"><i class="fas fa-envelope me-2"></i> Confirmation Email sent to
-              <?php echo htmlspecialchars($booking['email'] ?? 'you'); ?></li>
+              <?php echo htmlspecialchars($booking['email'] ?? 'you'); ?>
+            </li>
             <li class="mb-3"><i class="fas fa-bed me-2"></i> Present booking reference at check-in</li>
             <li><i class="fas fa-umbrella-beach me-2"></i> Enjoy your stay at
-              <?php echo htmlspecialchars($booking['property_name']); ?></li>
+              <?php echo htmlspecialchars($booking['property_name']); ?>
+            </li>
           </ul>
         </div>
       </div>

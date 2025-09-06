@@ -1,57 +1,49 @@
 <?php
 session_start();
-
-$timeout_duration = 900; 
-
+$timeout_duration = 900;
 if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY']) > $timeout_duration) {
-    session_unset();     
-    session_destroy();   
-    echo "<script>
+  session_unset();
+  session_destroy();
+  echo "<script>
         alert('Session expired due to inactivity. Please login again.');
         window.location.href = 'index.php';
     </script>";
-    exit;
+  exit;
 }
-
-$_SESSION['LAST_ACTIVITY'] = time(); 
+$_SESSION['LAST_ACTIVITY'] = time();
 
 if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'super_admin') {
-    echo "<script>
+  echo "<script>
         alert('Access denied. Super Admins only.');
         window.location.href = 'index.php';
     </script>";
-    exit;
+  exit;
 }
 
-// Database connection using PDO
 require_once '../db.php';
 
-// Initialize variables
 $bookings = [];
 $error = "";
 $success = "";
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $status_filter = isset($_GET['status']) ? $_GET['status'] : 'all';
 $date_filter = isset($_GET['date']) ? $_GET['date'] : '';
-
-// Handle booking status update
 if (isset($_POST['update_status'])) {
-    $booking_id = $_POST['booking_id'];
-    $new_status = $_POST['status'];
-    
-    try {
-        $stmt = $pdo->prepare("UPDATE bookings SET status = ? WHERE booking_id = ?");
-        $stmt->execute([$new_status, $booking_id]);
-        
-        $success = "Booking status updated successfully!";
-    } catch (PDOException $e) {
-        $error = "Error updating booking status: " . $e->getMessage();
-    }
+  $booking_id = $_POST['booking_id'];
+  $new_status = $_POST['status'];
+
+  try {
+    $stmt = $pdo->prepare("UPDATE bookings SET status = ? WHERE booking_id = ?");
+    $stmt->execute([$new_status, $booking_id]);
+
+    $success = "Booking status updated successfully!";
+  } catch (PDOException $e) {
+    $error = "Error updating booking status: " . $e->getMessage();
+  }
 }
 
-// Fetch bookings with filters
 try {
-    $query = "
+  $query = "
         SELECT b.*, p.name as property_name, 
                CONCAT(u.first_name, ' ', u.last_name) as admin_name,
                rt.name as room_type_name
@@ -60,49 +52,40 @@ try {
         LEFT JOIN user u ON p.admin_id = u.id
         LEFT JOIN room_types rt ON b.room_type_id = rt.id
     ";
-    
-    $conditions = [];
-    $params = [];
-    
-    // Add search condition
-    if (!empty($search)) {
-        $conditions[] = "(b.booking_code LIKE ? OR b.guest_name LIKE ? OR p.name LIKE ?)";
-        $search_term = "%$search%";
-        $params[] = $search_term;
-        $params[] = $search_term;
-        $params[] = $search_term;
-    }
-    
-    // Add status condition
-    if ($status_filter !== 'all') {
-        $conditions[] = "b.status = ?";
-        $params[] = $status_filter;
-    }
-    
-    // Add date condition
-    if (!empty($date_filter)) {
-        $conditions[] = "DATE(b.check_in) = ? OR DATE(b.check_out) = ?";
-        $params[] = $date_filter;
-        $params[] = $date_filter;
-    }
-    
-    // Add WHERE clause if there are conditions
-    if (!empty($conditions)) {
-        $query .= " WHERE " . implode(" AND ", $conditions);
-    }
-    
-    // Add ORDER BY
-    $query .= " ORDER BY b.created_at DESC";
-    
-    $stmt = $pdo->prepare($query);
-    $stmt->execute($params);
-    $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-} catch (PDOException $e) {
-    $error = "Unable to load bookings: " . $e->getMessage();
-}
 
-// Get admin name
+  $conditions = [];
+  $params = [];
+  if (!empty($search)) {
+    $conditions[] = "(b.booking_code LIKE ? OR b.guest_name LIKE ? OR p.name LIKE ?)";
+    $search_term = "%$search%";
+    $params[] = $search_term;
+    $params[] = $search_term;
+    $params[] = $search_term;
+  }
+
+  if ($status_filter !== 'all') {
+    $conditions[] = "b.status = ?";
+    $params[] = $status_filter;
+  }
+
+  if (!empty($date_filter)) {
+    $conditions[] = "DATE(b.check_in) = ? OR DATE(b.check_out) = ?";
+    $params[] = $date_filter;
+    $params[] = $date_filter;
+  }
+
+  if (!empty($conditions)) {
+    $query .= " WHERE " . implode(" AND ", $conditions);
+  }
+  $query .= " ORDER BY b.created_at DESC";
+
+  $stmt = $pdo->prepare($query);
+  $stmt->execute($params);
+  $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+} catch (PDOException $e) {
+  $error = "Unable to load bookings: " . $e->getMessage();
+}
 $adminName = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
 ?>
 
@@ -116,163 +99,13 @@ $adminName = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
-  <style>
-  :root {
-    --primary-color: #007bff;
-    --secondary-color: #6c757d;
-    --dark-color: #343a40;
-    --light-color: #f8f9fa;
-  }
+  <link rel="stylesheet" href="style.css">
 
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f5f7fa;
-    overflow-x: hidden;
-  }
-
-  .sidebar {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    color: white;
-    min-height: 100vh;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-    position: fixed;
-    width: 250px;
-    transition: all 0.3s;
-    z-index: 1000;
-  }
-
-  .sidebar .nav-link {
-    color: rgba(255, 255, 255, 0.8);
-    padding: 12px 15px;
-    margin: 5px 0;
-    border-radius: 5px;
-    transition: all 0.3s;
-  }
-
-  .sidebar .nav-link:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: white;
-  }
-
-  .sidebar .nav-link.active {
-    background-color: rgba(255, 255, 255, 0.2);
-    color: white;
-    font-weight: 500;
-  }
-
-  .sidebar .nav-link i {
-    margin-right: 10px;
-    width: 20px;
-    text-align: center;
-  }
-
-  .main-content {
-    margin-left: 250px;
-    transition: all 0.3s;
-    padding: 20px;
-  }
-
-  .admin-id-badge {
-    background-color: #6f42c1;
-    padding: 4px, 8px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-  }
-
-  .user-dropdown {
-    background-color: #6f42c1;
-    border: none;
-  }
-
-  .user-avatar {
-    width: 30px;
-    height: 30px;
-    background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 10px;
-  }
-
-  .user-info {
-    padding: 10px 15px;
-    border-bottom: 1px solid #dee2e6;
-  }
-
-  .user-name {
-    font-weight: bold;
-  }
-
-  .user-role {
-    font-size: 0.9rem;
-    color: #6c757d;
-  }
-
-  .filter-section {
-    background-color: white;
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-
-  .status-badge {
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 500;
-  }
-
-  .bg-pending {
-    background-color: #fff3cd;
-    color: #856404;
-  }
-
-  .bg-confirmed {
-    background-color: #d1ecf1;
-    color: #0c5460;
-  }
-
-  .bg-cancelled {
-    background-color: #f8d7da;
-    color: #721c24;
-  }
-
-  .booking-table {
-    background-color: white;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-
-  .table thead th {
-    background-color: #f8f9fa;
-    border-bottom: 2px solid #dee2e6;
-  }
-
-  @media (max-width: 768px) {
-    .sidebar {
-      width: 0;
-      position: fixed;
-      z-index: 1000;
-    }
-
-    .sidebar.active {
-      width: 250px;
-    }
-
-    .main-content {
-      margin-left: 0;
-    }
-  }
-  </style>
 </head>
 
 <body>
   <!-- Sidebar -->
   <?php include 'sidebar.php'; ?>
-
   <!-- Main Content -->
   <div class="main-content">
     <div class="container-fluid">
@@ -309,17 +142,17 @@ $adminName = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
 
       <!-- Display messages -->
       <?php if (!empty($error)): ?>
-      <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <?php echo $error; ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <?php echo $error; ?>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
       <?php endif; ?>
 
       <?php if (!empty($success)): ?>
-      <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <?php echo $success; ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <?php echo $success; ?>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
       <?php endif; ?>
 
       <!-- Filters Section -->
@@ -376,199 +209,210 @@ $adminName = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
             </thead>
             <tbody>
               <?php if (count($bookings) > 0): ?>
-              <?php foreach ($bookings as $booking): 
+                <?php foreach ($bookings as $booking):
                   // Determine status badge class
                   $statusClass = '';
-                  if ($booking['status'] == 'Confirmed') $statusClass = 'bg-confirmed';
-                  else if ($booking['status'] == 'Pending') $statusClass = 'bg-pending';
-                  else if ($booking['status'] == 'Cancelled') $statusClass = 'bg-cancelled';
-                  
+                  if ($booking['status'] == 'Confirmed')
+                    $statusClass = 'bg-confirmed';
+                  else if ($booking['status'] == 'Pending')
+                    $statusClass = 'bg-pending';
+                  else if ($booking['status'] == 'Cancelled')
+                    $statusClass = 'bg-cancelled';
+
                   // Format dates
                   $checkIn = date('M j, Y', strtotime($booking['check_in']));
                   $checkOut = date('M j, Y', strtotime($booking['check_out']));
                   $createdAt = date('M j, Y', strtotime($booking['created_at']));
-                ?>
-              <tr>
-                <td>
-                  <strong><?php echo htmlspecialchars($booking['booking_code']); ?></strong>
-                  <br>
-                  <small class="text-muted"><?php echo $createdAt; ?></small>
-                </td>
-                <td><?php echo htmlspecialchars($booking['property_name']); ?></td>
-                <td><?php echo htmlspecialchars($booking['guest_name']); ?></td>
-                <td><?php echo htmlspecialchars($booking['room_type_name'] ?? 'N/A'); ?></td>
-                <td><?php echo $checkIn; ?></td>
-                <td><?php echo $checkOut; ?></td>
-                <td>₹<?php echo number_format($booking['amount'], 2); ?></td>
-                <td>
-                  <?php 
+                  ?>
+                  <tr>
+                    <td>
+                      <strong><?php echo htmlspecialchars($booking['booking_code']); ?></strong>
+                      <br>
+                      <small class="text-muted"><?php echo $createdAt; ?></small>
+                    </td>
+                    <td><?php echo htmlspecialchars($booking['property_name']); ?></td>
+                    <td><?php echo htmlspecialchars($booking['guest_name']); ?></td>
+                    <td><?php echo htmlspecialchars($booking['room_type_name'] ?? 'N/A'); ?></td>
+                    <td><?php echo $checkIn; ?></td>
+                    <td><?php echo $checkOut; ?></td>
+                    <td>₹<?php echo number_format($booking['amount'], 2); ?></td>
+                    <td>
+                      <?php
                       $paymentType = $booking['payment_type'] ?? 'N/A';
                       $paymentBadgeClass = 'bg-secondary';
-                      if ($paymentType == 'credit_card') $paymentBadgeClass = 'bg-primary';
-                      if ($paymentType == 'pay_at_property') $paymentBadgeClass = 'bg-warning text-dark';
+                      if ($paymentType == 'credit_card')
+                        $paymentBadgeClass = 'bg-primary';
+                      if ($paymentType == 'pay_at_property')
+                        $paymentBadgeClass = 'bg-warning text-dark';
                       ?>
-                  <span class="badge <?php echo $paymentBadgeClass; ?>">
-                    <?php 
-                        if ($paymentType == 'credit_card') echo 'Credit Card';
-                        else if ($paymentType == 'pay_at_property') echo 'Pay at Property';
-                        else echo $paymentType;
+                      <span class="badge <?php echo $paymentBadgeClass; ?>">
+                        <?php
+                        if ($paymentType == 'credit_card')
+                          echo 'Credit Card';
+                        else if ($paymentType == 'pay_at_property')
+                          echo 'Pay at Property';
+                        else
+                          echo $paymentType;
                         ?>
-                  </span>
-                </td>
-                <td>
-                  <span class="badge status-badge <?php echo $statusClass; ?>">
-                    <?php echo htmlspecialchars($booking['status']); ?>
-                  </span>
-                </td>
-                <td>
-                  <div class="btn-group">
-                    <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
-                      data-bs-target="#viewModal<?php echo $booking['booking_id']; ?>">
-                      <i class="fas fa-eye"></i>
-                    </button>
-                    <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal"
-                      data-bs-target="#editModal<?php echo $booking['booking_id']; ?>">
-                      <i class="fas fa-edit"></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-
-              <!-- View Modal -->
-              <div class="modal fade" id="viewModal<?php echo $booking['booking_id']; ?>" tabindex="-1"
-                aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title">Booking Details: <?php echo htmlspecialchars($booking['booking_code']); ?>
-                      </h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                      <div class="row">
-                        <div class="col-md-6">
-                          <h6>Guest Information</h6>
-                          <p><strong>Name:</strong> <?php echo htmlspecialchars($booking['guest_name']); ?></p>
-                          <p><strong>Email:</strong> <?php echo htmlspecialchars($booking['guest_email'] ?? 'N/A'); ?>
-                          </p>
-                          <p><strong>Phone:</strong> <?php echo htmlspecialchars($booking['guest_phone'] ?? 'N/A'); ?>
-                          </p>
-                        </div>
-                        <div class="col-md-6">
-                          <h6>Booking Information</h6>
-                          <p><strong>Property:</strong> <?php echo htmlspecialchars($booking['property_name']); ?></p>
-                          <p><strong>Room Type:</strong>
-                            <?php echo htmlspecialchars($booking['room_type_name'] ?? 'N/A'); ?></p>
-                          <p><strong>Meal Plan:</strong> <?php echo htmlspecialchars($booking['meal_type'] ?? 'N/A'); ?>
-                          </p>
-                        </div>
+                      </span>
+                    </td>
+                    <td>
+                      <span class="badge status-badge <?php echo $statusClass; ?>">
+                        <?php echo htmlspecialchars($booking['status']); ?>
+                      </span>
+                    </td>
+                    <td>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                          data-bs-target="#viewModal<?php echo $booking['booking_id']; ?>">
+                          <i class="fas fa-eye"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal"
+                          data-bs-target="#editModal<?php echo $booking['booking_id']; ?>">
+                          <i class="fas fa-edit"></i>
+                        </button>
                       </div>
-                      <div class="row mt-3">
-                        <div class="col-md-6">
-                          <h6>Dates</h6>
-                          <p><strong>Check-In:</strong> <?php echo $checkIn; ?></p>
-                          <p><strong>Check-Out:</strong> <?php echo $checkOut; ?></p>
-                          <p><strong>Nights:</strong>
-                            <?php 
+                    </td>
+                  </tr>
+
+                  <!-- View Modal -->
+                  <div class="modal fade" id="viewModal<?php echo $booking['booking_id']; ?>" tabindex="-1"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Booking Details: <?php echo htmlspecialchars($booking['booking_code']); ?>
+                          </h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <div class="row">
+                            <div class="col-md-6">
+                              <h6>Guest Information</h6>
+                              <p><strong>Name:</strong> <?php echo htmlspecialchars($booking['guest_name']); ?></p>
+                              <p><strong>Email:</strong> <?php echo htmlspecialchars($booking['guest_email'] ?? 'N/A'); ?>
+                              </p>
+                              <p><strong>Phone:</strong> <?php echo htmlspecialchars($booking['guest_phone'] ?? 'N/A'); ?>
+                              </p>
+                            </div>
+                            <div class="col-md-6">
+                              <h6>Booking Information</h6>
+                              <p><strong>Property:</strong> <?php echo htmlspecialchars($booking['property_name']); ?></p>
+                              <p><strong>Room Type:</strong>
+                                <?php echo htmlspecialchars($booking['room_type_name'] ?? 'N/A'); ?></p>
+                              <p><strong>Meal Plan:</strong> <?php echo htmlspecialchars($booking['meal_type'] ?? 'N/A'); ?>
+                              </p>
+                            </div>
+                          </div>
+                          <div class="row mt-3">
+                            <div class="col-md-6">
+                              <h6>Dates</h6>
+                              <p><strong>Check-In:</strong> <?php echo $checkIn; ?></p>
+                              <p><strong>Check-Out:</strong> <?php echo $checkOut; ?></p>
+                              <p><strong>Nights:</strong>
+                                <?php
                                 $checkInDate = new DateTime($booking['check_in']);
                                 $checkOutDate = new DateTime($booking['check_out']);
                                 $nights = $checkInDate->diff($checkOutDate)->days;
                                 echo $nights;
                                 ?>
-                          </p>
-                        </div>
-                        <div class="col-md-6">
-                          <h6>Payment Details</h6>
-                          <p><strong>Amount:</strong> ₹<?php echo number_format($booking['amount'], 2); ?></p>
-                          <p><strong>Payment Method:</strong>
-                            <?php 
-                                if ($booking['payment_type'] == 'credit_card') echo 'Credit Card';
-                                else if ($booking['payment_type'] == 'pay_at_property') echo 'Pay at Property';
-                                else echo $booking['payment_type'] ?? 'N/A';
+                              </p>
+                            </div>
+                            <div class="col-md-6">
+                              <h6>Payment Details</h6>
+                              <p><strong>Amount:</strong> ₹<?php echo number_format($booking['amount'], 2); ?></p>
+                              <p><strong>Payment Method:</strong>
+                                <?php
+                                if ($booking['payment_type'] == 'credit_card')
+                                  echo 'Credit Card';
+                                else if ($booking['payment_type'] == 'pay_at_property')
+                                  echo 'Pay at Property';
+                                else
+                                  echo $booking['payment_type'] ?? 'N/A';
                                 ?>
-                          </p>
-                          <p><strong>Status:</strong>
-                            <span class="badge status-badge <?php echo $statusClass; ?>">
-                              <?php echo htmlspecialchars($booking['status']); ?>
-                            </span>
-                          </p>
+                              </p>
+                              <p><strong>Status:</strong>
+                                <span class="badge status-badge <?php echo $statusClass; ?>">
+                                  <?php echo htmlspecialchars($booking['status']); ?>
+                                </span>
+                              </p>
+                            </div>
+                          </div>
+                          <?php if (!empty($booking['gst_number'])): ?>
+                            <div class="row mt-3">
+                              <div class="col-12">
+                                <h6>GST Information</h6>
+                                <p><strong>GST Number:</strong> <?php echo htmlspecialchars($booking['gst_number']); ?></p>
+                                <p><strong>Company Name:</strong>
+                                  <?php echo htmlspecialchars($booking['gst_company_name'] ?? 'N/A'); ?></p>
+                              </div>
+                            </div>
+                          <?php endif; ?>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         </div>
                       </div>
-                      <?php if (!empty($booking['gst_number'])): ?>
-                      <div class="row mt-3">
-                        <div class="col-12">
-                          <h6>GST Information</h6>
-                          <p><strong>GST Number:</strong> <?php echo htmlspecialchars($booking['gst_number']); ?></p>
-                          <p><strong>Company Name:</strong>
-                            <?php echo htmlspecialchars($booking['gst_company_name'] ?? 'N/A'); ?></p>
-                        </div>
-                      </div>
-                      <?php endif; ?>
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     </div>
                   </div>
-                </div>
-              </div>
 
-              <!-- Edit Modal -->
-              <div class="modal fade" id="editModal<?php echo $booking['booking_id']; ?>" tabindex="-1"
-                aria-hidden="true">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title">Update Booking Status</h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  <!-- Edit Modal -->
+                  <div class="modal fade" id="editModal<?php echo $booking['booking_id']; ?>" tabindex="-1"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Update Booking Status</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form method="POST" action="bookings.php">
+                          <div class="modal-body">
+                            <input type="hidden" name="booking_id" value="<?php echo $booking['booking_id']; ?>">
+                            <div class="mb-3">
+                              <label class="form-label">Booking Code</label>
+                              <input type="text" class="form-control"
+                                value="<?php echo htmlspecialchars($booking['booking_code']); ?>" readonly>
+                            </div>
+                            <div class="mb-3">
+                              <label class="form-label">Guest Name</label>
+                              <input type="text" class="form-control"
+                                value="<?php echo htmlspecialchars($booking['guest_name']); ?>" readonly>
+                            </div>
+                            <div class="mb-3">
+                              <label class="form-label">Current Status</label>
+                              <input type="text" class="form-control"
+                                value="<?php echo htmlspecialchars($booking['status']); ?>" readonly>
+                            </div>
+                            <div class="mb-3">
+                              <label class="form-label">Update Status</label>
+                              <select class="form-select" name="status" required>
+                                <option value="Pending" <?php echo $booking['status'] == 'Pending' ? 'selected' : ''; ?>>
+                                  Pending</option>
+                                <option value="Confirmed" <?php echo $booking['status'] == 'Confirmed' ? 'selected' : ''; ?>>
+                                  Confirmed</option>
+                                <option value="Cancelled" <?php echo $booking['status'] == 'Cancelled' ? 'selected' : ''; ?>>
+                                  Cancelled</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" name="update_status" class="btn btn-primary">Update Status</button>
+                          </div>
+                        </form>
+                      </div>
                     </div>
-                    <form method="POST" action="bookings.php">
-                      <div class="modal-body">
-                        <input type="hidden" name="booking_id" value="<?php echo $booking['booking_id']; ?>">
-                        <div class="mb-3">
-                          <label class="form-label">Booking Code</label>
-                          <input type="text" class="form-control"
-                            value="<?php echo htmlspecialchars($booking['booking_code']); ?>" readonly>
-                        </div>
-                        <div class="mb-3">
-                          <label class="form-label">Guest Name</label>
-                          <input type="text" class="form-control"
-                            value="<?php echo htmlspecialchars($booking['guest_name']); ?>" readonly>
-                        </div>
-                        <div class="mb-3">
-                          <label class="form-label">Current Status</label>
-                          <input type="text" class="form-control"
-                            value="<?php echo htmlspecialchars($booking['status']); ?>" readonly>
-                        </div>
-                        <div class="mb-3">
-                          <label class="form-label">Update Status</label>
-                          <select class="form-select" name="status" required>
-                            <option value="Pending" <?php echo $booking['status'] == 'Pending' ? 'selected' : ''; ?>>
-                              Pending</option>
-                            <option value="Confirmed"
-                              <?php echo $booking['status'] == 'Confirmed' ? 'selected' : ''; ?>>Confirmed</option>
-                            <option value="Cancelled"
-                              <?php echo $booking['status'] == 'Cancelled' ? 'selected' : ''; ?>>Cancelled</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" name="update_status" class="btn btn-primary">Update Status</button>
-                      </div>
-                    </form>
                   </div>
-                </div>
-              </div>
-              <?php endforeach; ?>
+                <?php endforeach; ?>
               <?php else: ?>
-              <tr>
-                <td colspan="10" class="text-center py-4">
-                  <i class="fas fa-calendar-times fa-2x mb-2"></i>
-                  <h5>No Bookings Found</h5>
-                  <p class="text-muted">There are no bookings matching your search criteria.</p>
-                  <a href="bookings.php" class="btn btn-primary">Clear Filters</a>
-                </td>
-              </tr>
+                <tr>
+                  <td colspan="10" class="text-center py-4">
+                    <i class="fas fa-calendar-times fa-2x mb-2"></i>
+                    <h5>No Bookings Found</h5>
+                    <p class="text-muted">There are no bookings matching your search criteria.</p>
+                    <a href="bookings.php" class="btn btn-primary">Clear Filters</a>
+                  </td>
+                </tr>
               <?php endif; ?>
             </tbody>
           </table>
@@ -594,21 +438,21 @@ $adminName = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
   <script>
-  $(document).ready(function() {
-    $('#bookingsTable').DataTable({
-      "pageLength": 10,
-      "order": [
-        [0, 'desc']
-      ],
-      "language": {
-        "search": "Search bookings:",
-        "lengthMenu": "Show _MENU_ entries",
-        "info": "Showing _START_ to _END_ of _TOTAL_ bookings",
-        "infoEmpty": "No bookings available",
-        "infoFiltered": "(filtered from _MAX_ total bookings)"
-      }
+    $(document).ready(function () {
+      $('#bookingsTable').DataTable({
+        "pageLength": 10,
+        "order": [
+          [0, 'desc']
+        ],
+        "language": {
+          "search": "Search bookings:",
+          "lengthMenu": "Show _MENU_ entries",
+          "info": "Showing _START_ to _END_ of _TOTAL_ bookings",
+          "infoEmpty": "No bookings available",
+          "infoFiltered": "(filtered from _MAX_ total bookings)"
+        }
+      });
     });
-  });
   </script>
 </body>
 

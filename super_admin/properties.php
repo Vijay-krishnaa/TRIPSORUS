@@ -1,128 +1,97 @@
 <?php
 session_start();
-
-$timeout_duration = 900; 
-
+$timeout_duration = 2700;
 if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY']) > $timeout_duration) {
-    session_unset();     
-    session_destroy();   
-    echo "<script>
+  session_unset();
+  session_destroy();
+  echo "<script>
         alert('Session expired due to inactivity. Please login again.');
         window.location.href = 'index.php';
     </script>";
-    exit;
+  exit;
 }
-
-$_SESSION['LAST_ACTIVITY'] = time(); 
-
+$_SESSION['LAST_ACTIVITY'] = time();
 if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'super_admin') {
-    echo "<script>
+  echo "<script>
         alert('Access denied. Super Admins only.');
         window.location.href = 'index.php';
     </script>";
-    exit;
+  exit;
 }
-
-// Database connection using PDO
 require_once '../db.php';
-
-// Initialize variables
 $properties = [];
 $error = "";
 $success = "";
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $status_filter = isset($_GET['status']) ? $_GET['status'] : 'all';
 $type_filter = isset($_GET['type']) ? $_GET['type'] : 'all';
-
-// Handle property deletion
 if (isset($_GET['delete_id'])) {
-    $property_id = $_GET['delete_id'];
-    
-    try {
-        // Start transaction
-        $pdo->beginTransaction();
-        
-        // First delete related records
-        $stmt = $pdo->prepare("DELETE FROM room_inventory WHERE property_id = ?");
-        $stmt->execute([$property_id]);
-        
-        $stmt = $pdo->prepare("DELETE FROM room_types WHERE property_id = ?");
-        $stmt->execute([$property_id]);
-        
-        $stmt = $pdo->prepare("DELETE FROM property_images WHERE property_id = ?");
-        $stmt->execute([$property_id]);
-        
-        // Then delete the property
-        $stmt = $pdo->prepare("DELETE FROM properties WHERE id = ?");
-        $stmt->execute([$property_id]);
-        
-        // Commit transaction
-        $pdo->commit();
-        
-        $success = "Property deleted successfully!";
-    } catch (PDOException $e) {
-        $pdo->rollBack();
-        $error = "Error deleting property: " . $e->getMessage();
-    }
+  $property_id = $_GET['delete_id'];
+  try {
+    $pdo->beginTransaction();
+    $stmt = $pdo->prepare("DELETE FROM room_inventory WHERE property_id = ?");
+    $stmt->execute([$property_id]);
+    $stmt = $pdo->prepare("DELETE FROM room_types WHERE property_id = ?");
+    $stmt->execute([$property_id]);
+    $stmt = $pdo->prepare("DELETE FROM property_images WHERE property_id = ?");
+    $stmt->execute([$property_id]);
+    $stmt = $pdo->prepare("DELETE FROM properties WHERE id = ?");
+    $stmt->execute([$property_id]);
+    $pdo->commit();
+
+    $success = "Property deleted successfully!";
+  } catch (PDOException $e) {
+    $pdo->rollBack();
+    $error = "Error deleting property: " . $e->getMessage();
+  }
 }
 
-// Fetch properties with filters
 try {
-   $query = "
-    SELECT p.*, 
-           u.first_name, 
-           u.last_name, 
-           COUNT(DISTINCT rt.id) AS room_types_count,
-           COUNT(DISTINCT b.booking_id) AS bookings_count
-    FROM properties p 
-    LEFT JOIN user u ON p.admin_id = u.id 
-    LEFT JOIN room_types rt ON p.id = rt.property_id
-    LEFT JOIN bookings b ON p.id = b.property_id
-";
+  $query = "
+  SELECT p.*, 
+       u.first_name, 
+       u.last_name, 
+       COUNT(DISTINCT rt.id) AS room_types_count,
+       COUNT(DISTINCT b.booking_id) AS bookings_count,
+       pi.image_path AS property_image
+FROM properties p 
+LEFT JOIN user u ON p.admin_id = u.id 
+LEFT JOIN room_types rt ON p.id = rt.property_id
+LEFT JOIN bookings b ON p.id = b.property_id
+LEFT JOIN property_images pi ON p.id = pi.property_id AND pi.is_main = 1
 
-    
-    $conditions = [];
-    $params = [];
-    
-    // Add search condition
-    if (!empty($search)) {
-        $conditions[] = "(p.name LIKE ? OR p.city LIKE ? OR p.country LIKE ?)";
-        $search_term = "%$search%";
-        $params[] = $search_term;
-        $params[] = $search_term;
-        $params[] = $search_term;
-    }
-    
-    // Add status condition
-    if ($status_filter !== 'all') {
-        // For properties, we don't have a status field in the database
-        // This is just a placeholder for future implementation
-        $conditions[] = "p.id > 0"; // Dummy condition
-    }
-    
-    // Add type condition
-    if ($type_filter !== 'all') {
-        $conditions[] = "p.type = ?";
-        $params[] = $type_filter;
-    }
-    
-    // Add WHERE clause if there are conditions
-    if (!empty($conditions)) {
-        $query .= " WHERE " . implode(" AND ", $conditions);
-    }
-    
-    // Add GROUP BY and ORDER BY
-    $query .= " GROUP BY p.id ORDER BY p.created_at DESC";
-    
-    $stmt = $pdo->prepare($query);
-    $stmt->execute($params);
-    $properties = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+";
+  $conditions = [];
+  $params = [];
+
+  if (!empty($search)) {
+    $conditions[] = "(p.name LIKE ? OR p.city LIKE ? OR p.country LIKE ?)";
+    $search_term = "%$search%";
+    $params[] = $search_term;
+    $params[] = $search_term;
+    $params[] = $search_term;
+  }
+  if ($status_filter !== 'all') {
+    $conditions[] = "p.id > 0";
+  }
+
+  if ($type_filter !== 'all') {
+    $conditions[] = "p.type = ?";
+    $params[] = $type_filter;
+  }
+  if (!empty($conditions)) {
+    $query .= " WHERE " . implode(" AND ", $conditions);
+  }
+  $query .= " GROUP BY p.id ORDER BY p.created_at DESC";
+
+  $stmt = $pdo->prepare($query);
+  $stmt->execute($params);
+  $properties = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 } catch (PDOException $e) {
-    $error = "Unable to load properties: " . $e->getMessage();
+  $error = "Unable to load properties: " . $e->getMessage();
 }
 
-// Get admin name
 $adminName = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
 ?>
 
@@ -133,143 +102,10 @@ $adminName = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Properties Management - TRIPSORUS Super Admin</title>
-  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-  :root {
-    --primary-color: #007bff;
-    --secondary-color: #6c757d;
-    --dark-color: #343a40;
-    --light-color: #f8f9fa;
-  }
+  <link rel="stylesheet" href="style.css">
 
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f5f7fa;
-    overflow-x: hidden;
-  }
-
-  .sidebar {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    color: white;
-    min-height: 100vh;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-    position: fixed;
-    width: 250px;
-    transition: all 0.3s;
-    z-index: 1000;
-  }
-
-  .sidebar .nav-link {
-    color: rgba(255, 255, 255, 0.8);
-    padding: 12px 15px;
-    margin: 5px 0;
-    border-radius: 5px;
-    transition: all 0.3s;
-  }
-
-  .sidebar .nav-link:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: white;
-  }
-
-  .sidebar .nav-link.active {
-    background-color: rgba(255, 255, 255, 0.2);
-    color: white;
-    font-weight: 500;
-  }
-
-  .sidebar .nav-link i {
-    margin-right: 10px;
-    width: 20px;
-    text-align: center;
-  }
-
-  .main-content {
-    margin-left: 250px;
-    transition: all 0.3s;
-    padding: 20px;
-  }
-
-  .admin-id-badge {
-    background-color: #6f42c1;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-  }
-
-  .user-dropdown {
-    background-color: #6f42c1;
-    border: none;
-  }
-
-  .user-avatar {
-    width: 30px;
-    height: 30px;
-    background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 10px;
-  }
-
-  .property-card {
-    transition: transform 0.3s, box-shadow 0.3s;
-    border: none;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-
-  .property-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-  }
-
-  .property-img {
-    height: 200px;
-    object-fit: cover;
-  }
-
-  .property-type-badge {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 1;
-  }
-
-  .stats-badge {
-    font-size: 0.8rem;
-    margin-right: 5px;
-  }
-
-  @media (max-width: 768px) {
-    .sidebar {
-      width: 0;
-      position: fixed;
-      z-index: 1000;
-    }
-
-    .sidebar.active {
-      width: 250px;
-    }
-
-    .main-content {
-      margin-left: 0;
-    }
-  }
-
-  .filter-section {
-    background-color: white;
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  </style>
 </head>
 
 <body>
@@ -316,17 +152,17 @@ $adminName = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
 
       <!-- Display messages -->
       <?php if (!empty($error)): ?>
-      <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <?php echo $error; ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <?php echo $error; ?>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
       <?php endif; ?>
 
       <?php if (!empty($success)): ?>
-      <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <?php echo $success; ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <?php echo $success; ?>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
       <?php endif; ?>
 
       <!-- Filters Section -->
@@ -372,121 +208,114 @@ $adminName = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
       <!-- Properties Grid -->
       <div class="row">
         <?php if (count($properties) > 0): ?>
-        <?php foreach ($properties as $property): 
-            // Get property image
-            $imagePath = "uploads/properties/default.jpg";
-            try {
-              $stmt = $pdo->prepare("SELECT image_path FROM property_images WHERE property_id = ? AND is_main = 1 LIMIT 1");
-              $stmt->execute([$property['id']]);
-              $imageResult = $stmt->fetch(PDO::FETCH_ASSOC);
-              if ($imageResult) {
-                $imagePath = $imageResult['image_path'];
-              }
-            } catch (PDOException $e) {
-              // Use default image if there's an error
-            }
-            
-            // Format created date
+          <?php foreach ($properties as $property):
+
             $createdDate = date('M j, Y', strtotime($property['created_at']));
-          ?>
-        <div class="col-md-6 col-lg-4 mb-4">
-          <div class="card property-card h-100">
-            <div class="position-relative">
-              <img src="<?php echo $imagePath; ?>" class="card-img-top property-img"
-                alt="<?php echo htmlspecialchars($property['name']); ?>">
-              <span class="badge bg-primary property-type-badge"><?php echo ucfirst($property['type']); ?></span>
-            </div>
-            <div class="card-body">
-              <h5 class="card-title"><?php echo htmlspecialchars($property['name']); ?></h5>
-              <p class="card-text text-muted">
-                <i class="fas fa-map-marker-alt me-1"></i>
-                <?php echo htmlspecialchars($property['city'] . ', ' . $property['country']); ?>
-              </p>
-              <p class="card-text">
-                <?php echo strlen($property['description']) > 100 ? substr($property['description'], 0, 100) . '...' : $property['description']; ?>
-              </p>
+            $imagePath = !empty($property['property_image'])
+              ? "../tripsorus-admin/" . $property['property_image']
+              : "../assets/default-hotel.jpg";
 
-              <div class="d-flex justify-content-between mb-2">
-                <span class="stats-badge bg-info">
-                  <i class="fas fa-bed me-1"></i> <?php echo $property['room_types_count']; ?> Room Types
-                </span>
-                <span class="stats-badge bg-success">
-                  <i class="fas fa-calendar-check me-1"></i> <?php echo $property['bookings_count']; ?> Bookings
-                </span>
-              </div>
+            ?>
+            <div class="col-md-6 col-lg-4 mb-4">
+              <div class="card property-card h-100">
+                <div class="position-relative">
+                  <img src="<?php echo htmlspecialchars($imagePath); ?>" class="card-img-top property-img"
+                    alt="<?php echo htmlspecialchars($property['name']); ?>">
 
-              <div class="d-flex justify-content-between align-items-center">
-                <small class="text-muted">Added: <?php echo $createdDate; ?></small>
-                <small class="text-muted">By:
-                  <?php echo htmlspecialchars($property['first_name'] . ' ' . $property['last_name']); ?></small>
-              </div>
-            </div>
-            <div class="card-footer bg-white d-flex justify-content-between">
-              <a href="edit_property.php?id=<?php echo $property['id']; ?>" class="btn btn-sm btn-outline-primary">
-                <i class="fas fa-edit me-1"></i> Edit
-              </a>
-              <a href="property_details.php?id=<?php echo $property['id']; ?>" class="btn btn-sm btn-outline-info">
-                <i class="fas fa-eye me-1"></i> View
-              </a>
-              <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
-                data-bs-target="#deleteModal<?php echo $property['id']; ?>">
-                <i class="fas fa-trash me-1"></i> Delete
-              </button>
-            </div>
-          </div>
-        </div>
 
-        <!-- Delete Confirmation Modal -->
-        <div class="modal fade" id="deleteModal<?php echo $property['id']; ?>" tabindex="-1" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title">Confirm Delete</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                <p>Are you sure you want to delete the property
-                  "<strong><?php echo htmlspecialchars($property['name']); ?></strong>"?</p>
-                <p class="text-danger">This action cannot be undone and will delete all related data including room
-                  types and images.</p>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <a href="properties.php?delete_id=<?php echo $property['id']; ?>" class="btn btn-danger">Delete
-                  Property</a>
+                  <span class="badge bg-primary property-type-badge"><?php echo ucfirst($property['type']); ?></span>
+                </div>
+                <div class="card-body">
+                  <h5 class="card-title"><?php echo htmlspecialchars($property['name']); ?></h5>
+                  <p class="card-text text-muted">
+                    <i class="fas fa-map-marker-alt me-1"></i>
+                    <?php echo htmlspecialchars($property['city'] . ', ' . $property['country']); ?>
+                  </p>
+                  <p class="card-text">
+                    <?php echo strlen($property['description']) > 100 ? substr($property['description'], 0, 100) . '...' : $property['description']; ?>
+                  </p>
+
+                  <div class="d-flex justify-content-between mb-2">
+                    <span class="stats-badge bg-info">
+                      <i class="fas fa-bed me-1"></i> <?php echo $property['room_types_count']; ?> Room Types
+                    </span>
+                    <span class="stats-badge bg-success">
+                      <i class="fas fa-calendar-check me-1"></i> <?php echo $property['bookings_count']; ?> Bookings
+                    </span>
+                  </div>
+
+                  <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">Added: <?php echo $createdDate; ?></small>
+                    <small class="text-muted">By:
+                      <?php echo htmlspecialchars($property['first_name'] . ' ' . $property['last_name']); ?></small>
+                  </div>
+                </div>
+                <div class="card-footer bg-white d-flex justify-content-between">
+                  <a href="edit_property.php?id=<?php echo $property['id']; ?>" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-edit me-1"></i> Edit
+                  </a>
+                  <a href="property_details.php?id=<?php echo $property['id']; ?>" class="btn btn-sm btn-outline-info">
+                    <i class="fas fa-eye me-1"></i> View
+                  </a>
+                  <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                    data-bs-target="#deleteModal<?php echo $property['id']; ?>">
+                    <i class="fas fa-trash me-1"></i> Delete
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-        <?php endforeach; ?>
+
+            <!-- Delete Confirmation Modal -->
+            <div class="modal fade" id="deleteModal<?php echo $property['id']; ?>" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p>Are you sure you want to delete the property
+                      "<strong><?php echo htmlspecialchars($property['name']); ?></strong>"?</p>
+                    <p class="text-danger">This action cannot be undone and will delete all related data including room
+                      types and images.</p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a href="properties.php?delete_id=<?php echo $property['id']; ?>" class="btn btn-danger">Delete
+                      Property</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <?php endforeach; ?>
         <?php else: ?>
-        <div class="col-12">
-          <div class="alert alert-info text-center py-4">
-            <i class="fas fa-hotel fa-3x mb-3"></i>
-            <h4>No Properties Found</h4>
-            <p>There are no properties matching your search criteria.</p>
-            <a href="properties.php" class="btn btn-primary me-2">Clear Filters</a>
-            <a href="add_property.php" class="btn btn-success">Add New Property</a>
+          <div class="col-12">
+            <div class="alert alert-info text-center py-4">
+              <i class="fas fa-hotel fa-3x mb-3"></i>
+              <h4>No Properties Found</h4>
+              <p>There are no properties matching your search criteria.</p>
+              <a href="properties.php" class="btn btn-primary me-2">Clear Filters</a>
+              <a href="add_property.php" class="btn btn-success">Add New Property</a>
+            </div>
           </div>
-        </div>
         <?php endif; ?>
       </div>
 
       <!-- Pagination -->
       <?php if (count($properties) > 0): ?>
-      <nav aria-label="Properties pagination" class="mt-4">
-        <ul class="pagination justify-content-center">
-          <li class="page-item disabled">
-            <a class="page-link" href="#" tabindex="-1">Previous</a>
-          </li>
-          <li class="page-item active"><a class="page-link" href="#">1</a></li>
-          <li class="page-item"><a class="page-link" href="#">2</a></li>
-          <li class="page-item"><a class="page-link" href="#">3</a></li>
-          <li class="page-item">
-            <a class="page-link" href="#">Next</a>
-          </li>
-        </ul>
-      </nav>
+        <nav aria-label="Properties pagination" class="mt-4">
+          <ul class="pagination justify-content-center">
+            <li class="page-item disabled">
+              <a class="page-link" href="#" tabindex="-1">Previous</a>
+            </li>
+            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item">
+              <a class="page-link" href="#">Next</a>
+            </li>
+          </ul>
+        </nav>
       <?php endif; ?>
     </div>
   </div>

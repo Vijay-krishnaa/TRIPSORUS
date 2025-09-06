@@ -8,26 +8,25 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-        $userId        = $_POST['user_id'] ?? null;
-        $adminId       = $_POST['admin_id'] ?? null;
-        $propertyId    = $_POST['property_id'] ?? null;
-        $propertyName  = $_POST['property_name'] ?? '';
-        $roomTypeId    = $_POST['room_type_id'] ?? null;
-        $guestName     = $_POST['guest_name'] ?? '';
-        $checkIn       = $_POST['check_in'] ?? '';
-        $checkOut      = $_POST['check_out'] ?? '';
-        $amount        = $_POST['amount'] ?? 0;
-        $city          = $_POST['city'] ?? "Not Provided"; 
-        $occupancy     = $_POST['occupancy'] ?? "2 Adults";
-        $extraBed      = $_POST['extra_bed'] ?? "0";
-        $guests        = $_POST['guests'] ?? 2;
-        $gstNumber     = $_POST['gst_number'] ?? '';
-        $gstCompany    = $_POST['gst_company_name'] ?? '';
-        $gstAddress    = $_POST['gst_company_address'] ?? '';
-        
+        $userId = $_POST['user_id'] ?? null;
+        $adminId = $_POST['admin_id'] ?? null;
+        $propertyId = $_POST['property_id'] ?? null;
+        $propertyName = $_POST['property_name'] ?? '';
+        $roomTypeId = $_POST['room_type_id'] ?? null;
+        $guestName = $_POST['guest_name'] ?? '';
+        $checkIn = $_POST['check_in'] ?? '';
+        $checkOut = $_POST['check_out'] ?? '';
+        $amount = $_POST['amount'] ?? 0;
+        $city = $_POST['city'] ?? "Not Provided";
+        $occupancy = $_POST['occupancy'] ?? "2 Adults";
+        $extraBed = $_POST['extra_bed'] ?? "0";
+        $guests = $_POST['guests'] ?? 2;
+        $gstNumber = $_POST['gst_number'] ?? '';
+        $gstCompany = $_POST['gst_company_name'] ?? '';
+        $gstAddress = $_POST['gst_company_address'] ?? '';
+
         $roomTypeName = 'Unknown Room Type';
         if ($roomTypeId) {
             $stmt = $pdo->prepare("SELECT name FROM room_types WHERE id = :room_type_id");
@@ -37,14 +36,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $roomTypeName = $roomType['name'];
             }
         }
-        
+
         $checkInDate = new DateTime($checkIn);
         $checkOutDate = new DateTime($checkOut);
         $nights = $checkOutDate->diff($checkInDate)->days;
         $mealInput = trim($_POST['meal_type'] ?? 'EP');
         $mealMap = [
-            "EP"  => "room_only",
-            "CP"  => "with_breakfast",
+            "EP" => "room_only",
+            "CP" => "with_breakfast",
             "MAP" => "breakfast_lunch_dinner",
             "Breakfast" => "with_breakfast",
             "With Breakfast" => "with_breakfast",
@@ -54,7 +53,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             "with_breakfast" => "with_breakfast",
             "breakfast_lunch_dinner" => "breakfast_lunch_dinner"
         ];
-
         $mealInputUpper = strtoupper(trim($mealInput));
         $mealType = "room_only";
         foreach ($mealMap as $key => $value) {
@@ -62,13 +60,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $mealType = $value;
                 break;
             }
-        } 
+        }
         $stmt = $pdo->query("SELECT MAX(booking_id) as last_id FROM bookings");
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         $nextId = ($row && $row['last_id']) ? $row['last_id'] + 1 : 1;
         $bookingCode = "BKG" . str_pad($nextId, 4, "0", STR_PAD_LEFT);
         $paymentType = isset($_POST['payment_type']) ? $_POST['payment_type'] : 'pay_at_property';
-        
+
         $stmt = $pdo->prepare("
             INSERT INTO bookings
             (booking_code, user_id, property_id, room_type_id, room_type_name, meal_type, property_name, guest_name, 
@@ -81,37 +79,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
              :first_name, :last_name, :guest_email, :guest_phone, :payment_type,
              :gst_number, :gst_company_name, :gst_company_address)
         ");
-        
+
         $stmt->execute([
-            ':booking_code'   => $bookingCode,
-            ':user_id'        => $userId,
-            ':property_id'    => $propertyId,
-            ':room_type_id'   => $roomTypeId,
+            ':booking_code' => $bookingCode,
+            ':user_id' => $userId,
+            ':property_id' => $propertyId,
+            ':room_type_id' => $roomTypeId,
             ':room_type_name' => $roomTypeName,
-            ':meal_type'      => $mealType,
-            ':property_name'  => $propertyName,
-            ':guest_name'     => $guestName,
-            ':check_in'       => $checkIn,
-            ':check_out'      => $checkOut,
-            ':amount'         => $amount,
-            ':status'         => 'Confirmed',
-            ':first_name'     => $_POST['first_name'] ?? '',
-            ':last_name'      => $_POST['last_name'] ?? '',
-            ':guest_email'    => $_POST['guest_email'] ?? '',
-            ':guest_phone'    => $_POST['guest_phone'] ?? '',
-            ':payment_type'   => $paymentType,
-            ':gst_number'     => $gstNumber,
+            ':meal_type' => $mealType,
+            ':property_name' => $propertyName,
+            ':guest_name' => $guestName,
+            ':check_in' => $checkIn,
+            ':check_out' => $checkOut,
+            ':amount' => $amount,
+            ':status' => 'Confirmed',
+            ':first_name' => $_POST['first_name'] ?? '',
+            ':last_name' => $_POST['last_name'] ?? '',
+            ':guest_email' => $_POST['guest_email'] ?? '',
+            ':guest_phone' => $_POST['guest_phone'] ?? '',
+            ':payment_type' => $paymentType,
+            ':gst_number' => $gstNumber,
             ':gst_company_name' => $gstCompany,
             ':gst_company_address' => $gstAddress
         ]);
-        
+
         $lastId = $pdo->lastInsertId();
         $period = new DatePeriod(
             new DateTime($checkIn),
             new DateInterval('P1D'),
             new DateTime($checkOut)
         );
-        
+
         foreach ($period as $date) {
             $currentDate = $date->format("Y-m-d");
             $stmt = $pdo->prepare("
@@ -124,10 +122,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 LIMIT 1
             ");
             $stmt->execute([
-                ':property_id'  => $propertyId,
+                ':property_id' => $propertyId,
                 ':room_type_id' => $roomTypeId,
-                ':meal_type'    => $mealType,
-                ':date'         => $currentDate
+                ':meal_type' => $mealType,
+                ':date' => $currentDate
             ]);
             $inventory = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -146,14 +144,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     VALUES (:property_id, :room_type_id, :meal_type, :date, 1, 1, 0)
                 ");
                 $stmt->execute([
-                    ':property_id'  => $propertyId,
+                    ':property_id' => $propertyId,
                     ':room_type_id' => $roomTypeId,
-                    ':meal_type'    => $mealType,
-                    ':date'         => $currentDate
+                    ':meal_type' => $mealType,
+                    ':date' => $currentDate
                 ]);
             }
         }
-        
+
         $stmt = $pdo->prepare("
             SELECT 
                 booking_code, 
@@ -178,24 +176,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ");
         $stmt->execute([':booking_id' => $lastId]);
         $booking = $stmt->fetch(PDO::FETCH_ASSOC);
-   
-$adminEmail = '';
-$stmt = $pdo->prepare("SELECT admin_id FROM properties WHERE id = :property_id LIMIT 1");
-$stmt->execute([':property_id' => $propertyId]);
-$propertyData = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if ($propertyData && !empty($propertyData['admin_id'])) {
-    $stmt = $pdo->prepare("SELECT Email FROM user WHERE id = :admin_id LIMIT 1");
-    $stmt->execute([':admin_id' => $propertyData['admin_id']]);
-    $adminUser = $stmt->fetch(PDO::FETCH_ASSOC);
-    if ($adminUser && !empty($adminUser['Email'])) {
-        $adminEmail = $adminUser['Email'];
-    }
-}
+        $adminEmail = '';
+        $stmt = $pdo->prepare("SELECT admin_id FROM properties WHERE id = :property_id LIMIT 1");
+        $stmt->execute([':property_id' => $propertyId]);
+        $propertyData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($propertyData && !empty($propertyData['admin_id'])) {
+            $stmt = $pdo->prepare("SELECT Email FROM user WHERE id = :admin_id LIMIT 1");
+            $stmt->execute([':admin_id' => $propertyData['admin_id']]);
+            $adminUser = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($adminUser && !empty($adminUser['Email'])) {
+                $adminEmail = $adminUser['Email'];
+            }
+        }
         if (!$booking) {
             throw new Exception("Booking not found.");
         }
-        
         $bookingCode = $booking['booking_code'];
         $propertyName = $booking['property_name'];
         $guestName = $booking['guest_name'];
@@ -213,21 +210,17 @@ if ($propertyData && !empty($propertyData['admin_id'])) {
         $gstNumber = $booking['gst_number'];
         $gstCompany = $booking['gst_company_name'];
         $gstAddress = $booking['gst_company_address'];
-        
         $checkInDate = new DateTime($checkIn);
         $checkOutDate = new DateTime($checkOut);
         $nights = $checkOutDate->diff($checkInDate)->days;
-        
         $options = new Options();
         $options->set('isRemoteEnabled', true);
         $dompdf = new Dompdf($options);
-        
         $pricePerNight = $nights > 0 ? $amount / $nights : $amount;
         $taxes = $amount * 0.18;
         $totalAmount = $amount + $taxes;
-        $commission = $totalAmount * 0.14;     
-        $netPayout  = $totalAmount - $commission; 
-        
+        $commission = $totalAmount * 0.14;
+        $netPayout = $totalAmount - $commission;
         $commissionSection = "
         <tr>
             <td colspan='3'><span class='highlight'>Commission (14%):</span> Rs " . number_format($commission, 2) . "</td>
@@ -237,20 +230,21 @@ if ($propertyData && !empty($propertyData['admin_id'])) {
         </tr>
         ";
 
-        function getMealPlanDescription($mealType) {
+        function getMealPlanDescription($mealType)
+        {
             $descriptions = [
                 "room_only" => "Room Only",
                 "with_breakfast" => "Breakfast",
                 "breakfast_lunch_dinner" => "Breakfast, Lunch & Dinner"
             ];
-            
+
             return $descriptions[$mealType] ?? "Room Only";
         }
 
         $checkInDisplay = date("d M 'y", strtotime($checkIn));
         $checkOutDisplay = date("d M 'y", strtotime($checkOut));
         $bookedOn = date("d M 'y h:i A");
-        
+
         $gstSection = "
         <table class='gst-section'>
             <tr>
@@ -454,23 +448,23 @@ if ($propertyData && !empty($propertyData['admin_id'])) {
             </div>
         </body>
         </html>";
-$htmlAdmin = $html;
-$htmlGuest = str_replace($commissionSection, '', $htmlAdmin);
-$dompdfGuest = new Dompdf($options);
-$dompdfGuest->loadHtml($htmlGuest);
-$dompdfGuest->setPaper('A4', 'portrait');
-$dompdfGuest->render();
-$pdfPathGuest = __DIR__ . "/Booking_{$bookingCode}_Guest.pdf";
-file_put_contents($pdfPathGuest, $dompdfGuest->output());
-$pdfPathAdmin = '';
-if (!empty($adminEmail)) {
-    $dompdfAdmin = new Dompdf($options);
-    $dompdfAdmin->loadHtml($htmlAdmin);
-    $dompdfAdmin->setPaper('A4', 'portrait');
-    $dompdfAdmin->render();
-    $pdfPathAdmin = __DIR__ . "/Booking_{$bookingCode}_Admin.pdf";
-    file_put_contents($pdfPathAdmin, $dompdfAdmin->output());
-}
+        $htmlAdmin = $html;
+        $htmlGuest = str_replace($commissionSection, '', $htmlAdmin);
+        $dompdfGuest = new Dompdf($options);
+        $dompdfGuest->loadHtml($htmlGuest);
+        $dompdfGuest->setPaper('A4', 'portrait');
+        $dompdfGuest->render();
+        $pdfPathGuest = __DIR__ . "/Booking_{$bookingCode}_Guest.pdf";
+        file_put_contents($pdfPathGuest, $dompdfGuest->output());
+        $pdfPathAdmin = '';
+        if (!empty($adminEmail)) {
+            $dompdfAdmin = new Dompdf($options);
+            $dompdfAdmin->loadHtml($htmlAdmin);
+            $dompdfAdmin->setPaper('A4', 'portrait');
+            $dompdfAdmin->render();
+            $pdfPathAdmin = __DIR__ . "/Booking_{$bookingCode}_Admin.pdf";
+            file_put_contents($pdfPathAdmin, $dompdfAdmin->output());
+        }
         // Send email to guest
         if (!empty($guestEmail)) {
             $guestMail = new PHPMailer(true);
@@ -484,10 +478,9 @@ if (!empty($adminEmail)) {
                 $guestMail->Port = 587;
                 $guestMail->setFrom("noreply@tripsorus.com", "Tripsorus");
                 $guestMail->addAddress($guestEmail, "$firstName $lastName");
-               if (!empty($pdfPathGuest) && file_exists($pdfPathGuest)) {
-    $guestMail->addAttachment($pdfPathGuest);
-}
-
+                if (!empty($pdfPathGuest) && file_exists($pdfPathGuest)) {
+                    $guestMail->addAttachment($pdfPathGuest);
+                }
                 $guestMail->isHTML(true);
                 $guestMail->Subject = "Booking Confirmation - $propertyName";
                 $guestMail->Body = "<p>Dear $firstName $lastName,</p>
@@ -515,9 +508,9 @@ if (!empty($adminEmail)) {
                 $adminMail->setFrom("noreply@tripsorus.com", "Tripsorus");
                 $adminMail->addAddress($adminEmail, "Property Owner");
                 $adminMail->addAddress("noreply@tripsorus.com", "Admin");
-              if (!empty($pdfPathAdmin) && file_exists($pdfPathAdmin)) {
-    $adminMail->addAttachment($pdfPathAdmin);
-}
+                if (!empty($pdfPathAdmin) && file_exists($pdfPathAdmin)) {
+                    $adminMail->addAttachment($pdfPathAdmin);
+                }
 
                 $adminMail->isHTML(true);
                 $adminMail->Subject = "New Booking Received - $propertyName";
@@ -532,12 +525,12 @@ if (!empty($adminEmail)) {
                 error_log("Admin email could not be sent: {$adminMail->ErrorInfo}");
             }
         }
-    if (!empty($pdfPathGuest) && file_exists($pdfPathGuest)) {
-    @unlink($pdfPathGuest);
-}
-if (!empty($pdfPathAdmin) && file_exists($pdfPathAdmin)) {
-    @unlink($pdfPathAdmin);
-}
+        if (!empty($pdfPathGuest) && file_exists($pdfPathGuest)) {
+            @unlink($pdfPathGuest);
+        }
+        if (!empty($pdfPathAdmin) && file_exists($pdfPathAdmin)) {
+            @unlink($pdfPathAdmin);
+        }
 
         header("Location: confirmation.php?booking_id=" . $lastId);
         exit;

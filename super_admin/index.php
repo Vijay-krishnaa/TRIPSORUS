@@ -1,23 +1,23 @@
 <?php
 session_start();
-$timeout_duration = 2700; 
+$timeout_duration = 2700;
 if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY']) > $timeout_duration) {
-    session_unset();     
-    session_destroy();   
-    echo "<script>
+  session_unset();
+  session_destroy();
+  echo "<script>
         alert('Session expired due to inactivity. Please login again.');
         window.location.href = '../index.php';
     </script>";
-    exit;
+  exit;
 }
-$_SESSION['LAST_ACTIVITY'] = time(); 
+$_SESSION['LAST_ACTIVITY'] = time();
 
 if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'super_admin') {
-    echo "<script>
+  echo "<script>
         alert('Access denied. Super Admins only.');
         window.location.href = '../index.php';
     </script>";
-    exit;
+  exit;
 }
 require_once '../db.php';
 $stats = [];
@@ -26,40 +26,40 @@ $recentProperties = [];
 $adminName = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
 
 try {
-    $stmt = $pdo->prepare("SELECT COUNT(*) as total FROM properties");
-    $stmt->execute();
-    $stats['total_properties'] = $stmt->fetchColumn();
-    $stmt = $pdo->prepare("SELECT COUNT(*) as total FROM user WHERE user_type = 'admin'");
-    $stmt->execute();
-    $stats['total_admins'] = $stmt->fetchColumn();
-    $stmt = $pdo->prepare("SELECT SUM(amount) as total FROM bookings WHERE status = 'Confirmed'");
-    $stmt->execute();
-    $stats['total_revenue'] = $stmt->fetchColumn() ?? 0;
-    $stmt = $pdo->prepare("SELECT COUNT(*) as total FROM bookings");
-    $stmt->execute();
-    $stats['total_bookings'] = $stmt->fetchColumn();
-    $stmt = $pdo->prepare("
+  $stmt = $pdo->prepare("SELECT COUNT(*) as total FROM properties");
+  $stmt->execute();
+  $stats['total_properties'] = $stmt->fetchColumn();
+  $stmt = $pdo->prepare("SELECT COUNT(*) as total FROM user WHERE user_type = 'admin'");
+  $stmt->execute();
+  $stats['total_admins'] = $stmt->fetchColumn();
+  $stmt = $pdo->prepare("SELECT SUM(amount) as total FROM bookings WHERE status = 'Confirmed'");
+  $stmt->execute();
+  $stats['total_revenue'] = $stmt->fetchColumn() ?? 0;
+  $stmt = $pdo->prepare("SELECT COUNT(*) as total FROM bookings");
+  $stmt->execute();
+  $stats['total_bookings'] = $stmt->fetchColumn();
+  $stmt = $pdo->prepare("
         SELECT bookings.*, properties.name AS property_name
         FROM bookings
         INNER JOIN properties ON bookings.property_id = properties.id
         ORDER BY bookings.created_at DESC
         LIMIT 5
     ");
-    $stmt->execute();
-    $recentBookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $stmt = $pdo->prepare("
+  $stmt->execute();
+  $recentBookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  $stmt = $pdo->prepare("
         SELECT p.*, u.first_name, u.last_name 
         FROM properties p 
         LEFT JOIN user u ON p.admin_id = u.id 
         ORDER BY p.created_at DESC 
         LIMIT 5
     ");
-    $stmt->execute();
-    $recentProperties = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  $stmt->execute();
+  $recentProperties = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 } catch (PDOException $e) {
-    error_log("Database error: " . $e->getMessage());
-    $error = "Unable to load dashboard data. Please try again later.";
+  error_log("Database error: " . $e->getMessage());
+  $error = "Unable to load dashboard data. Please try again later.";
 }
 ?>
 
@@ -73,143 +73,9 @@ try {
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-  :root {
-    --primary-color: #007bff;
-    --secondary-color: #6c757d;
-    --dark-color: #343a40;
-    --light-color: #f8f9fa;
-  }
+  <link rel="stylesheet" href="style.css">
 
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f5f7fa;
-    overflow-x: hidden;
-  }
 
-  .sidebar {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    color: white;
-    min-height: 100vh;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-    position: fixed;
-    width: 250px;
-    transition: all 0.3s;
-    z-index: 1000;
-  }
-
-  .sidebar .nav-link {
-    color: rgba(255, 255, 255, 0.8);
-    padding: 12px 15px;
-    margin: 5px 0;
-    border-radius: 5px;
-    transition: all 0.3s;
-  }
-
-  .sidebar .nav-link:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: white;
-  }
-
-  .sidebar .nav-link.active {
-    background-color: rgba(255, 255, 255, 0.2);
-    color: white;
-    font-weight: 500;
-  }
-
-  .sidebar .nav-link i {
-    margin-right: 10px;
-    width: 20px;
-    text-align: center;
-  }
-
-  .stats-card {
-    border-radius: 10px;
-    padding: 20px;
-    color: white;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s;
-  }
-
-  .stats-card:hover {
-    transform: translateY(-5px);
-  }
-
-  .stats-card i {
-    font-size: 2rem;
-    margin-bottom: 10px;
-  }
-
-  .stats-card .count {
-    font-size: 2rem;
-    font-weight: bold;
-  }
-
-  .stats-card .title {
-    font-size: 0.9rem;
-    opacity: 0.9;
-  }
-
-  .main-content {
-    margin-left: 250px;
-    transition: all 0.3s;
-    padding: 20px;
-  }
-
-  .admin-id-badge {
-    background-color: #6f42c1;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-  }
-
-  .user-dropdown {
-    background-color: #6f42c1;
-    border: none;
-  }
-
-  .user-avatar {
-    width: 30px;
-    height: 30px;
-    background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 10px;
-  }
-
-  .user-info {
-    padding: 10px 15px;
-    border-bottom: 1px solid #dee2e6;
-  }
-
-  .user-name {
-    font-weight: bold;
-  }
-
-  .user-role {
-    font-size: 0.9rem;
-    color: #6c757d;
-  }
-
-  @media (max-width: 768px) {
-    .sidebar {
-      width: 0;
-      position: fixed;
-      z-index: 1000;
-    }
-
-    .sidebar.active {
-      width: 250px;
-    }
-
-    .main-content {
-      margin-left: 0;
-    }
-  }
-  </style>
 </head>
 
 <body>
@@ -256,10 +122,10 @@ try {
       </div>
 
       <?php if (isset($error)): ?>
-      <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <?php echo $error; ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <?php echo $error; ?>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
       <?php endif; ?>
 
       <!-- Stats Cards -->
@@ -328,33 +194,37 @@ try {
                   </thead>
                   <tbody>
                     <?php if (count($recentBookings) > 0): ?>
-                    <?php foreach ($recentBookings as $booking): 
+                      <?php foreach ($recentBookings as $booking):
                         $statusClass = '';
-                        if ($booking['status'] == 'Confirmed') $statusClass = 'bg-success';
-                        else if ($booking['status'] == 'Pending') $statusClass = 'bg-warning text-dark';
-                        else if ($booking['status'] == 'Cancelled') $statusClass = 'bg-danger';
-                        else $statusClass = 'bg-secondary';
-                      ?>
-                    <tr>
-                      <td><?php echo htmlspecialchars($booking['booking_code']); ?></td>
-                      <td><?php echo htmlspecialchars($booking['property_name']); ?></td>
-                      <td><?php echo htmlspecialchars($booking['guest_name']); ?></td>
-                      <td><?php echo date('d M Y', strtotime($booking['check_in'])); ?></td>
-                      <td><?php echo date('d M Y', strtotime($booking['check_out'])); ?></td>
-                      <td>₹<?php echo number_format($booking['amount']); ?></td>
-                      <td>
-                        <span class="badge <?php echo $statusClass; ?>">
-                          <?php echo htmlspecialchars($booking['status']); ?>
-                        </span>
-                      </td>
-                    </tr>
-                    <?php endforeach; ?>
+                        if ($booking['status'] == 'Confirmed')
+                          $statusClass = 'bg-success';
+                        else if ($booking['status'] == 'Pending')
+                          $statusClass = 'bg-warning text-dark';
+                        else if ($booking['status'] == 'Cancelled')
+                          $statusClass = 'bg-danger';
+                        else
+                          $statusClass = 'bg-secondary';
+                        ?>
+                        <tr>
+                          <td><?php echo htmlspecialchars($booking['booking_code']); ?></td>
+                          <td><?php echo htmlspecialchars($booking['property_name']); ?></td>
+                          <td><?php echo htmlspecialchars($booking['guest_name']); ?></td>
+                          <td><?php echo date('d M Y', strtotime($booking['check_in'])); ?></td>
+                          <td><?php echo date('d M Y', strtotime($booking['check_out'])); ?></td>
+                          <td>₹<?php echo number_format($booking['amount']); ?></td>
+                          <td>
+                            <span class="badge <?php echo $statusClass; ?>">
+                              <?php echo htmlspecialchars($booking['status']); ?>
+                            </span>
+                          </td>
+                        </tr>
+                      <?php endforeach; ?>
                     <?php else: ?>
-                    <tr>
-                      <td colspan="7" class="text-center text-muted py-3">
-                        <i class="fas fa-calendar-times me-2"></i>No bookings found
-                      </td>
-                    </tr>
+                      <tr>
+                        <td colspan="7" class="text-center text-muted py-3">
+                          <i class="fas fa-calendar-times me-2"></i>No bookings found
+                        </td>
+                      </tr>
                     <?php endif; ?>
                   </tbody>
                 </table>
@@ -373,37 +243,37 @@ try {
             <div class="card-body">
               <div class="list-group">
                 <?php if (count($recentProperties) > 0): ?>
-                <?php foreach ($recentProperties as $property): 
+                  <?php foreach ($recentProperties as $property):
                     $addedTime = strtotime($property['created_at']);
                     $timeDiff = time() - $addedTime;
 
                     if ($timeDiff < 86400) {
-                        $timeText = 'Today';
+                      $timeText = 'Today';
                     } elseif ($timeDiff < 172800) {
-                        $timeText = 'Yesterday';
+                      $timeText = 'Yesterday';
                     } elseif ($timeDiff < 604800) {
-                        $days = floor($timeDiff / 86400);
-                        $timeText = $days . ' day' . ($days > 1 ? 's' : '') . ' ago';
+                      $days = floor($timeDiff / 86400);
+                      $timeText = $days . ' day' . ($days > 1 ? 's' : '') . ' ago';
                     } elseif ($timeDiff < 2592000) {
-                        $weeks = floor($timeDiff / 604800);
-                        $timeText = $weeks . ' week' . ($weeks > 1 ? 's' : '') . ' ago';
+                      $weeks = floor($timeDiff / 604800);
+                      $timeText = $weeks . ' week' . ($weeks > 1 ? 's' : '') . ' ago';
                     } else {
-                        $months = floor($timeDiff / 2592000);
-                        $timeText = $months . ' month' . ($months > 1 ? 's' : '') . ' ago';
+                      $months = floor($timeDiff / 2592000);
+                      $timeText = $months . ' month' . ($months > 1 ? 's' : '') . ' ago';
                     }
-                  ?>
-                <a href="#" class="list-group-item list-group-item-action">
-                  <div class="d-flex w-100 justify-content-between">
-                    <small>ID: <?php echo htmlspecialchars($property['id']); ?></small>
-                    <h6 class="mb-1"><?php echo htmlspecialchars($property['name']); ?></h6>
-                    <small class="text-muted">Added: <?php echo $timeText; ?></small>
-                  </div>
-                  <small class="text-muted">By:
-                    <?php echo htmlspecialchars($property['first_name'] . ' ' . $property['last_name']); ?></small>
-                </a>
-                <?php endforeach; ?>
+                    ?>
+                    <a href="#" class="list-group-item list-group-item-action">
+                      <div class="d-flex w-100 justify-content-between">
+                        <small>ID: <?php echo htmlspecialchars($property['id']); ?></small>
+                        <h6 class="mb-1"><?php echo htmlspecialchars($property['name']); ?></h6>
+                        <small class="text-muted">Added: <?php echo $timeText; ?></small>
+                      </div>
+                      <small class="text-muted">By:
+                        <?php echo htmlspecialchars($property['first_name'] . ' ' . $property['last_name']); ?></small>
+                    </a>
+                  <?php endforeach; ?>
                 <?php else: ?>
-                <div class="text-center py-4 text-muted">No properties found</div>
+                  <div class="text-center py-4 text-muted">No properties found</div>
                 <?php endif; ?>
               </div>
             </div>
@@ -430,35 +300,35 @@ try {
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-  const ctx = document.getElementById('revenueChart').getContext('2d');
-  const revenueChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-      datasets: [{
-        label: 'Revenue (₹)',
-        data: [125000, 189000, 142000, 178000, 156000, 210000, 185000, 230000, 205000, 245000, 198000,
-          284760
-        ],
-        backgroundColor: 'rgba(54, 162, 235, 0.7)',
-        borderColor: 'rgba(54, 162, 235, 1)',
-        borderWidth: 1
-      }]
-    },
-    options: {
-      responsive: true,
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: {
-            callback: function(value) {
-              return '₹' + value.toLocaleString();
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+    const revenueChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        datasets: [{
+          label: 'Revenue (₹)',
+          data: [125000, 189000, 142000, 178000, 156000, 210000, 185000, 230000, 205000, 245000, 198000,
+            284760
+          ],
+          backgroundColor: 'rgba(54, 162, 235, 0.7)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function (value) {
+                return '₹' + value.toLocaleString();
+              }
             }
           }
         }
       }
-    }
-  });
+    });
   </script>
 </body>
 

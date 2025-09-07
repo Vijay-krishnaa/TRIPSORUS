@@ -1,14 +1,16 @@
 <?php
-session_start(); 
+session_start();
 include 'db.php';
-function getActivePromotions($pdo) {
-    $stmt = $pdo->prepare("SELECT * FROM promotions WHERE status = 'active'");
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+function getActivePromotions($pdo)
+{
+  $stmt = $pdo->prepare("SELECT * FROM promotions WHERE status = 'active'");
+  $stmt->execute();
+  return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 $promotions = getActivePromotions($pdo);
-function getRoomPrice($pdo, $roomTypeId, $mealType, $checkin, $checkout, $promotions) {
-    $stmt = $pdo->prepare("
+function getRoomPrice($pdo, $roomTypeId, $mealType, $checkin, $checkout, $promotions)
+{
+  $stmt = $pdo->prepare("
         SELECT MIN(single_rate) AS price 
         FROM room_inventory 
         WHERE room_type_id = :roomTypeId
@@ -16,66 +18,66 @@ function getRoomPrice($pdo, $roomTypeId, $mealType, $checkin, $checkout, $promot
           AND date >= :checkin
           AND date < :checkout
     ");
-    $stmt->execute([
-        ':roomTypeId' => $roomTypeId,
-        ':mealType' => $mealType,
-        ':checkin' => $checkin,
-        ':checkout' => $checkout
-    ]);
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    $price = $row['price'] ?? 0;
-    $checkinDate = new DateTime($checkin);
-    $checkoutDate = new DateTime($checkout);
-    $nights = $checkoutDate->diff($checkinDate)->days;
-    $today = new DateTime();
-    $daysBeforeCheckin = $checkinDate->diff($today)->days;
+  $stmt->execute([
+    ':roomTypeId' => $roomTypeId,
+    ':mealType' => $mealType,
+    ':checkin' => $checkin,
+    ':checkout' => $checkout
+  ]);
+  $row = $stmt->fetch(PDO::FETCH_ASSOC);
+  $price = $row['price'] ?? 0;
+  $checkinDate = new DateTime($checkin);
+  $checkoutDate = new DateTime($checkout);
+  $nights = $checkoutDate->diff($checkinDate)->days;
+  $today = new DateTime();
+  $daysBeforeCheckin = $checkinDate->diff($today)->days;
 
-    $appliedPromotions = [];
+  $appliedPromotions = [];
 
-    foreach ($promotions as $promo) {
-        $applied = false;
-        if ($promo['type'] === 'last-minute' && $daysBeforeCheckin <= $promo['days_before_checkin']) {
-            $applied = true;
-        }
-        if ($promo['type'] === 'early-bird' && $daysBeforeCheckin >= $promo['days_before_checkin']) {
-            $applied = true;
-        }
-        if ($promo['type'] === 'long-stay' && $nights >= $promo['min_stay_days']) {
-            $applied = true;
-        }
-        if ($applied) {
-            if ($promo['discount_type'] === 'percentage') {
-                $price -= ($price * $promo['discount_value'] / 100);
-            } else {
-                $price -= $promo['discount_value'];
-            }
-
-            $appliedPromotions[] = $promo['discount_value'] . "% " . $promo['name'];
-        }
+  foreach ($promotions as $promo) {
+    $applied = false;
+    if ($promo['type'] === 'last-minute' && $daysBeforeCheckin <= $promo['days_before_checkin']) {
+      $applied = true;
     }
-    return [
-        'price' => max($price, 0),
-        'applied_promotions' => $appliedPromotions
-    ];
+    if ($promo['type'] === 'early-bird' && $daysBeforeCheckin >= $promo['days_before_checkin']) {
+      $applied = true;
+    }
+    if ($promo['type'] === 'long-stay' && $nights >= $promo['min_stay_days']) {
+      $applied = true;
+    }
+    if ($applied) {
+      if ($promo['discount_type'] === 'percentage') {
+        $price -= ($price * $promo['discount_value'] / 100);
+      } else {
+        $price -= $promo['discount_value'];
+      }
+
+      $appliedPromotions[] = $promo['discount_value'] . "% " . $promo['name'];
+    }
+  }
+  return [
+    'price' => max($price, 0),
+    'applied_promotions' => $appliedPromotions
+  ];
 }
 
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 $limit = 4;
 $offset = ($page - 1) * $limit;
 $location = $_GET['location'] ?? '';
 $checkin = $_GET['checkin'] ?? '';
 $checkout = $_GET['checkout'] ?? '';
-$rooms = isset($_GET['rooms']) ? (int)$_GET['rooms'] : 1;
-$adults = isset($_GET['adults']) ? (int)$_GET['adults'] : 2;
-$children = isset($_GET['children']) ? (int)$_GET['children'] : 0;
+$rooms = isset($_GET['rooms']) ? (int) $_GET['rooms'] : 1;
+$adults = isset($_GET['adults']) ? (int) $_GET['adults'] : 2;
+$children = isset($_GET['children']) ? (int) $_GET['children'] : 0;
 
 
 if (empty($checkin)) {
-    $checkin = date('Y-m-d');
+  $checkin = date('Y-m-d');
 }
 if (empty($checkout)) {
-    $tomorrow = date('Y-m-d', strtotime('+1 day'));
-    $checkout = $tomorrow;
+  $tomorrow = date('Y-m-d', strtotime('+1 day'));
+  $checkout = $tomorrow;
 }
 
 $searchTerm = "%$location%";
@@ -88,8 +90,8 @@ $propertyMapLink = '';
 $propertyAmenities = '';
 
 if (isset($_GET['id']) && !empty($_GET['id'])) {
-    $propertyId = (int)$_GET['id'];
-$propStmt = $pdo->prepare("
+  $propertyId = (int) $_GET['id'];
+  $propStmt = $pdo->prepare("
     SELECT 
         name, 
         address, 
@@ -110,71 +112,71 @@ $propStmt = $pdo->prepare("
     LIMIT 1
 ");
   $propStmt->execute([':id' => $propertyId]);
-    $propRow = $propStmt->fetch(PDO::FETCH_ASSOC);
-$propertyCheckin  = !empty($propRow['checkin_time'])  
-    ? date("h:i A", strtotime($propRow['checkin_time']))  
+  $propRow = $propStmt->fetch(PDO::FETCH_ASSOC);
+  $propertyCheckin = !empty($propRow['checkin_time'])
+    ? date("h:i A", strtotime($propRow['checkin_time']))
     : "12:00 PM";
 
-$propertyCheckout = !empty($propRow['checkout_time'])  
-    ? date("h:i A", strtotime($propRow['checkout_time']))  
+  $propertyCheckout = !empty($propRow['checkout_time'])
+    ? date("h:i A", strtotime($propRow['checkout_time']))
     : "11:00 AM";
-    if ($propRow) {
-        $propertyName = $propRow['name'];
-        $propertyAddress = $propRow['address'];
-        $propertyCity = $propRow['city'];
-        $propertyCountry = $propRow['country'];
-        $propertyMapLink = $propRow['map_link'];
-        $propertyAmenities = $propRow['amenities'];
-        $propertyImage = $propRow['property_image'];
-    }
+  if ($propRow) {
+    $propertyName = $propRow['name'];
+    $propertyAddress = $propRow['address'];
+    $propertyCity = $propRow['city'];
+    $propertyCountry = $propRow['country'];
+    $propertyMapLink = $propRow['map_link'];
+    $propertyAmenities = $propRow['amenities'];
+    $propertyImage = $propRow['property_image'];
+  }
 }
 $amenityIcons = [
-    'wifi' => 'fa-wifi',
-    'air conditioning' => 'fa-snowflake',
-    'parking' => 'fa-square-parking',
-    'pool' => 'fa-person-swimming',
-    'restaurant' => 'fa-utensils',
-    'bar' => 'fa-glass-martini-alt',
-    'gym' => 'fa-dumbbell',
-    'spa' => 'fa-spa',
-    'tv' => 'fa-tv',
-    'balcony' => 'fa-building',
-    'minibar' => 'fa-wine-bottle',
-    'electric kettle' => 'fa-mug-hot',
-    'breakfast' => 'fa-bread-slice',
-    'default' => 'fa-check'
+  'wifi' => 'fa-wifi',
+  'air conditioning' => 'fa-snowflake',
+  'parking' => 'fa-square-parking',
+  'pool' => 'fa-person-swimming',
+  'restaurant' => 'fa-utensils',
+  'bar' => 'fa-glass-martini-alt',
+  'gym' => 'fa-dumbbell',
+  'spa' => 'fa-spa',
+  'tv' => 'fa-tv',
+  'balcony' => 'fa-building',
+  'minibar' => 'fa-wine-bottle',
+  'electric kettle' => 'fa-mug-hot',
+  'breakfast' => 'fa-bread-slice',
+  'default' => 'fa-check'
 ];
 $propertyImages = [];
 if (isset($_GET['id']) && !empty($_GET['id'])) {
-    $propertyId = (int)$_GET['id'];
-    $imageStmt = $pdo->prepare("
+  $propertyId = (int) $_GET['id'];
+  $imageStmt = $pdo->prepare("
         SELECT image_path 
         FROM property_images 
         WHERE property_id = :property_id
         ORDER BY is_main DESC, id ASC
         LIMIT 5
     ");
-    $imageStmt->execute([':property_id' => $propertyId]);
-    $propertyImages = $imageStmt->fetchAll(PDO::FETCH_ASSOC);
+  $imageStmt->execute([':property_id' => $propertyId]);
+  $propertyImages = $imageStmt->fetchAll(PDO::FETCH_ASSOC);
 }
 if (count($propertyImages) < 5) {
-    $defaultImages = [
-        ['image_path' => 'images/river1.jpg'],
-        ['image_path' => 'images/river2.jpg'],
-        ['image_path' => 'images/river3.jpg'],
-        ['image_path' => 'images/river4.jpg'],
-        ['image_path' => 'images/river5.jpg']
-    ];
-    
-    for ($i = count($propertyImages); $i < 5; $i++) {
-        $propertyImages[] = $defaultImages[$i];
-    }
+  $defaultImages = [
+    ['image_path' => 'images/river1.jpg'],
+    ['image_path' => 'images/river2.jpg'],
+    ['image_path' => 'images/river3.jpg'],
+    ['image_path' => 'images/river4.jpg'],
+    ['image_path' => 'images/river5.jpg']
+  ];
+
+  for ($i = count($propertyImages); $i < 5; $i++) {
+    $propertyImages[] = $defaultImages[$i];
+  }
 }
 
 $roomTypes = [];
 if (isset($_GET['id']) && !empty($_GET['id'])) {
-    $propertyId = (int)$_GET['id'];
-    $roomStmt = $pdo->prepare("
+  $propertyId = (int) $_GET['id'];
+  $roomStmt = $pdo->prepare("
         SELECT 
             rt.id, 
             rt.name,
@@ -188,16 +190,16 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
         FROM room_types rt 
         WHERE rt.property_id = :property_id
     ");
-    $roomStmt->execute([':property_id' => $propertyId]);
-    $roomTypes = $roomStmt->fetchAll(PDO::FETCH_ASSOC);
+  $roomStmt->execute([':property_id' => $propertyId]);
+  $roomTypes = $roomStmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 $mealTypes = [
-    'Room Only' => 'room_only',
-    'With Breakfast' => 'with_breakfast',
-    'Breakfast+lunch/dinner' => 'breakfast_lunch_dinner'
+  'Room Only' => 'room_only',
+  'With Breakfast' => 'with_breakfast',
+  'Breakfast+lunch/dinner' => 'breakfast_lunch_dinner'
 ];
-$checkinDateTime = $checkin . ' ' . $propRow['checkin_time']; 
+$checkinDateTime = $checkin . ' ' . $propRow['checkin_time'];
 $dt = new DateTime($checkinDateTime);
 $dt->modify('-1 minute');
 $freeCancellation = $dt->format('F j, Y g:i A');
@@ -215,31 +217,31 @@ $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $data = [];
 foreach ($rows as $row) {
-    $catId = $row['category_id'];
-    if (!isset($data[$catId])) {
-        $data[$catId] = [
-            'id' => $catId,
-            'name' => $row['category_name'],
-            'slug' => $row['slug'],
-            'rules' => []
-        ];
-    }
+  $catId = $row['category_id'];
+  if (!isset($data[$catId])) {
+    $data[$catId] = [
+      'id' => $catId,
+      'name' => $row['category_name'],
+      'slug' => $row['slug'],
+      'rules' => []
+    ];
+  }
 
-    if ($row['rule_id']) {
-        if (!isset($data[$catId]['rules'][$row['rule_id']])) {
-            $data[$catId]['rules'][$row['rule_id']] = [
-                'id' => $row['rule_id'],
-                'title' => $row['title'],
-                'items' => []
-            ];
-        }
-        if ($row['item_id']) {
-            $data[$catId]['rules'][$row['rule_id']]['items'][] = $row['content'];
-        }
+  if ($row['rule_id']) {
+    if (!isset($data[$catId]['rules'][$row['rule_id']])) {
+      $data[$catId]['rules'][$row['rule_id']] = [
+        'id' => $row['rule_id'],
+        'title' => $row['title'],
+        'items' => []
+      ];
     }
+    if ($row['item_id']) {
+      $data[$catId]['rules'][$row['rule_id']]['items'][] = $row['content'];
+    }
+  }
 }
 foreach ($data as &$cat) {
-    $cat['rules'] = array_values($cat['rules']);
+  $cat['rules'] = array_values($cat['rules']);
 }
 $ruleCategories = array_values($data);
 ?>
@@ -777,6 +779,7 @@ $ruleCategories = array_values($data);
   .room-header {
     margin: 10px;
     padding: 5px;
+    max-width: min-content;
 
   }
 
@@ -932,16 +935,16 @@ $ruleCategories = array_values($data);
           <div class="col-12">
             <h2 class="section-title">About the Property</h2>
             <p>
-              <?php 
-          $desc = "This beautiful property offers comfortable accommodations with modern amenities. " . 
-                 "Guests can enjoy a relaxing stay with excellent service and convenient facilities.";
-          if (!empty($propRow['description'])) {
-            $desc = $propRow['description'];
-          }
-          $shortDesc = strlen($desc) > 120 ? substr($desc, 0, 120) . "..." : $desc;
-          echo nl2br(htmlspecialchars($shortDesc));
-          ?>
-              <?php if(strlen($desc) > 120): ?>
+              <?php
+              $desc = "This beautiful property offers comfortable accommodations with modern amenities. " .
+                "Guests can enjoy a relaxing stay with excellent service and convenient facilities.";
+              if (!empty($propRow['description'])) {
+                $desc = $propRow['description'];
+              }
+              $shortDesc = strlen($desc) > 120 ? substr($desc, 0, 120) . "..." : $desc;
+              echo nl2br(htmlspecialchars($shortDesc));
+              ?>
+              <?php if (strlen($desc) > 120): ?>
               <button class="btn read-more-btn" data-bs-toggle="modal" data-bs-target="#descriptionModal">
                 Read More <span class="material-icons" style="font-size:16px;vertical-align:middle">chevron_right</span>
               </button>
@@ -954,60 +957,60 @@ $ruleCategories = array_values($data);
             <h2 class="section-title">Amenities</h2>
             <div class="amenities-grid am">
               <?php
-          $amenities = !empty($propertyAmenities) 
-            ? explode(',', $propertyAmenities) 
-            : ['Free WiFi', 'Air Conditioning', 'Swimming Pool', 'Restaurant', 'Parking'];
-          $initialAmenities = array_slice($amenities, 0, 5);
-          $remainingAmenities = array_slice($amenities, 5);
-          $icons = [
-            'wifi' => 'wifi',
-            'free wifi' => 'wifi',
-            'air conditioning' => 'ac_unit',
-            'ac' => 'ac_unit',
-            'swimming pool' => 'pool',
-            'pool' => 'pool',
-            'restaurant' => 'restaurant',
-            'parking' => 'local_parking',
-            'gym' => 'fitness_center',
-            'fitness center' => 'fitness_center',
-            '24/7 front desk' => 'support_agent',
-            'front desk' => 'support_agent',
-            'room service' => 'room_service',
-            'breakfast' => 'free_breakfast',
-            'spa' => 'spa',
-            'bar' => 'sports_bar',
-            'business center' => 'business_center',
-            'laundry' => 'local_laundry_service'
-          ];
+              $amenities = !empty($propertyAmenities)
+                ? explode(',', $propertyAmenities)
+                : ['Free WiFi', 'Air Conditioning', 'Swimming Pool', 'Restaurant', 'Parking'];
+              $initialAmenities = array_slice($amenities, 0, 5);
+              $remainingAmenities = array_slice($amenities, 5);
+              $icons = [
+                'wifi' => 'wifi',
+                'free wifi' => 'wifi',
+                'air conditioning' => 'ac_unit',
+                'ac' => 'ac_unit',
+                'swimming pool' => 'pool',
+                'pool' => 'pool',
+                'restaurant' => 'restaurant',
+                'parking' => 'local_parking',
+                'gym' => 'fitness_center',
+                'fitness center' => 'fitness_center',
+                '24/7 front desk' => 'support_agent',
+                'front desk' => 'support_agent',
+                'room service' => 'room_service',
+                'breakfast' => 'free_breakfast',
+                'spa' => 'spa',
+                'bar' => 'sports_bar',
+                'business center' => 'business_center',
+                'laundry' => 'local_laundry_service'
+              ];
 
-          foreach ($initialAmenities as $amenity) {
-            $amenity = trim($amenity);
-            $aKey = strtolower($amenity);
-            $icon = isset($icons[$aKey]) ? $icons[$aKey] : 'check_circle';
-            echo '
+              foreach ($initialAmenities as $amenity) {
+                $amenity = trim($amenity);
+                $aKey = strtolower($amenity);
+                $icon = isset($icons[$aKey]) ? $icons[$aKey] : 'check_circle';
+                echo '
             <div class="amenity-item">
-              <span class="material-icons">'.$icon.'</span>
-              <span class="amenity-text">'.htmlspecialchars($amenity).'</span>
+              <span class="material-icons">' . $icon . '</span>
+              <span class="amenity-text">' . htmlspecialchars($amenity) . '</span>
             </div>';
-          }
-          ?>
+              }
+              ?>
             </div>
             <div id="moreAmenities" style="display: none;" class="amenities-grid mt-3">
               <?php
-          foreach ($remainingAmenities as $amenity) {
-            $amenity = trim($amenity);
-            $aKey = strtolower($amenity);
-            $icon = isset($icons[$aKey]) ? $icons[$aKey] : 'check_circle';
-            echo '
+              foreach ($remainingAmenities as $amenity) {
+                $amenity = trim($amenity);
+                $aKey = strtolower($amenity);
+                $icon = isset($icons[$aKey]) ? $icons[$aKey] : 'check_circle';
+                echo '
             <div class="amenity-item">
-              <span class="material-icons">'.$icon.'</span>
-              <span class="amenity-text">'.htmlspecialchars($amenity).'</span>
+              <span class="material-icons">' . $icon . '</span>
+              <span class="amenity-text">' . htmlspecialchars($amenity) . '</span>
             </div>';
-          }
-          ?>
+              }
+              ?>
             </div>
 
-            <?php if(count($amenities) > 6): ?>
+            <?php if (count($amenities) > 6): ?>
             <div class="text-center mt-3">
               <button id="viewAllBtn" class="btn view-all-btn">
                 View All <span class="material-icons" style="font-size:16px;vertical-align:middle">expand_more</span>
@@ -1129,11 +1132,11 @@ $ruleCategories = array_values($data);
       <h2 class="section-title">Available Rooms</h2>
       <?php
       foreach ($roomTypes as $roomType) {
-          $roomTypeId = $roomType['id'];
-          $roomTypeName = $roomType['name'];
-          $roomTypeDescription = $roomType['description'];
-          $roomAmenities = $roomType['amenities'];
-      ?>
+        $roomTypeId = $roomType['id'];
+        $roomTypeName = $roomType['name'];
+        $roomTypeDescription = $roomType['description'];
+        $roomAmenities = $roomType['amenities'];
+        ?>
       <div class="room-card">
         <div class="room-header">
           <div id="availabil-room">
@@ -1152,22 +1155,22 @@ $ruleCategories = array_values($data);
             <?php if (!empty($roomAmenities)): ?>
             <div class="room-amenities">
               <ul style="list-style-type: none; padding: 0;">
-                <?php 
-            $amenities = explode(',', $roomAmenities);
-            foreach ($amenities as $amenity):
-                $amenity = trim($amenity);
-                if (!empty($amenity)):
-                    $key = strtolower($amenity);
-                    $iconClass = $amenityIcons[$key] ?? $amenityIcons['default'];
-            ?>
+                <?php
+                    $amenities = explode(',', $roomAmenities);
+                    foreach ($amenities as $amenity):
+                      $amenity = trim($amenity);
+                      if (!empty($amenity)):
+                        $key = strtolower($amenity);
+                        $iconClass = $amenityIcons[$key] ?? $amenityIcons['default'];
+                        ?>
                 <li>
                   <i class="fas <?php echo $iconClass; ?>"></i>
                   <?php echo htmlspecialchars($amenity); ?>
                 </li>
-                <?php 
-                endif;
-            endforeach; 
-            ?>
+                <?php
+                      endif;
+                    endforeach;
+                    ?>
               </ul>
             </div>
             <?php endif; ?>
@@ -1176,13 +1179,13 @@ $ruleCategories = array_values($data);
         </div>
         <div class="room-options-container">
           <?php
-          foreach ($mealTypes as $mealName => $mealType) {
-          $roomPriceData = getRoomPrice($pdo, $roomTypeId, $mealType, $checkin, $checkout, $promotions);
-          $price = $roomPriceData['price'];
-          $appliedPromotions = $roomPriceData['applied_promotions']; 
+            foreach ($mealTypes as $mealName => $mealType) {
+              $roomPriceData = getRoomPrice($pdo, $roomTypeId, $mealType, $checkin, $checkout, $promotions);
+              $price = $roomPriceData['price'];
+              $appliedPromotions = $roomPriceData['applied_promotions'];
               if ($price > 0) {
-                  $isHighlighted = $mealName === 'With Breakfast' ? 'highlighted' : '';
-          ?>
+                $isHighlighted = $mealName === 'With Breakfast' ? 'highlighted' : '';
+                ?>
           <div class="room-option <?php echo $isHighlighted; ?>">
             <div class="room-content">
               <div class="option-header">
@@ -1225,21 +1228,21 @@ $ruleCategories = array_values($data);
                   <?php echo number_format($price * 0.12); ?> Taxes & Fees per night
                 </div>
                 <a href="cart.php?
-                  property_id=<?=urlencode($propertyId)?>&
-                  property_name=<?=urlencode($propertyName)?>&
-                  address=<?=urlencode($propertyAddress)?>&
-                  city=<?=urlencode($propertyCity)?>&
-                  country=<?=urlencode($propertyCountry)?>&
-                  room_type_id=<?=urlencode($roomTypeId)?>&
-                  room_name=<?=urlencode($roomTypeName)?>&
-                  meal_name=<?=urlencode($mealName)?>&
-                  price=<?=urlencode($price)?>&
-                  taxes=<?=urlencode($price * 0.12)?>&
-                  checkin=<?=urlencode($checkin)?>&
-                  checkout=<?=urlencode($checkout)?>&
-                  adults=<?=urlencode($adults)?>&
-                  children=<?=urlencode($children)?>&
-                  rooms=<?=urlencode($rooms)?>" class="btn btn-primary">
+                  property_id=<?= urlencode($propertyId) ?>&
+                  property_name=<?= urlencode($propertyName) ?>&
+                  address=<?= urlencode($propertyAddress) ?>&
+                  city=<?= urlencode($propertyCity) ?>&
+                  country=<?= urlencode($propertyCountry) ?>&
+                  room_type_id=<?= urlencode($roomTypeId) ?>&
+                  room_name=<?= urlencode($roomTypeName) ?>&
+                  meal_name=<?= urlencode($mealName) ?>&
+                  price=<?= urlencode($price) ?>&
+                  taxes=<?= urlencode($price * 0.12) ?>&
+                  checkin=<?= urlencode($checkin) ?>&
+                  checkout=<?= urlencode($checkout) ?>&
+                  adults=<?= urlencode($adults) ?>&
+                  children=<?= urlencode($children) ?>&
+                  rooms=<?= urlencode($rooms) ?>" class="btn btn-primary">
                   SELECT ROOM
                 </a>
                 <div class="room-availability">Only 2 rooms left at this price!</div>
@@ -1248,8 +1251,8 @@ $ruleCategories = array_values($data);
           </div>
           <?php
               }
-          }
-          ?>
+            }
+            ?>
         </div>
       </div>
       <?php
@@ -1421,19 +1424,19 @@ $ruleCategories = array_values($data);
   document.addEventListener("DOMContentLoaded", function() {
     const counters = {
       adults: {
-        value: <?php echo(int)$adults; ?>,
+        value: <?php echo (int) $adults; ?>,
         min: 1,
         element: document.getElementById("adultsCounter"),
         input: document.getElementById("adultsInput")
       },
       children: {
-        value: <?php echo (int)$children; ?>,
+        value: <?php echo (int) $children; ?>,
         min: 0,
         element: document.getElementById("childrenCounter"),
         input: document.getElementById("childrenInput")
       },
       rooms: {
-        value: <?php echo(int)$rooms; ?>,
+        value: <?php echo (int) $rooms; ?>,
         min: 1,
         element: document.getElementById("roomsCounter"),
         input: document.getElementById("roomsInput")

@@ -1,22 +1,22 @@
 <?php session_start(); ?>
 <?php
 include 'db.php';
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 $limit = 4;
 $offset = ($page - 1) * $limit;
 
 $location = $_GET['location'] ?? '';
 $checkin = $_GET['checkin'] ?? '';
 $checkout = $_GET['checkout'] ?? '';
-$rooms = isset($_GET['rooms']) ? (int)$_GET['rooms'] : 1;
-$adults = isset($_GET['adults']) ? (int)$_GET['adults'] : 2;
-$children = isset($_GET['children']) ? (int)$_GET['children'] : 0;
+$rooms = isset($_GET['rooms']) ? (int) $_GET['rooms'] : 1;
+$adults = isset($_GET['adults']) ? (int) $_GET['adults'] : 2;
+$children = isset($_GET['children']) ? (int) $_GET['children'] : 0;
 if (empty($checkin)) {
-    $checkin = date('Y-m-d');
+  $checkin = date('Y-m-d');
 }
 if (empty($checkout)) {
-    $tomorrow = date('Y-m-d', strtotime('+1 day'));
-    $checkout = $tomorrow;
+  $tomorrow = date('Y-m-d', strtotime('+1 day'));
+  $checkout = $tomorrow;
 }
 $searchTerm = "%$location%";
 $sql = "SELECT
@@ -427,15 +427,15 @@ $totalPages = ceil($totalHotels / $limit);
                   <!-- Amenities -->
                   <div class="d-flex flex-wrap gap-2 mb-2">
                     <?php if (!empty($property['amenities'])): ?>
-                    <?php 
-                    $amenities = explode(',', $property['amenities']);
-                    foreach ($amenities as $amenity): 
-                      if (!empty(trim($amenity))): ?>
+                    <?php
+                          $amenities = explode(',', $property['amenities']);
+                          foreach ($amenities as $amenity):
+                            if (!empty(trim($amenity))): ?>
                     <span class="badge bg-primary">
                       <?php echo htmlspecialchars(trim($amenity)); ?>
                     </span>
                     <?php endif;
-                    endforeach; ?>
+                          endforeach; ?>
                     <?php endif; ?>
                   </div>
 
@@ -483,19 +483,22 @@ $totalPages = ceil($totalHotels / $limit);
         <!-- Pagination -->
         <nav aria-label="Search results pagination" class="mt-4">
           <ul class="pagination justify-content-center">
-            <li class="page-item <?php if ($page <= 1) echo 'disabled'; ?>">
+            <li class="page-item <?php if ($page <= 1)
+              echo 'disabled'; ?>">
               <a class="page-link"
                 href="?location=<?php echo urlencode($location); ?>&checkin=<?php echo $checkin; ?>&checkout=<?php echo $checkout; ?>&rooms=<?php echo $rooms; ?>&adults=<?php echo $adults; ?>&children=<?php echo $children; ?>&page=<?php echo $page - 1; ?>">Previous</a>
             </li>
             <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-            <li class="page-item <?php if ($i == $page) echo 'active'; ?>">
+            <li class="page-item <?php if ($i == $page)
+                echo 'active'; ?>">
               <a class="page-link"
                 href="?location=<?php echo urlencode($location); ?>&checkin=<?php echo $checkin; ?>&checkout=<?php echo $checkout; ?>&rooms=<?php echo $rooms; ?>&adults=<?php echo $adults; ?>&children=<?php echo $children; ?>&page=<?php echo $i; ?>">
                 <?php echo $i; ?>
               </a>
             </li>
             <?php endfor; ?>
-            <li class="page-item <?php if ($page >= $totalPages) echo 'disabled'; ?>">
+            <li class="page-item <?php if ($page >= $totalPages)
+              echo 'disabled'; ?>">
               <a class="page-link"
                 href="?location=<?php echo urlencode($location); ?>&checkin=<?php echo $checkin; ?>&checkout=<?php echo $checkout; ?>&rooms=<?php echo $rooms; ?>&adults=<?php echo $adults; ?>&children=<?php echo $children; ?>&page=<?php echo $page + 1; ?>">Next</a>
             </li>
@@ -563,19 +566,19 @@ $totalPages = ceil($totalHotels / $limit);
     // Initialize counters
     const counters = {
       adults: {
-        value: <?php echo (int)$adults; ?>,
+        value: <?php echo (int) $adults; ?>,
         min: 1,
         element: document.getElementById("adultsCounter"),
         input: document.getElementById("adultsInput")
       },
       children: {
-        value: <?php echo (int)$children; ?>,
+        value: <?php echo (int) $children; ?>,
         min: 0,
         element: document.getElementById("childrenCounter"),
         input: document.getElementById("childrenInput")
       },
       rooms: {
-        value: <?php echo (int)$rooms; ?>,
+        value: <?php echo (int) $rooms; ?>,
         min: 1,
         element: document.getElementById("roomsCounter"),
         input: document.getElementById("roomsInput")
@@ -730,31 +733,18 @@ $totalPages = ceil($totalHotels / $limit);
             return 0;
         }
       });
-
-      // Remove all items
       items.forEach(item => item.remove());
-
-      // Add back in sorted order
       items.forEach(item => container.appendChild(item));
     }
-
-    // Event listeners
     applyFiltersBtn.addEventListener('click', applyFilters);
-
     resetFiltersBtn.addEventListener('click', function() {
-      // Reset all filters
       budgetRange.value = 6000;
       budgetValue.textContent = '₹ 6,000+';
-
       ratingFilters.forEach(filter => filter.checked = false);
       bedFilters.forEach(filter => filter.checked = false);
       amenityFilters.forEach(filter => filter.checked = false);
-
-      // Show all properties
       propertyItems.forEach(item => item.style.display = '');
       filteredCount.textContent = propertyItems.length;
-
-      // Reset sort
       sortSelect.value = 'default';
     });
 

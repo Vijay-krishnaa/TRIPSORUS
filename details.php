@@ -244,6 +244,17 @@ foreach ($data as &$cat) {
   $cat['rules'] = array_values($cat['rules']);
 }
 $ruleCategories = array_values($data);
+function getRoomImages($pdo, $roomTypeId)
+{
+  $stmt = $pdo->prepare("
+        SELECT image_path 
+        FROM room_images 
+        WHERE room_type_id = :room_type_id
+        ORDER BY is_main DESC, id ASC
+    ");
+  $stmt->execute([':room_type_id' => $roomTypeId]);
+  return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -917,7 +928,33 @@ $ruleCategories = array_values($data);
           <?php else: ?>
           <img src="images/river3.jpg" alt="Hotel exterior" class="img-fluid hotel-img">
           <?php endif; ?>
-          <!-- <a href="#" class="view-all-photos">View all photos <i class="fas fa-chevron-right"></i></a> -->
+          <!-- View All Photos Link -->
+          <a href="#" class="view-all-photos" data-bs-toggle="modal" data-bs-target="#photosModal">
+            View all photos <i class="fas fa-chevron-right"></i>
+          </a>
+          <!-- Modal -->
+          <div class="modal fade" id="photosModal" tabindex="-1" aria-labelledby="photosModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="photosModalLabel"><?php echo htmlspecialchars($propertyName); ?> - Photos
+                  </h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="row g-3">
+                    <?php foreach ($propertyImages as $img): ?>
+                    <div class="col-md-4 col-sm-6">
+                      <img src="tripsorus-admin/<?php echo htmlspecialchars($img['image_path']); ?>"
+                        class="img-fluid rounded shadow-sm" alt="Property Photo">
+                    </div>
+                    <?php endforeach; ?>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <?php for ($i = 1; $i < 5; $i++): ?>
         <?php if (isset($propertyImages[$i])): ?>
@@ -1009,7 +1046,6 @@ $ruleCategories = array_values($data);
               }
               ?>
             </div>
-
             <?php if (count($amenities) > 6): ?>
             <div class="text-center mt-3">
               <button id="viewAllBtn" class="btn view-all-btn">
@@ -1099,7 +1135,6 @@ $ruleCategories = array_values($data);
                 <input type="hidden" id="adultsInput" name="adults" value="<?php echo $adults; ?>">
               </div>
             </div>
-
             <div class="counter-group">
               <span>Children</span>
               <div>
@@ -1111,7 +1146,6 @@ $ruleCategories = array_values($data);
                 <input type="hidden" id="childrenInput" name="children" value="<?php echo $children; ?>">
               </div>
             </div>
-
             <div class="counter-group">
               <span>Rooms</span>
               <div>
@@ -1140,17 +1174,47 @@ $ruleCategories = array_values($data);
       <div class="room-card">
         <div class="room-header">
           <div id="availabil-room">
-            <br>
-            <img src="tripsorus-admin/<?php echo htmlspecialchars($roomType['image']); ?>"
-              alt="<?php echo htmlspecialchars($roomTypeName); ?>" class="single-room-image">
-            <br>
+            <div class="mt-2 mb-2">
+              <img src="tripsorus-admin/<?php echo htmlspecialchars($roomType['image']); ?>"
+                alt="<?php echo htmlspecialchars($roomTypeName); ?>" class="single-room-image">
+              <a href="#" class="" data-bs-toggle="modal" data-bs-target="#photosModal<?php echo $roomTypeId; ?>">View
+                all photos </a>
+            </div>
+            <!-- View all photos link -->
             <h3 class="room-title fst-italic">
-              <br>
               <?php echo htmlspecialchars($roomTypeName); ?>
             </h3>
+            <?php
+              $words = explode(" ", strip_tags($roomTypeDescription));
+              $wordCount = count($words);
+              $shortDescription = $wordCount > 5 ? implode(" ", array_slice($words, 0, 5)) . "..." : $roomTypeDescription;
+              ?>
             <div class="fst-italic">
-              <?php echo nl2br(htmlspecialchars($roomTypeDescription)); ?>
+              <?php echo nl2br(htmlspecialchars($shortDescription)); ?>
+              <?php if ($wordCount > 5): ?>
+              <button type="button" class="btn p-0 ms-2 text-primary" data-bs-toggle="modal"
+                data-bs-target="#descModal<?php echo $roomTypeId; ?>">
+                Read More
+              </button>
+              <?php endif; ?>
             </div>
+
+            <?php if ($wordCount > 5): ?>
+            <!-- Bootstrap Modal for Description -->
+            <div class="modal fade" id="descModal<?php echo $roomTypeId; ?>" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Room Description</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <?php echo nl2br(htmlspecialchars($roomTypeDescription)); ?>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <?php endif; ?>
 
             <?php if (!empty($roomAmenities)): ?>
             <div class="room-amenities">
@@ -1174,8 +1238,34 @@ $ruleCategories = array_values($data);
               </ul>
             </div>
             <?php endif; ?>
-
           </div>
+
+          <!-- Modal for all photos -->
+          <div class="modal fade" id="photosModal<?php echo $roomTypeId; ?>" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">All Photos</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="row">
+                    <?php if (!empty($roomImages)): ?>
+                    <?php foreach ($roomImages as $img): ?>
+                    <div class="col-md-4 mb-3">
+                      <img src="tripsorus-admin/<?php echo htmlspecialchars($img); ?>"
+                        class="img-fluid rounded shadow-sm" alt="Room Image">
+                    </div>
+                    <?php endforeach; ?>
+                    <?php else: ?>
+                    <p>No additional photos available.</p>
+                    <?php endif; ?>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
         <div class="room-options-container">
           <?php
@@ -1211,10 +1301,8 @@ $ruleCategories = array_values($data);
                   </li>
                   <?php endforeach; ?>
                   <?php endif; ?>
-
                   <li><span class="material-icons small-icon">currency_rupee</span> Book with ₹0 payment</li>
                   <li><span class="material-icons small-icon">account_balance_wallet</span> Pay at property</li>
-
                 </ul>
               </div>
               <div class="option-price-container">
@@ -1262,19 +1350,16 @@ $ruleCategories = array_values($data);
     <section class="property-info-section">
       <div class="hotel-rules-container">
         <div class="hotel-name">Hotel Rules at <?php echo htmlspecialchars($propertyName); ?></div>
-
         <div class="check-in-out">
           Check-in: <?php echo $propertyCheckin; ?>
           | Check-out: <?php echo $propertyCheckout; ?>
         </div>
-
         <hr>
         <div class="rule-item">
           <p>Primary Guest should be at least 18 years of age.</p>
         </div>
         <div class="rules-categories">
           <a href="#" class="category-link btn btn-outline-secondary">Must Read Rules</a>
-
           <div class="divider"></div>
           <a href="#" class="category-link btn btn-outline-secondary">Guest Profile</a>
           <div class="divider"></div>
@@ -1294,7 +1379,6 @@ $ruleCategories = array_values($data);
     </div>
     <section class="reviews-section">
       <h2 class="section-title">Guest reviews</h2>
-
       <div class="review-score">
         <div class="score-circle">
           <span class="score-value">8.6</span>
@@ -1304,7 +1388,6 @@ $ruleCategories = array_values($data);
           <p>Based on 428 verified guest reviews from actual stays at this property</p>
         </div>
       </div>
-
       <div class="review-card">
         <div class="review-header">
           <div class="reviewer-info">
@@ -1395,7 +1478,6 @@ $ruleCategories = array_values($data);
     if (!checkinInput.value) {
       checkinInput.value = todayFormatted;
     }
-
     if (!checkoutInput.value) {
       const tomorrowFormatted = formatDate(tomorrow);
       checkoutInput.value = tomorrowFormatted;
@@ -1414,13 +1496,11 @@ $ruleCategories = array_values($data);
 
   const discountedPriceEl = document.querySelector('.discounted-price');
   const taxesEl = document.querySelector('.taxes');
-
   if (discountedPriceEl && taxesEl) {
     let discountedPrice = parseFloat(discountedPriceEl.textContent.replace(/[₹,]/g, ''));
     let tax = (discountedPrice * 0.12).toFixed(2);
     taxesEl.textContent = '+ ₹' + tax + ' Taxes & Fees per night';
   }
-
   document.addEventListener("DOMContentLoaded", function() {
     const counters = {
       adults: {
@@ -1451,7 +1531,6 @@ $ruleCategories = array_values($data);
         `${counters.children.value} Child${counters.children.value !== 1 ? "ren" : ""}, ` +
         `${counters.rooms.value} Room${counters.rooms.value !== 1 ? "s" : ""}`;
     }
-
     updateGuestText();
     guestSelector.addEventListener("click", () => {
       guestModal.style.display = guestModal.style.display === "none" ? "block" : "none";
@@ -1483,29 +1562,23 @@ $ruleCategories = array_values($data);
     const categories = categoryId ?
       ruleCategories.filter(c => c.id == categoryId) :
       ruleCategories;
-
     categories.forEach(category => {
       const categoryElement = document.createElement('div');
       categoryElement.className = 'rules-category';
-
       const titleElement = document.createElement('h3');
       titleElement.className = 'rules-category-title';
       titleElement.textContent = category.name.toUpperCase();
       categoryElement.appendChild(titleElement);
-
       category.rules.forEach(rule => {
         const listElement = document.createElement('ul');
         listElement.className = 'rules-list';
-
         rule.items.forEach(item => {
           const listItem = document.createElement('li');
           listItem.textContent = item;
           listElement.appendChild(listItem);
         });
-
         categoryElement.appendChild(listElement);
       });
-
       rulesContent.appendChild(categoryElement);
     });
   }
@@ -1521,13 +1594,10 @@ $ruleCategories = array_values($data);
     document.body.style.overflow = '';
   }
   document.getElementById('viewAllRulesBtn').addEventListener('click', () => showRulesPopup());
-
   document.getElementById('closePopup').addEventListener('click', hideRulesPopup);
-
   document.getElementById('rulesPopup').addEventListener('click', function(e) {
     if (e.target === this) hideRulesPopup();
   });
-
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') hideRulesPopup();
   });

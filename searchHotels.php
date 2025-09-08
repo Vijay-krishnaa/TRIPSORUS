@@ -4,7 +4,6 @@ include 'db.php';
 $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 $limit = 4;
 $offset = ($page - 1) * $limit;
-
 $location = $_GET['location'] ?? '';
 $checkin = $_GET['checkin'] ?? '';
 $checkout = $_GET['checkout'] ?? '';
@@ -55,6 +54,7 @@ $totalPages = ceil($totalHotels / $limit);
   <title>Hotels in
     <?php echo htmlspecialchars($location); ?> - TRIPSORUS
   </title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
@@ -103,7 +103,7 @@ $totalPages = ceil($totalHotels / $limit);
 
   .hotel-card .badge {
     font-size: 0.75rem;
-    padding: 0.35rem 0.6rem;
+    padding: 0.1rem 0.1rem;
     border-radius: 6px;
   }
 
@@ -425,18 +425,41 @@ $totalPages = ceil($totalHotels / $limit);
                   </div>
 
                   <!-- Amenities -->
-                  <div class="d-flex flex-wrap gap-2 mb-2">
-                    <?php if (!empty($property['amenities'])): ?>
+
+                  <div class="highlights text-muted mb-2">
                     <?php
-                          $amenities = explode(',', $property['amenities']);
-                          foreach ($amenities as $amenity):
-                            if (!empty(trim($amenity))): ?>
-                    <span class="badge bg-primary">
-                      <?php echo htmlspecialchars(trim($amenity)); ?>
-                    </span>
-                    <?php endif;
-                          endforeach; ?>
-                    <?php endif; ?>
+                        $highlights = [];
+
+                        // Always add these static highlights
+                        $highlights[] = '<div class="d-flex align-items-center mb-1">
+                      <span class="material-icons me-2" style="font-size:18px;">payments</span> 
+                      Pay at Property
+                    </div>';
+
+                        $highlights[] = '<div class="d-flex align-items-center mb-1">
+                      <span class="material-icons me-2" style="font-size:18px;">cancel</span> 
+                      Free Cancellation 1 min before Check-in
+                    </div>';
+
+                        // Check if property has any rooms with breakfast
+                        $stmt = $pdo->prepare("
+        SELECT COUNT(*) as cnt 
+        FROM room_inventory 
+        WHERE property_id = ? AND meal_type = 'with_breakfast'
+    ");
+                        $stmt->execute([$property['id']]);
+                        $result = $stmt->fetch();
+
+                        if ($result && $result['cnt'] > 0) {
+                          $highlights[] = '<div class="d-flex align-items-center mb-1">
+                          <span class="material-icons me-2" style="font-size:18px;">free_breakfast</span> 
+                          Breakfast Included
+                        </div>';
+                        }
+
+                        // Print all highlights (each in its own line)
+                        echo implode("", $highlights);
+                        ?>
                   </div>
 
                   <!-- Availability note -->

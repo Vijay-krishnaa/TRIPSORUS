@@ -28,7 +28,9 @@ p.amenities,
 (SELECT MIN(rt.price) FROM room_types rt WHERE rt.property_id = p.id) AS price
 FROM properties p
 WHERE p.city LIKE :location
+  AND p.status = 'approved'
 LIMIT :limit OFFSET :offset";
+
 
 $stmt = $pdo->prepare($sql);
 $stmt->bindValue(':location', $searchTerm, PDO::PARAM_STR);
@@ -37,7 +39,11 @@ $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
 
 $stmt->execute();
 $results = $stmt->fetchAll();
-$countSql = "SELECT COUNT(*) as total FROM properties WHERE city LIKE :location";
+$countSql = "SELECT COUNT(*) as total 
+             FROM properties 
+             WHERE city LIKE :location 
+               AND status = 'approved'";
+
 $countStmt = $pdo->prepare($countSql);
 $countStmt->bindValue(':location', $searchTerm, PDO::PARAM_STR);
 $countStmt->execute();
@@ -61,123 +67,123 @@ $totalPages = ceil($totalHotels / $limit);
   <link rel="icon" href="images/favicon.ico" type="image/png">
   <link rel="stylesheet" href="styles/style.css">
   <style>
-  .hotel-card {
-    border: 1px solid #e3e8ef;
-    border-radius: 12px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  }
+    .hotel-card {
+      border: 1px solid #e3e8ef;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
 
-  .hotel-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
-  }
+    .hotel-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+    }
 
-  .image-box {
-    padding: 12px;
-  }
+    .image-box {
+      padding: 12px;
+    }
 
-  .image-box img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 10px;
-  }
-
-  .hotel-card .card-body {
-    padding: 1rem;
-  }
-
-  .hotel-card .card-title {
-    font-size: 1.15rem;
-    font-weight: 600;
-    color: #0a55ff;
-  }
-
-  .hotel-card .card-text {
-    font-size: 0.9rem;
-    margin-bottom: 0.5rem;
-    color: #555;
-  }
-
-  .hotel-card .badge {
-    font-size: 0.75rem;
-    padding: 0.1rem 0.1rem;
-    border-radius: 6px;
-  }
-
-  .hotel-card .badge.bg-primary {
-    background-color: #0a55ff !important;
-  }
-
-  .hotel-card .text-danger {
-    font-size: 0.75rem;
-    margin-top: 0.5rem;
-  }
-
-  .property-sidebar {
-    display: flex;
-    float: right;
-    flex-direction: column;
-    text-align: right;
-    padding: 1rem;
-
-  }
-
-  .search--btn {
-    margin-top: 30px;
-  }
-
-  .rating-box .badge {
-    font-size: 0.8rem;
-    padding: 0.4rem 0.7rem;
-    border-radius: 8px;
-  }
-
-  .rating-box .reviews {
-    font-size: 0.75rem;
-    color: #666;
-    margin-top: 0.3rem;
-  }
-
-  .price-box .price {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: #0a55ff;
-  }
-
-  .price-box .taxes {
-    font-size: 0.8rem;
-    color: #888;
-  }
-
-  .property-sidebar .btn {
-    font-size: 0.95rem;
-    font-weight: 600;
-    padding: 0.65rem;
-    border-radius: 8px;
-    background-color: #0a55ff;
-    border: none;
-    transition: background 0.25s ease;
-  }
-
-  .property-sidebar .btn:hover {
-    background-color: #004ad8;
-  }
-
-  @media (max-width: 768px) {
     .image-box img {
-      height: 160px;
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .hotel-card .card-body {
+      padding: 1rem;
+    }
+
+    .hotel-card .card-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #0a55ff;
+    }
+
+    .hotel-card .card-text {
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+      color: #555;
+    }
+
+    .hotel-card .badge {
+      font-size: 0.75rem;
+      padding: 0.1rem 0.1rem;
+      border-radius: 6px;
+    }
+
+    .hotel-card .badge.bg-primary {
+      background-color: #0a55ff !important;
+    }
+
+    .hotel-card .text-danger {
+      font-size: 0.75rem;
+      margin-top: 0.5rem;
     }
 
     .property-sidebar {
-      border-left: none;
-      border-top: 1px solid #e3e8ef;
-      margin-top: 0.5rem;
+      display: flex;
+      float: right;
+      flex-direction: column;
+      text-align: right;
+      padding: 1rem;
 
     }
-  }
+
+    .search--btn {
+      margin-top: 30px;
+    }
+
+    .rating-box .badge {
+      font-size: 0.8rem;
+      padding: 0.4rem 0.7rem;
+      border-radius: 8px;
+    }
+
+    .rating-box .reviews {
+      font-size: 0.75rem;
+      color: #666;
+      margin-top: 0.3rem;
+    }
+
+    .price-box .price {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #0a55ff;
+    }
+
+    .price-box .taxes {
+      font-size: 0.8rem;
+      color: #888;
+    }
+
+    .property-sidebar .btn {
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 0.65rem;
+      border-radius: 8px;
+      background-color: #0a55ff;
+      border: none;
+      transition: background 0.25s ease;
+    }
+
+    .property-sidebar .btn:hover {
+      background-color: #004ad8;
+    }
+
+    @media (max-width: 768px) {
+      .image-box img {
+        height: 160px;
+      }
+
+      .property-sidebar {
+        border-left: none;
+        border-top: 1px solid #e3e8ef;
+        margin-top: 0.5rem;
+
+      }
+    }
   </style>
 </head>
 
@@ -395,39 +401,39 @@ $totalPages = ceil($totalHotels / $limit);
         <!-- Property Listings -->
         <div id="propertyListings">
           <?php if (count($results) > 0): ?>
-          <?php foreach ($results as $property): ?>
-          <div class="card hotel-card mb-4 property-item"
-            data-price="<?php echo isset($property['price']) ? $property['price'] : 0; ?>" data-rating="4"
-            data-amenities="<?php echo htmlspecialchars($property['amenities']); ?>" data-beds="Queen,Double">
+            <?php foreach ($results as $property): ?>
+              <div class="card hotel-card mb-4 property-item"
+                data-price="<?php echo isset($property['price']) ? $property['price'] : 0; ?>" data-rating="4"
+                data-amenities="<?php echo htmlspecialchars($property['amenities']); ?>" data-beds="Queen,Double">
 
-            <div class="row g-0">
-              <!-- Image -->
-              <div class="col-md-4">
-                <div class="image-box">
-                  <img src="tripsorus-admin/<?php echo htmlspecialchars($property['image']); ?>" class="img-fluid"
-                    alt="<?php echo htmlspecialchars($property['name']); ?>">
-                </div>
-              </div>
-
-              <!-- Middle Content -->
-              <div class="col-md-5">
-                <div class="card-body">
-                  <h5 class="card-title">
-                    <?php echo htmlspecialchars($property['name']); ?>
-                  </h5>
-                  <p class="card-text text-muted small">
-                    <?php echo htmlspecialchars($property['location']); ?>
-                  </p>
-
-                  <!-- Room type -->
-                  <div class="mb-2">
-                    <span class="badge bg-light text-dark me-1">Guest room</span>
+                <div class="row g-0">
+                  <!-- Image -->
+                  <div class="col-md-4">
+                    <div class="image-box">
+                      <img src="tripsorus-admin/<?php echo htmlspecialchars($property['image']); ?>" class="img-fluid"
+                        alt="<?php echo htmlspecialchars($property['name']); ?>">
+                    </div>
                   </div>
 
-                  <!-- Amenities -->
+                  <!-- Middle Content -->
+                  <div class="col-md-5">
+                    <div class="card-body">
+                      <h5 class="card-title">
+                        <?php echo htmlspecialchars($property['name']); ?>
+                      </h5>
+                      <p class="card-text text-muted small">
+                        <?php echo htmlspecialchars($property['location']); ?>
+                      </p>
 
-                  <div class="highlights text-muted mb-2">
-                    <?php
+                      <!-- Room type -->
+                      <div class="mb-2">
+                        <span class="badge bg-light text-dark me-1">Guest room</span>
+                      </div>
+
+                      <!-- Amenities -->
+
+                      <div class="highlights text-muted mb-2">
+                        <?php
                         $highlights = [];
 
                         // Always add these static highlights
@@ -460,46 +466,46 @@ $totalPages = ceil($totalHotels / $limit);
                         // Print all highlights (each in its own line)
                         echo implode("", $highlights);
                         ?>
+                      </div>
+
+                      <!-- Availability note -->
+                      <p class="text-danger small mb-0">
+                        <i class="fas fa-exclamation-circle me-1"></i>
+                        Only 5 rooms left at this price on our site
+                      </p>
+                    </div>
                   </div>
 
-                  <!-- Availability note -->
-                  <p class="text-danger small mb-0">
-                    <i class="fas fa-exclamation-circle me-1"></i>
-                    Only 5 rooms left at this price on our site
-                  </p>
+                  <!-- Right Sidebar -->
+                  <div class="col-md-3">
+                    <div class="property-sidebar">
+
+                      <!-- Rating -->
+                      <div class="rating-box">
+                        <span class="badge bg-success">Excellent 8.7</span>
+                        <p class="reviews">1,858 reviews</p>
+                      </div>
+                      <!-- Price -->
+                      <div class="price-box">
+                        <h4 class="price">
+                          ₹<?php echo isset($property['price']) ? number_format($property['price']) : 'N/A'; ?>
+                        </h4>
+                        <p class="taxes">+ taxes and fees</p>
+                      </div>
+
+                      <!-- Button -->
+                      <a href="details.php?id=<?php echo $property['id']; ?>&checkin=<?php echo $checkin; ?>&checkout=<?php echo $checkout; ?>&adults=<?php echo $adults; ?>&children=<?php echo $children; ?>&rooms=<?php echo $rooms; ?>"
+                        class="btn btn-primary w-100">
+                        See availability
+                      </a>
+                    </div>
+                  </div>
+
                 </div>
               </div>
-
-              <!-- Right Sidebar -->
-              <div class="col-md-3">
-                <div class="property-sidebar">
-
-                  <!-- Rating -->
-                  <div class="rating-box">
-                    <span class="badge bg-success">Excellent 8.7</span>
-                    <p class="reviews">1,858 reviews</p>
-                  </div>
-                  <!-- Price -->
-                  <div class="price-box">
-                    <h4 class="price">
-                      ₹<?php echo isset($property['price']) ? number_format($property['price']) : 'N/A'; ?>
-                    </h4>
-                    <p class="taxes">+ taxes and fees</p>
-                  </div>
-
-                  <!-- Button -->
-                  <a href="details.php?id=<?php echo $property['id']; ?>&checkin=<?php echo $checkin; ?>&checkout=<?php echo $checkout; ?>&adults=<?php echo $adults; ?>&children=<?php echo $children; ?>&rooms=<?php echo $rooms; ?>"
-                    class="btn btn-primary w-100">
-                    See availability
-                  </a>
-                </div>
-              </div>
-
-            </div>
-          </div>
-          <?php endforeach; ?>
+            <?php endforeach; ?>
           <?php else: ?>
-          <p>No properties found for "<?php echo htmlspecialchars($location); ?>".</p>
+            <p>No properties found for "<?php echo htmlspecialchars($location); ?>".</p>
           <?php endif; ?>
         </div>
 
@@ -512,13 +518,13 @@ $totalPages = ceil($totalHotels / $limit);
                 href="?location=<?php echo urlencode($location); ?>&checkin=<?php echo $checkin; ?>&checkout=<?php echo $checkout; ?>&rooms=<?php echo $rooms; ?>&adults=<?php echo $adults; ?>&children=<?php echo $children; ?>&page=<?php echo $page - 1; ?>">Previous</a>
             </li>
             <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-            <li class="page-item <?php if ($i == $page)
+              <li class="page-item <?php if ($i == $page)
                 echo 'active'; ?>">
-              <a class="page-link"
-                href="?location=<?php echo urlencode($location); ?>&checkin=<?php echo $checkin; ?>&checkout=<?php echo $checkout; ?>&rooms=<?php echo $rooms; ?>&adults=<?php echo $adults; ?>&children=<?php echo $children; ?>&page=<?php echo $i; ?>">
-                <?php echo $i; ?>
-              </a>
-            </li>
+                <a class="page-link"
+                  href="?location=<?php echo urlencode($location); ?>&checkin=<?php echo $checkin; ?>&checkout=<?php echo $checkout; ?>&rooms=<?php echo $rooms; ?>&adults=<?php echo $adults; ?>&children=<?php echo $children; ?>&page=<?php echo $i; ?>">
+                  <?php echo $i; ?>
+                </a>
+              </li>
             <?php endfor; ?>
             <li class="page-item <?php if ($page >= $totalPages)
               echo 'disabled'; ?>">
@@ -535,244 +541,244 @@ $totalPages = ceil($totalHotels / $limit);
   <?php include 'footer.php'; ?>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    // Date handling functionality
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const formatDate = (date) => {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    };
-    const checkinDisplay = document.getElementById('checkinDisplay');
-    const checkoutDisplay = document.getElementById('checkoutDisplay');
-    const checkinHidden = document.getElementById('checkinHidden');
-    const checkoutHidden = document.getElementById('checkoutHidden');
-    const todayFormatted = formatDate(today);
-    checkinDisplay.setAttribute('min', todayFormatted);
-    checkoutDisplay.setAttribute('min', formatDate(tomorrow));
-    if (!checkinDisplay.value) {
-      checkinDisplay.value = todayFormatted;
-      checkinHidden.value = todayFormatted;
-    }
-    if (!checkoutDisplay.value) {
-      const tomorrowFormatted = formatDate(tomorrow);
-      checkoutDisplay.value = tomorrowFormatted;
-      checkoutHidden.value = tomorrowFormatted;
-    }
-
-    checkinDisplay.addEventListener('change', function() {
-      const checkinDate = new Date(this.value);
-      const newMinCheckout = new Date(checkinDate);
-      newMinCheckout.setDate(newMinCheckout.getDate() + 1);
-      checkoutDisplay.setAttribute('min', formatDate(newMinCheckout));
-      const checkoutDate = new Date(checkoutDisplay.value);
-      if (checkoutDate <= checkinDate) {
-        const newCheckout = formatDate(newMinCheckout);
-        checkoutDisplay.value = newCheckout;
-        checkoutHidden.value = newCheckout;
+    document.addEventListener("DOMContentLoaded", function () {
+      // Date handling functionality
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const formatDate = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+      const checkinDisplay = document.getElementById('checkinDisplay');
+      const checkoutDisplay = document.getElementById('checkoutDisplay');
+      const checkinHidden = document.getElementById('checkinHidden');
+      const checkoutHidden = document.getElementById('checkoutHidden');
+      const todayFormatted = formatDate(today);
+      checkinDisplay.setAttribute('min', todayFormatted);
+      checkoutDisplay.setAttribute('min', formatDate(tomorrow));
+      if (!checkinDisplay.value) {
+        checkinDisplay.value = todayFormatted;
+        checkinHidden.value = todayFormatted;
+      }
+      if (!checkoutDisplay.value) {
+        const tomorrowFormatted = formatDate(tomorrow);
+        checkoutDisplay.value = tomorrowFormatted;
+        checkoutHidden.value = tomorrowFormatted;
       }
 
-      checkinHidden.value = this.value;
-    });
-    checkoutDisplay.addEventListener('change', function() {
-      checkoutHidden.value = this.value;
-    });
-    const locationDisplay = document.getElementById('locationDisplay');
-    const locationHidden = document.getElementById('locationHidden');
-    locationDisplay.addEventListener('change', function() {
-      locationHidden.value = this.value;
-    });
-
-    // Initialize counters
-    const counters = {
-      adults: {
-        value: <?php echo (int) $adults; ?>,
-        min: 1,
-        element: document.getElementById("adultsCounter"),
-        input: document.getElementById("adultsInput")
-      },
-      children: {
-        value: <?php echo (int) $children; ?>,
-        min: 0,
-        element: document.getElementById("childrenCounter"),
-        input: document.getElementById("childrenInput")
-      },
-      rooms: {
-        value: <?php echo (int) $rooms; ?>,
-        min: 1,
-        element: document.getElementById("roomsCounter"),
-        input: document.getElementById("roomsInput")
-      }
-    };
-    const guestSelector = document.getElementById("guest-selector");
-
-    function updateGuestText() {
-      guestSelector.value = `${counters.adults.value} Adult${counters.adults.value !== 1 ? "s" : ""}, ` +
-        `${counters.children.value} Child${counters.children.value !== 1 ? "ren" : ""}, ` +
-        `${counters.rooms.value} Room${counters.rooms.value !== 1 ? "s" : ""}`;
-    }
-
-    updateGuestText();
-    document.querySelectorAll(".counter-btn").forEach((btn) => {
-      btn.addEventListener("click", function() {
-        const counterType = this.getAttribute("data-counter");
-        const isIncrement = this.getAttribute("data-direction") === "+";
-        const counter = counters[counterType];
-
-        if (isIncrement) {
-          counter.value++;
-        } else if (counter.value > counter.min) {
-          counter.value--;
+      checkinDisplay.addEventListener('change', function () {
+        const checkinDate = new Date(this.value);
+        const newMinCheckout = new Date(checkinDate);
+        newMinCheckout.setDate(newMinCheckout.getDate() + 1);
+        checkoutDisplay.setAttribute('min', formatDate(newMinCheckout));
+        const checkoutDate = new Date(checkoutDisplay.value);
+        if (checkoutDate <= checkinDate) {
+          const newCheckout = formatDate(newMinCheckout);
+          checkoutDisplay.value = newCheckout;
+          checkoutHidden.value = newCheckout;
         }
-        counter.element.textContent = counter.value;
-        counter.input.value = counter.value;
 
+        checkinHidden.value = this.value;
+      });
+      checkoutDisplay.addEventListener('change', function () {
+        checkoutHidden.value = this.value;
+      });
+      const locationDisplay = document.getElementById('locationDisplay');
+      const locationHidden = document.getElementById('locationHidden');
+      locationDisplay.addEventListener('change', function () {
+        locationHidden.value = this.value;
+      });
+
+      // Initialize counters
+      const counters = {
+        adults: {
+          value: <?php echo (int) $adults; ?>,
+          min: 1,
+          element: document.getElementById("adultsCounter"),
+          input: document.getElementById("adultsInput")
+        },
+        children: {
+          value: <?php echo (int) $children; ?>,
+          min: 0,
+          element: document.getElementById("childrenCounter"),
+          input: document.getElementById("childrenInput")
+        },
+        rooms: {
+          value: <?php echo (int) $rooms; ?>,
+          min: 1,
+          element: document.getElementById("roomsCounter"),
+          input: document.getElementById("roomsInput")
+        }
+      };
+      const guestSelector = document.getElementById("guest-selector");
+
+      function updateGuestText() {
+        guestSelector.value = `${counters.adults.value} Adult${counters.adults.value !== 1 ? "s" : ""}, ` +
+          `${counters.children.value} Child${counters.children.value !== 1 ? "ren" : ""}, ` +
+          `${counters.rooms.value} Room${counters.rooms.value !== 1 ? "s" : ""}`;
+      }
+
+      updateGuestText();
+      document.querySelectorAll(".counter-btn").forEach((btn) => {
+        btn.addEventListener("click", function () {
+          const counterType = this.getAttribute("data-counter");
+          const isIncrement = this.getAttribute("data-direction") === "+";
+          const counter = counters[counterType];
+
+          if (isIncrement) {
+            counter.value++;
+          } else if (counter.value > counter.min) {
+            counter.value--;
+          }
+          counter.element.textContent = counter.value;
+          counter.input.value = counter.value;
+
+          updateGuestText();
+        });
+      });
+      document.getElementById("guestModal").addEventListener("hidden.bs.modal", function () {
         updateGuestText();
       });
-    });
-    document.getElementById("guestModal").addEventListener("hidden.bs.modal", function() {
-      updateGuestText();
-    });
 
-    // Filter functionality
-    const budgetRange = document.getElementById('budgetRange');
-    const budgetValue = document.getElementById('budgetValue');
-    const ratingFilters = document.querySelectorAll('.rating-filter');
-    const bedFilters = document.querySelectorAll('.bed-filter');
-    const amenityFilters = document.querySelectorAll('.amenity-filter');
-    const applyFiltersBtn = document.getElementById('applyFilters');
-    const resetFiltersBtn = document.getElementById('resetFilters');
-    const sortSelect = document.getElementById('sortResults');
-    const propertyItems = document.querySelectorAll('.property-item');
-    const filteredCount = document.getElementById('filteredCount');
+      // Filter functionality
+      const budgetRange = document.getElementById('budgetRange');
+      const budgetValue = document.getElementById('budgetValue');
+      const ratingFilters = document.querySelectorAll('.rating-filter');
+      const bedFilters = document.querySelectorAll('.bed-filter');
+      const amenityFilters = document.querySelectorAll('.amenity-filter');
+      const applyFiltersBtn = document.getElementById('applyFilters');
+      const resetFiltersBtn = document.getElementById('resetFilters');
+      const sortSelect = document.getElementById('sortResults');
+      const propertyItems = document.querySelectorAll('.property-item');
+      const filteredCount = document.getElementById('filteredCount');
 
-    // Initialize budget slider
-    budgetRange.addEventListener('input', function() {
-      if (this.value == 6000) {
-        budgetValue.textContent = '₹ 6,000+';
-      } else {
-        budgetValue.textContent = `₹ ${Number(this.value).toLocaleString()}`;
+      // Initialize budget slider
+      budgetRange.addEventListener('input', function () {
+        if (this.value == 6000) {
+          budgetValue.textContent = '₹ 6,000+';
+        } else {
+          budgetValue.textContent = `₹ ${Number(this.value).toLocaleString()}`;
+        }
+      });
+
+      // Apply filters function
+      function applyFilters() {
+        const maxPrice = parseInt(budgetRange.value);
+        const selectedRatings = Array.from(ratingFilters)
+          .filter(filter => filter.checked)
+          .map(filter => parseInt(filter.value));
+
+        const selectedBeds = Array.from(bedFilters)
+          .filter(filter => filter.checked)
+          .map(filter => filter.value.toLowerCase());
+
+        const selectedAmenities = Array.from(amenityFilters)
+          .filter(filter => filter.checked)
+          .map(filter => filter.value.toLowerCase());
+
+        let visibleCount = 0;
+
+        propertyItems.forEach(item => {
+          const itemPrice = parseInt(item.dataset.price);
+          const itemAmenities = item.dataset.amenities.toLowerCase();
+          const itemBeds = item.dataset.beds.toLowerCase();
+
+          // Price filter
+          if (itemPrice > maxPrice) {
+            item.style.display = 'none';
+            return;
+          }
+
+          // Rating filter (if any selected)
+          if (selectedRatings.length > 0) {
+            const itemRating = parseInt(item.dataset.rating);
+            if (!selectedRatings.includes(itemRating)) {
+              item.style.display = 'none';
+              return;
+            }
+          }
+
+          // Bed size filter (if any selected)
+          if (selectedBeds.length > 0) {
+            let hasSelectedBed = false;
+            for (const bed of selectedBeds) {
+              if (itemBeds.includes(bed)) {
+                hasSelectedBed = true;
+                break;
+              }
+            }
+            if (!hasSelectedBed) {
+              item.style.display = 'none';
+              return;
+            }
+          }
+
+          // Amenities filter (if any selected)
+          if (selectedAmenities.length > 0) {
+            let hasAllAmenities = true;
+            for (const amenity of selectedAmenities) {
+              if (!itemAmenities.includes(amenity)) {
+                hasAllAmenities = false;
+                break;
+              }
+            }
+            if (!hasAllAmenities) {
+              item.style.display = 'none';
+              return;
+            }
+          }
+
+          // If all filters passed, show the item
+          item.style.display = '';
+          visibleCount++;
+        });
+
+        filteredCount.textContent = visibleCount;
       }
-    });
 
-    // Apply filters function
-    function applyFilters() {
-      const maxPrice = parseInt(budgetRange.value);
-      const selectedRatings = Array.from(ratingFilters)
-        .filter(filter => filter.checked)
-        .map(filter => parseInt(filter.value));
+      // Sort function
+      function sortProperties() {
+        const sortValue = sortSelect.value;
+        const container = document.getElementById('propertyListings');
+        const items = Array.from(propertyItems).filter(item => item.style.display !== 'none');
 
-      const selectedBeds = Array.from(bedFilters)
-        .filter(filter => filter.checked)
-        .map(filter => filter.value.toLowerCase());
+        items.sort((a, b) => {
+          const aPrice = parseInt(a.dataset.price);
+          const bPrice = parseInt(b.dataset.price);
 
-      const selectedAmenities = Array.from(amenityFilters)
-        .filter(filter => filter.checked)
-        .map(filter => filter.value.toLowerCase());
-
-      let visibleCount = 0;
-
-      propertyItems.forEach(item => {
-        const itemPrice = parseInt(item.dataset.price);
-        const itemAmenities = item.dataset.amenities.toLowerCase();
-        const itemBeds = item.dataset.beds.toLowerCase();
-
-        // Price filter
-        if (itemPrice > maxPrice) {
-          item.style.display = 'none';
-          return;
-        }
-
-        // Rating filter (if any selected)
-        if (selectedRatings.length > 0) {
-          const itemRating = parseInt(item.dataset.rating);
-          if (!selectedRatings.includes(itemRating)) {
-            item.style.display = 'none';
-            return;
+          switch (sortValue) {
+            case 'price-low':
+              return aPrice - bPrice;
+            case 'price-high':
+              return bPrice - aPrice;
+            case 'rating':
+              const aRating = parseInt(a.dataset.rating);
+              const bRating = parseInt(b.dataset.rating);
+              return bRating - aRating;
+            default:
+              return 0;
           }
-        }
-
-        // Bed size filter (if any selected)
-        if (selectedBeds.length > 0) {
-          let hasSelectedBed = false;
-          for (const bed of selectedBeds) {
-            if (itemBeds.includes(bed)) {
-              hasSelectedBed = true;
-              break;
-            }
-          }
-          if (!hasSelectedBed) {
-            item.style.display = 'none';
-            return;
-          }
-        }
-
-        // Amenities filter (if any selected)
-        if (selectedAmenities.length > 0) {
-          let hasAllAmenities = true;
-          for (const amenity of selectedAmenities) {
-            if (!itemAmenities.includes(amenity)) {
-              hasAllAmenities = false;
-              break;
-            }
-          }
-          if (!hasAllAmenities) {
-            item.style.display = 'none';
-            return;
-          }
-        }
-
-        // If all filters passed, show the item
-        item.style.display = '';
-        visibleCount++;
+        });
+        items.forEach(item => item.remove());
+        items.forEach(item => container.appendChild(item));
+      }
+      applyFiltersBtn.addEventListener('click', applyFilters);
+      resetFiltersBtn.addEventListener('click', function () {
+        budgetRange.value = 6000;
+        budgetValue.textContent = '₹ 6,000+';
+        ratingFilters.forEach(filter => filter.checked = false);
+        bedFilters.forEach(filter => filter.checked = false);
+        amenityFilters.forEach(filter => filter.checked = false);
+        propertyItems.forEach(item => item.style.display = '');
+        filteredCount.textContent = propertyItems.length;
+        sortSelect.value = 'default';
       });
 
-      filteredCount.textContent = visibleCount;
-    }
-
-    // Sort function
-    function sortProperties() {
-      const sortValue = sortSelect.value;
-      const container = document.getElementById('propertyListings');
-      const items = Array.from(propertyItems).filter(item => item.style.display !== 'none');
-
-      items.sort((a, b) => {
-        const aPrice = parseInt(a.dataset.price);
-        const bPrice = parseInt(b.dataset.price);
-
-        switch (sortValue) {
-          case 'price-low':
-            return aPrice - bPrice;
-          case 'price-high':
-            return bPrice - aPrice;
-          case 'rating':
-            const aRating = parseInt(a.dataset.rating);
-            const bRating = parseInt(b.dataset.rating);
-            return bRating - aRating;
-          default:
-            return 0;
-        }
-      });
-      items.forEach(item => item.remove());
-      items.forEach(item => container.appendChild(item));
-    }
-    applyFiltersBtn.addEventListener('click', applyFilters);
-    resetFiltersBtn.addEventListener('click', function() {
-      budgetRange.value = 6000;
-      budgetValue.textContent = '₹ 6,000+';
-      ratingFilters.forEach(filter => filter.checked = false);
-      bedFilters.forEach(filter => filter.checked = false);
-      amenityFilters.forEach(filter => filter.checked = false);
-      propertyItems.forEach(item => item.style.display = '');
-      filteredCount.textContent = propertyItems.length;
-      sortSelect.value = 'default';
+      sortSelect.addEventListener('change', sortProperties);
     });
-
-    sortSelect.addEventListener('change', sortProperties);
-  });
   </script>
 </body>
 

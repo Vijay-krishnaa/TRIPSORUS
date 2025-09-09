@@ -7,18 +7,20 @@ error_log("Request method: " . $_SERVER['REQUEST_METHOD']);
 error_log("Files data: " . print_r($_FILES, true));
 error_log("Post data: " . print_r($_POST, true));
 
-function sanitizeInput($data) {
+function sanitizeInput($data)
+{
     if (is_array($data)) {
         return array_map('sanitizeInput', $data);
     }
     return htmlspecialchars(strip_tags(trim($data)), ENT_QUOTES, 'UTF-8');
 }
 
-function uploadFiles($files, $targetDir = 'uploads/') {
+function uploadFiles($files, $targetDir = 'uploads/')
+{
     $uploadedPaths = [];
     $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
     $maxFileSize = 5 * 1024 * 1024;
-    
+
     try {
         if (!file_exists($targetDir)) {
             if (!mkdir($targetDir, 0755, true)) {
@@ -29,7 +31,8 @@ function uploadFiles($files, $targetDir = 'uploads/') {
         if (is_array($files['name'])) {
             $fileCount = count($files['name']);
             for ($i = 0; $i < $fileCount; $i++) {
-                if (empty($files['tmp_name'][$i])) continue;
+                if (empty($files['tmp_name'][$i]))
+                    continue;
 
                 if ($files['error'][$i] !== UPLOAD_ERR_OK) {
                     throw new Exception("Upload error: " . $files['error'][$i]);
@@ -60,8 +63,9 @@ function uploadFiles($files, $targetDir = 'uploads/') {
                 $uploadedPaths[] = $targetPath;
             }
         } else {
-      
-            if (empty($files['tmp_name'])) return $uploadedPaths;
+
+            if (empty($files['tmp_name']))
+                return $uploadedPaths;
 
             if ($files['error'] !== UPLOAD_ERR_OK) {
                 throw new Exception("Upload error: " . $files['error']);
@@ -145,38 +149,38 @@ try {
 
     $pdo->beginTransaction();
 
- $propertyStmt = $pdo->prepare("
+    $propertyStmt = $pdo->prepare("
     INSERT INTO properties (
         admin_id, name, type, description, address, city, 
         country, map_link, amenities, checkin_time, checkout_time, created_at
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
 ");
-$checkInTime = !empty($_POST['checkin_time']) ? sanitizeInput($_POST['checkin_time']) : '14:00';
-$checkOutTime = !empty($_POST['checkout_time']) ? sanitizeInput($_POST['checkout_time']) : '12:00';
+    $checkInTime = !empty($_POST['checkin_time']) ? sanitizeInput($_POST['checkin_time']) : '14:00';
+    $checkOutTime = !empty($_POST['checkout_time']) ? sanitizeInput($_POST['checkout_time']) : '12:00';
 
 
-if (!preg_match('/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/', $checkInTime)) {
-    $checkInTime = '14:00';
-}
+    if (!preg_match('/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/', $checkInTime)) {
+        $checkInTime = '14:00';
+    }
 
-if (!preg_match('/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/', $checkOutTime)) {
-    $checkOutTime = '12:00';
-}
-  $propertyAmenities = !empty($_POST['amenities']) && is_array($_POST['amenities']) ? 
-    implode(',', array_map('sanitizeInput', $_POST['amenities'])) : '';
-$propertyStmt->execute([
-    $adminId,
-    sanitizeInput($_POST['property_name']),
-    sanitizeInput($_POST['property_type']),
-    sanitizeInput($_POST['description']),
-    sanitizeInput($_POST['address']),
-    sanitizeInput($_POST['city']),
-    sanitizeInput($_POST['country']),
-    !empty($_POST['map_link']) ? filter_var($_POST['map_link'], FILTER_SANITIZE_URL) : null,
-    $propertyAmenities,
-    $checkInTime,
-    $checkOutTime
-]);
+    if (!preg_match('/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/', $checkOutTime)) {
+        $checkOutTime = '12:00';
+    }
+    $propertyAmenities = !empty($_POST['amenities']) && is_array($_POST['amenities']) ?
+        implode(',', array_map('sanitizeInput', $_POST['amenities'])) : '';
+    $propertyStmt->execute([
+        $adminId,
+        sanitizeInput($_POST['property_name']),
+        sanitizeInput($_POST['property_type']),
+        sanitizeInput($_POST['description']),
+        sanitizeInput($_POST['address']),
+        sanitizeInput($_POST['city']),
+        sanitizeInput($_POST['country']),
+        !empty($_POST['map_link']) ? filter_var($_POST['map_link'], FILTER_SANITIZE_URL) : null,
+        $propertyAmenities,
+        $checkInTime,
+        $checkOutTime
+    ]);
 
     $propertyId = $pdo->lastInsertId();
     error_log("Property created with ID: $propertyId");
@@ -184,9 +188,9 @@ $propertyStmt->execute([
     if (!empty($_FILES['property_main_image']) && !empty($_FILES['property_main_image']['tmp_name'])) {
         try {
             $propertyDir = "uploads/properties/{$propertyId}/";
-            
+
             $mainImage = uploadFiles($_FILES['property_main_image'], $propertyDir);
-            
+
             if (!empty($mainImage)) {
                 $imageStmt = $pdo->prepare("
                     INSERT INTO property_images (property_id, image_path, is_main, created_at) 
@@ -202,14 +206,14 @@ $propertyStmt->execute([
     if (!empty($_FILES['propertyImages']) && !empty($_FILES['propertyImages']['tmp_name'][0])) {
         try {
             $propertyDir = "uploads/properties/{$propertyId}/";
-            
+
             $propertyImages = uploadFiles($_FILES['propertyImages'], $propertyDir);
-            
+
             $imageStmt = $pdo->prepare("
                 INSERT INTO property_images (property_id, image_path, is_main, created_at) 
                 VALUES (?, ?, 0, NOW())
             ");
-            
+
             foreach ($propertyImages as $imagePath) {
                 $imageStmt->execute([$propertyId, $imagePath]);
             }
@@ -252,7 +256,7 @@ $propertyStmt->execute([
                 continue;
             }
 
-            $roomAmenities = !empty($roomType['amenities']) && is_array($roomType['amenities']) ? 
+            $roomAmenities = !empty($roomType['amenities']) && is_array($roomType['amenities']) ?
                 implode(',', array_map('sanitizeInput', $roomType['amenities'])) : '';
 
             $roomStmt->execute([
@@ -261,10 +265,10 @@ $propertyStmt->execute([
                 filter_var($roomType['max_guests'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]),
                 filter_var($roomType['quantity'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]),
                 filter_var($roomType['price'], FILTER_VALIDATE_FLOAT, ['options' => ['min_range' => 0]]),
-                !empty($roomType['discount_price']) ? 
-                    filter_var($roomType['discount_price'], FILTER_VALIDATE_FLOAT, ['options' => ['min_range' => 0]]) : null,
-                !empty($roomType['size']) ? 
-                    filter_var($roomType['size'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]]) : null,
+                !empty($roomType['discount_price']) ?
+                filter_var($roomType['discount_price'], FILTER_VALIDATE_FLOAT, ['options' => ['min_range' => 0]]) : null,
+                !empty($roomType['size']) ?
+                filter_var($roomType['size'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]]) : null,
                 !empty($roomType['description']) ? sanitizeInput($roomType['description']) : '',
                 $roomAmenities,
                 sanitizeInput($roomType['bed_size'])
@@ -281,12 +285,12 @@ $propertyStmt->execute([
                         'error' => $_FILES['room_types']['error'][$index]['main_image'],
                         'size' => $_FILES['room_types']['size'][$index]['main_image']
                     ];
-                    
+
                     $mainImagePath = uploadFiles(
                         $roomMainImage,
                         "uploads/properties/{$propertyId}/rooms/{$roomId}/"
                     );
-                    
+
                     if (!empty($mainImagePath)) {
                         $roomImageStmt->execute([$roomId, $mainImagePath[0], 1]);
                     }
@@ -304,18 +308,18 @@ $propertyStmt->execute([
                         'error' => $_FILES['room_types']['error'][$index]['images'],
                         'size' => $_FILES['room_types']['size'][$index]['images']
                     ];
-                    
+
                     $additionalImages = uploadFiles(
                         $roomImages,
                         "uploads/properties/{$propertyId}/rooms/{$roomId}/"
                     );
-                    
+
                     foreach ($additionalImages as $imagePath) {
                         $roomImageStmt->execute([$roomId, $imagePath, 0]);
                     }
                 } catch (Exception $e) {
                     error_log("Room additional images upload failed for room $roomId: " . $e->getMessage());
-                    
+
                 }
             }
         }
@@ -323,18 +327,18 @@ $propertyStmt->execute([
 
     $pdo->commit();
 
-    echo json_encode([
-        'success' => true,
-        'message' => 'Property added successfully',
-        'property_id' => $propertyId,
-        'timestamp' => date('Y-m-d H:i:s')
-    ]);
+    echo "<script>
+    alert('Property added successfully');
+    window.location.href = 'index.php';
+</script>";
+    exit;
+
 
 } catch (PDOException $e) {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
-    
+
     http_response_code(500);
     echo json_encode([
         'success' => false,
@@ -342,7 +346,7 @@ $propertyStmt->execute([
         'error_code' => $e->getCode()
     ]);
     error_log("Database error: " . $e->getMessage() . "\n" . $e->getTraceAsString());
-    
+
 } catch (Exception $e) {
     http_response_code($e->getCode() >= 400 && $e->getCode() < 600 ? $e->getCode() : 500);
     echo json_encode([

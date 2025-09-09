@@ -93,6 +93,29 @@ LEFT JOIN property_images pi ON p.id = pi.property_id AND pi.is_main = 1
 }
 
 $adminName = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
+
+if (isset($_GET['approve_id'])) {
+  $property_id = intval($_GET['approve_id']);
+  try {
+    $stmt = $pdo->prepare("UPDATE properties SET status = 'approved' WHERE id = ?");
+    $stmt->execute([$property_id]);
+    $success = "Property approved successfully!";
+  } catch (PDOException $e) {
+    $error = "Error approving property: " . $e->getMessage();
+  }
+}
+
+if (isset($_GET['reject_id'])) {
+  $property_id = intval($_GET['reject_id']);
+  try {
+    $stmt = $pdo->prepare("UPDATE properties SET status = 'rejected' WHERE id = ?");
+    $stmt->execute([$property_id]);
+    $success = "Property rejected successfully!";
+  } catch (PDOException $e) {
+    $error = "Error rejecting property: " . $e->getMessage();
+  }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -244,18 +267,31 @@ $adminName = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
                       <?php echo htmlspecialchars($property['first_name'] . ' ' . $property['last_name']); ?></small>
                   </div>
                 </div>
-                <div class="card-footer bg-white d-flex justify-content-between">
+                <div class="card-footer bg-white d-flex justify-content-between flex-wrap gap-2">
                   <a href="edit_property.php?id=<?php echo $property['id']; ?>" class="btn btn-sm btn-outline-primary">
                     <i class="fas fa-edit me-1"></i> Edit
                   </a>
+
                   <a href="property_details.php?id=<?php echo $property['id']; ?>" class="btn btn-sm btn-outline-info">
                     <i class="fas fa-eye me-1"></i> View
                   </a>
+
+                  <?php if ($property['status'] === 'pending'): ?>
+                    <a href="properties.php?approve_id=<?php echo $property['id']; ?>" class="btn btn-sm btn-outline-success">
+                      <i class="fas fa-check me-1"></i> Approve
+                    </a>
+                    <a href="properties.php?reject_id=<?php echo $property['id']; ?>" class="btn btn-sm btn-outline-warning">
+                      <i class="fas fa-times me-1"></i> Reject
+                    </a>
+                  <?php endif; ?>
+
                   <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
                     data-bs-target="#deleteModal<?php echo $property['id']; ?>">
                     <i class="fas fa-trash me-1"></i> Delete
                   </button>
                 </div>
+
+
               </div>
             </div>
             <!-- Delete Confirmation Modal -->

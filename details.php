@@ -393,13 +393,6 @@ function getRoomImages($pdo, $roomTypeId)
       margin-top: 15px;
     }
 
-    .amenity-item {
-      display: flex;
-      align-items: center;
-      padding: 8px 10px;
-      background: #f8f9fa;
-      border-radius: 6px;
-    }
 
     .amenity-item .material-icons {
       font-size: 18px;
@@ -518,7 +511,6 @@ function getRoomImages($pdo, $roomTypeId)
         width: 100%;
         border-radius: 8px;
         padding: 10px;
-
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
       }
 
@@ -812,8 +804,7 @@ function getRoomImages($pdo, $roomTypeId)
 
     .info-row {
       margin-bottom: -2px;
-      width: 111%;
-      padding: 5px;
+      width: 120%;
       background: #fff;
       border-radius: 10px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -862,21 +853,17 @@ function getRoomImages($pdo, $roomTypeId)
       border-radius: 6px;
     }
 
-    .amenity-item .material-icons {
-      font-size: 18px;
-      color: #0a55ff;
-      margin-right: 10px;
-    }
 
-    .amenity-text {
-      font-size: 14px;
-      color: #444;
-    }
+
 
     @media (max-width: 768px) {
       .amenities-grid {
         grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
         gap: 10px;
+      }
+
+      .info-row {
+        width: 110%;
       }
     }
 
@@ -898,10 +885,6 @@ function getRoomImages($pdo, $roomTypeId)
         display: none !important;
       }
 
-    }
-
-    .abcd {
-      width: 120%;
     }
   </style>
 </head>

@@ -6,8 +6,6 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-$dotenv->load();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $userId = $_POST['user_id'] ?? null;
@@ -473,7 +471,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $guestMail->Host = 'smtpout.secureserver.net';
                 $guestMail->SMTPAuth = true;
                 $guestMail->Username = 'noreply@tripsorus.com';
-                $guestMail->Password = $_ENV['MAIL_PASSWORD'];
+                $guestMail->Password = 'bablupd@1996';
                 $guestMail->SMTPSecure = 'tls';
                 $guestMail->Port = 587;
                 $guestMail->setFrom("noreply@tripsorus.com", "Tripsorus");
@@ -502,7 +500,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $adminMail->Host = 'smtpout.secureserver.net';
                 $adminMail->SMTPAuth = true;
                 $adminMail->Username = 'noreply@tripsorus.com';
-                $adminMail->Password = $_ENV['MAIL_PASSWORD'];
+                $adminMail->Password = 'bablupd@1996';
                 $adminMail->SMTPSecure = 'tls';
                 $adminMail->Port = 587;
                 $adminMail->setFrom("noreply@tripsorus.com", "Tripsorus");

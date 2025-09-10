@@ -447,7 +447,7 @@ if (
               </span>
             </div>
             <div class="alert alert-info mt-3">
-              <i class="fas fa-info-circle me-2"></i> Free cancellation until Mar 18
+              <i class="fas fa-info-circle me-2"></i> Free cancellation 1m before check-in
             </div>
 
             <div class="form-check mb-3">

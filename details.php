@@ -1233,7 +1233,6 @@ function getRoomImages($pdo, $roomTypeId)
                 </div>
               <?php endif; ?>
             </div>
-
             <!-- Modal for all photos -->
             <div class="modal fade" id="photosModal<?php echo $roomTypeId; ?>" tabindex="-1" aria-hidden="true">
               <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -1265,20 +1264,21 @@ function getRoomImages($pdo, $roomTypeId)
             <?php
             foreach ($mealTypes as $mealName => $mealType) {
               $roomPriceData = getRoomPrice($pdo, $roomTypeId, $mealType, $checkin, $checkout, $promotions);
-              $price = $roomPriceData['price'];
+              $totalPrice = $roomPriceData['price']; // total price from DB
               $appliedPromotions = $roomPriceData['applied_promotions'];
-              if ($price > 0) {
+
+              if ($totalPrice > 0) {
+                $taxAmount = $totalPrice * 0.12; // 12% of total as tax
+                $discountedPrice = $totalPrice - $taxAmount; // base/discounted price
+          
                 $isHighlighted = $mealName === 'With Breakfast' ? 'highlighted' : '';
                 ?>
                 <div class="room-option <?php echo $isHighlighted; ?>">
                   <div class="room-content">
                     <div class="option-header">
-                      <h4>
-                        <?php echo $mealName; ?>
-                      </h4>
+                      <h4><?php echo $mealName; ?></h4>
                       <div class="free-cancellation">
-                        Free Cancellation before
-                        <?= $freeCancellation ?>
+                        Free Cancellation before <?= $freeCancellation ?>
                       </div>
                       <ul class="option-benefits">
                         <?php if ($mealType == 'room_only'): ?>
@@ -1299,32 +1299,33 @@ function getRoomImages($pdo, $roomTypeId)
                         <li><span class="material-icons small-icon">account_balance_wallet</span> Pay at property</li>
                       </ul>
                     </div>
+
                     <div class="option-price-container">
-                      <span class="original-price">₹
-                        <?php echo number_format($price + 200); ?>
-                      </span>
-                      <span class="discounted-price">₹
-                        <?php echo number_format($price); ?>
-                      </span>
-                      <div class="taxes">+ ₹
-                        <?php echo number_format($price * 0.12); ?> Taxes & Fees per night
-                      </div>
+                      <!-- Original price (crossed out) -->
+                      <span class="original-price">₹<?php echo number_format($totalPrice + 200, 2); ?></span>
+
+                      <!-- Discounted price (base price without tax) -->
+                      <span class="discounted-price">₹<?php echo number_format($discountedPrice, 2); ?></span>
+
+                      <!-- Taxes -->
+                      <div class="taxes">+ ₹<?php echo number_format($taxAmount, 2); ?> Taxes & Fees per night</div>
+
                       <a href="cart.php?
-                  property_id=<?= urlencode($propertyId) ?>&
-                  property_name=<?= urlencode($propertyName) ?>&
-                  address=<?= urlencode($propertyAddress) ?>&
-                  city=<?= urlencode($propertyCity) ?>&
-                  country=<?= urlencode($propertyCountry) ?>&
-                  room_type_id=<?= urlencode($roomTypeId) ?>&
-                  room_name=<?= urlencode($roomTypeName) ?>&
-                  meal_name=<?= urlencode($mealName) ?>&
-                  price=<?= urlencode($price) ?>&
-                  taxes=<?= urlencode($price * 0.12) ?>&
-                  checkin=<?= urlencode($checkin) ?>&
-                  checkout=<?= urlencode($checkout) ?>&
-                  adults=<?= urlencode($adults) ?>&
-                  children=<?= urlencode($children) ?>&
-                  rooms=<?= urlencode($rooms) ?>" class="btn btn-primary">
+              property_id=<?= urlencode($propertyId) ?>&
+              property_name=<?= urlencode($propertyName) ?>&
+              address=<?= urlencode($propertyAddress) ?>&
+              city=<?= urlencode($propertyCity) ?>&
+              country=<?= urlencode($propertyCountry) ?>&
+              room_type_id=<?= urlencode($roomTypeId) ?>&
+              room_name=<?= urlencode($roomTypeName) ?>&
+              meal_name=<?= urlencode($mealName) ?>&
+              price=<?= urlencode($discountedPrice) ?>&
+              taxes=<?= urlencode($taxAmount) ?>&
+              checkin=<?= urlencode($checkin) ?>&
+              checkout=<?= urlencode($checkout) ?>&
+              adults=<?= urlencode($adults) ?>&
+              children=<?= urlencode($children) ?>&
+              rooms=<?= urlencode($rooms) ?>" class="btn btn-primary">
                         SELECT ROOM
                       </a>
                       <div class="room-availability">Only 2 rooms left at this price!</div>
@@ -1336,6 +1337,7 @@ function getRoomImages($pdo, $roomTypeId)
             }
             ?>
           </div>
+
         </div>
         <?php
       }

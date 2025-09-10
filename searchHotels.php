@@ -50,6 +50,7 @@ $countStmt->execute();
 $totalRow = $countStmt->fetch();
 $totalHotels = $totalRow['total'];
 $totalPages = ceil($totalHotels / $limit);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -402,6 +403,11 @@ $totalPages = ceil($totalHotels / $limit);
         <div id="propertyListings">
           <?php if (count($results) > 0): ?>
             <?php foreach ($results as $property): ?>
+              <?php
+              $finalPrice = isset($property['price']) ? (float) $property['price'] : 0;
+              $basePrice = $finalPrice / 1.12;
+              $taxAmount = $finalPrice - $basePrice;
+              ?>
               <div class="card hotel-card mb-4 property-item"
                 data-price="<?php echo isset($property['price']) ? $property['price'] : 0; ?>" data-rating="4"
                 data-amenities="<?php echo htmlspecialchars($property['amenities']); ?>" data-beds="Queen,Double">
@@ -429,13 +435,10 @@ $totalPages = ceil($totalHotels / $limit);
                       <div class="mb-2">
                         <span class="badge bg-light text-dark me-1">Guest room</span>
                       </div>
-
                       <!-- Amenities -->
-
                       <div class="highlights text-muted mb-2">
                         <?php
                         $highlights = [];
-
                         // Always add these static highlights
                         $highlights[] = '<div class="d-flex align-items-center mb-1">
                       <span class="material-icons me-2" style="font-size:18px;">payments</span> 
@@ -447,7 +450,6 @@ $totalPages = ceil($totalHotels / $limit);
                       Free Cancellation 1 min before Check-in
                     </div>';
 
-                        // Check if property has any rooms with breakfast
                         $stmt = $pdo->prepare("
         SELECT COUNT(*) as cnt 
         FROM room_inventory 
@@ -463,323 +465,314 @@ $totalPages = ceil($totalHotels / $limit);
                         </div>';
                         }
 
-                        // Print all highlights (each in its own line)
                         echo implode("", $highlights);
                         ?>
                       </div>
-
-                      <!-- Availability note -->
                       <p class="text-danger small mb-0">
                         <i class="fas fa-exclamation-circle me-1"></i>
                         Only 5 rooms left at this price on our site
                       </p>
                     </div>
                   </div>
-
                   <!-- Right Sidebar -->
                   <div class="col-md-3">
                     <div class="property-sidebar">
-
-                      <!-- Rating -->
                       <div class="rating-box">
                         <span class="badge bg-success">Excellent 8.7</span>
                         <p class="reviews">1,858 reviews</p>
                       </div>
-                      <!-- Price -->
                       <div class="price-box">
                         <h4 class="price">
-                          ₹<?php echo isset($property['price']) ? number_format($property['price']) : 'N/A'; ?>
+                          ₹<?php echo number_format($basePrice, 2); ?>
                         </h4>
-                        <p class="taxes">+ taxes and fees</p>
+                        <p class="taxes">
+                          + ₹<?php echo number_format($taxAmount, 2); ?> Taxes & Fees per night
+                        </p>
+                        <a href="details.php?id=<?php echo $property['id']; ?>&checkin=<?php echo $checkin; ?>&checkout=<?php echo $checkout; ?>&adults=<?php echo $adults; ?>&children=<?php echo $children; ?>&rooms=<?php echo $rooms; ?>"
+                          class="btn btn-primary w-100">
+                          See availability
+                        </a>
                       </div>
-
-                      <!-- Button -->
-                      <a href="details.php?id=<?php echo $property['id']; ?>&checkin=<?php echo $checkin; ?>&checkout=<?php echo $checkout; ?>&adults=<?php echo $adults; ?>&children=<?php echo $children; ?>&rooms=<?php echo $rooms; ?>"
-                        class="btn btn-primary w-100">
-                        See availability
-                      </a>
                     </div>
+
                   </div>
-
                 </div>
-              </div>
-            <?php endforeach; ?>
-          <?php else: ?>
-            <p>No properties found for "<?php echo htmlspecialchars($location); ?>".</p>
-          <?php endif; ?>
-        </div>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <p>No properties found for "<?php echo htmlspecialchars($location); ?>".</p>
+            <?php endif; ?>
+          </div>
 
-        <!-- Pagination -->
-        <nav aria-label="Search results pagination" class="mt-4">
-          <ul class="pagination justify-content-center">
-            <li class="page-item <?php if ($page <= 1)
-              echo 'disabled'; ?>">
-              <a class="page-link"
-                href="?location=<?php echo urlencode($location); ?>&checkin=<?php echo $checkin; ?>&checkout=<?php echo $checkout; ?>&rooms=<?php echo $rooms; ?>&adults=<?php echo $adults; ?>&children=<?php echo $children; ?>&page=<?php echo $page - 1; ?>">Previous</a>
-            </li>
-            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-              <li class="page-item <?php if ($i == $page)
-                echo 'active'; ?>">
+          <!-- Pagination -->
+          <nav aria-label="Search results pagination" class="mt-4">
+            <ul class="pagination justify-content-center">
+              <li class="page-item <?php if ($page <= 1)
+                echo 'disabled'; ?>">
                 <a class="page-link"
-                  href="?location=<?php echo urlencode($location); ?>&checkin=<?php echo $checkin; ?>&checkout=<?php echo $checkout; ?>&rooms=<?php echo $rooms; ?>&adults=<?php echo $adults; ?>&children=<?php echo $children; ?>&page=<?php echo $i; ?>">
-                  <?php echo $i; ?>
-                </a>
+                  href="?location=<?php echo urlencode($location); ?>&checkin=<?php echo $checkin; ?>&checkout=<?php echo $checkout; ?>&rooms=<?php echo $rooms; ?>&adults=<?php echo $adults; ?>&children=<?php echo $children; ?>&page=<?php echo $page - 1; ?>">Previous</a>
               </li>
-            <?php endfor; ?>
-            <li class="page-item <?php if ($page >= $totalPages)
-              echo 'disabled'; ?>">
-              <a class="page-link"
-                href="?location=<?php echo urlencode($location); ?>&checkin=<?php echo $checkin; ?>&checkout=<?php echo $checkout; ?>&rooms=<?php echo $rooms; ?>&adults=<?php echo $adults; ?>&children=<?php echo $children; ?>&page=<?php echo $page + 1; ?>">Next</a>
-            </li>
-          </ul>
-        </nav>
+              <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                <li class="page-item <?php if ($i == $page)
+                  echo 'active'; ?>">
+                  <a class="page-link"
+                    href="?location=<?php echo urlencode($location); ?>&checkin=<?php echo $checkin; ?>&checkout=<?php echo $checkout; ?>&rooms=<?php echo $rooms; ?>&adults=<?php echo $adults; ?>&children=<?php echo $children; ?>&page=<?php echo $i; ?>">
+                    <?php echo $i; ?>
+                  </a>
+                </li>
+              <?php endfor; ?>
+              <li class="page-item <?php if ($page >= $totalPages)
+                echo 'disabled'; ?>">
+                <a class="page-link"
+                  href="?location=<?php echo urlencode($location); ?>&checkin=<?php echo $checkin; ?>&checkout=<?php echo $checkout; ?>&rooms=<?php echo $rooms; ?>&adults=<?php echo $adults; ?>&children=<?php echo $children; ?>&page=<?php echo $page + 1; ?>">Next</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Footer -->
-  <?php include 'footer.php'; ?>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      // Date handling functionality
-      const today = new Date();
-      const tomorrow = new Date(today);
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      const formatDate = (date) => {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-      };
-      const checkinDisplay = document.getElementById('checkinDisplay');
-      const checkoutDisplay = document.getElementById('checkoutDisplay');
-      const checkinHidden = document.getElementById('checkinHidden');
-      const checkoutHidden = document.getElementById('checkoutHidden');
-      const todayFormatted = formatDate(today);
-      checkinDisplay.setAttribute('min', todayFormatted);
-      checkoutDisplay.setAttribute('min', formatDate(tomorrow));
-      if (!checkinDisplay.value) {
-        checkinDisplay.value = todayFormatted;
-        checkinHidden.value = todayFormatted;
-      }
-      if (!checkoutDisplay.value) {
-        const tomorrowFormatted = formatDate(tomorrow);
-        checkoutDisplay.value = tomorrowFormatted;
-        checkoutHidden.value = tomorrowFormatted;
-      }
-
-      checkinDisplay.addEventListener('change', function () {
-        const checkinDate = new Date(this.value);
-        const newMinCheckout = new Date(checkinDate);
-        newMinCheckout.setDate(newMinCheckout.getDate() + 1);
-        checkoutDisplay.setAttribute('min', formatDate(newMinCheckout));
-        const checkoutDate = new Date(checkoutDisplay.value);
-        if (checkoutDate <= checkinDate) {
-          const newCheckout = formatDate(newMinCheckout);
-          checkoutDisplay.value = newCheckout;
-          checkoutHidden.value = newCheckout;
+    <!-- Footer -->
+    <?php include 'footer.php'; ?>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Date handling functionality
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const formatDate = (date) => {
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const day = String(date.getDate()).padStart(2, '0');
+          return `${year}-${month}-${day}`;
+        };
+        const checkinDisplay = document.getElementById('checkinDisplay');
+        const checkoutDisplay = document.getElementById('checkoutDisplay');
+        const checkinHidden = document.getElementById('checkinHidden');
+        const checkoutHidden = document.getElementById('checkoutHidden');
+        const todayFormatted = formatDate(today);
+        checkinDisplay.setAttribute('min', todayFormatted);
+        checkoutDisplay.setAttribute('min', formatDate(tomorrow));
+        if (!checkinDisplay.value) {
+          checkinDisplay.value = todayFormatted;
+          checkinHidden.value = todayFormatted;
+        }
+        if (!checkoutDisplay.value) {
+          const tomorrowFormatted = formatDate(tomorrow);
+          checkoutDisplay.value = tomorrowFormatted;
+          checkoutHidden.value = tomorrowFormatted;
         }
 
-        checkinHidden.value = this.value;
-      });
-      checkoutDisplay.addEventListener('change', function () {
-        checkoutHidden.value = this.value;
-      });
-      const locationDisplay = document.getElementById('locationDisplay');
-      const locationHidden = document.getElementById('locationHidden');
-      locationDisplay.addEventListener('change', function () {
-        locationHidden.value = this.value;
-      });
-
-      // Initialize counters
-      const counters = {
-        adults: {
-          value: <?php echo (int) $adults; ?>,
-          min: 1,
-          element: document.getElementById("adultsCounter"),
-          input: document.getElementById("adultsInput")
-        },
-        children: {
-          value: <?php echo (int) $children; ?>,
-          min: 0,
-          element: document.getElementById("childrenCounter"),
-          input: document.getElementById("childrenInput")
-        },
-        rooms: {
-          value: <?php echo (int) $rooms; ?>,
-          min: 1,
-          element: document.getElementById("roomsCounter"),
-          input: document.getElementById("roomsInput")
-        }
-      };
-      const guestSelector = document.getElementById("guest-selector");
-
-      function updateGuestText() {
-        guestSelector.value = `${counters.adults.value} Adult${counters.adults.value !== 1 ? "s" : ""}, ` +
-          `${counters.children.value} Child${counters.children.value !== 1 ? "ren" : ""}, ` +
-          `${counters.rooms.value} Room${counters.rooms.value !== 1 ? "s" : ""}`;
-      }
-
-      updateGuestText();
-      document.querySelectorAll(".counter-btn").forEach((btn) => {
-        btn.addEventListener("click", function () {
-          const counterType = this.getAttribute("data-counter");
-          const isIncrement = this.getAttribute("data-direction") === "+";
-          const counter = counters[counterType];
-
-          if (isIncrement) {
-            counter.value++;
-          } else if (counter.value > counter.min) {
-            counter.value--;
+        checkinDisplay.addEventListener('change', function () {
+          const checkinDate = new Date(this.value);
+          const newMinCheckout = new Date(checkinDate);
+          newMinCheckout.setDate(newMinCheckout.getDate() + 1);
+          checkoutDisplay.setAttribute('min', formatDate(newMinCheckout));
+          const checkoutDate = new Date(checkoutDisplay.value);
+          if (checkoutDate <= checkinDate) {
+            const newCheckout = formatDate(newMinCheckout);
+            checkoutDisplay.value = newCheckout;
+            checkoutHidden.value = newCheckout;
           }
-          counter.element.textContent = counter.value;
-          counter.input.value = counter.value;
 
+          checkinHidden.value = this.value;
+        });
+        checkoutDisplay.addEventListener('change', function () {
+          checkoutHidden.value = this.value;
+        });
+        const locationDisplay = document.getElementById('locationDisplay');
+        const locationHidden = document.getElementById('locationHidden');
+        locationDisplay.addEventListener('change', function () {
+          locationHidden.value = this.value;
+        });
+
+        // Initialize counters
+        const counters = {
+          adults: {
+            value: <?php echo (int) $adults; ?>,
+            min: 1,
+            element: document.getElementById("adultsCounter"),
+            input: document.getElementById("adultsInput")
+          },
+          children: {
+            value: <?php echo (int) $children; ?>,
+            min: 0,
+            element: document.getElementById("childrenCounter"),
+            input: document.getElementById("childrenInput")
+          },
+          rooms: {
+            value: <?php echo (int) $rooms; ?>,
+            min: 1,
+            element: document.getElementById("roomsCounter"),
+            input: document.getElementById("roomsInput")
+          }
+        };
+        const guestSelector = document.getElementById("guest-selector");
+
+        function updateGuestText() {
+          guestSelector.value = `${counters.adults.value} Adult${counters.adults.value !== 1 ? "s" : ""}, ` +
+            `${counters.children.value} Child${counters.children.value !== 1 ? "ren" : ""}, ` +
+            `${counters.rooms.value} Room${counters.rooms.value !== 1 ? "s" : ""}`;
+        }
+
+        updateGuestText();
+        document.querySelectorAll(".counter-btn").forEach((btn) => {
+          btn.addEventListener("click", function () {
+            const counterType = this.getAttribute("data-counter");
+            const isIncrement = this.getAttribute("data-direction") === "+";
+            const counter = counters[counterType];
+
+            if (isIncrement) {
+              counter.value++;
+            } else if (counter.value > counter.min) {
+              counter.value--;
+            }
+            counter.element.textContent = counter.value;
+            counter.input.value = counter.value;
+
+            updateGuestText();
+          });
+        });
+        document.getElementById("guestModal").addEventListener("hidden.bs.modal", function () {
           updateGuestText();
         });
-      });
-      document.getElementById("guestModal").addEventListener("hidden.bs.modal", function () {
-        updateGuestText();
-      });
 
-      // Filter functionality
-      const budgetRange = document.getElementById('budgetRange');
-      const budgetValue = document.getElementById('budgetValue');
-      const ratingFilters = document.querySelectorAll('.rating-filter');
-      const bedFilters = document.querySelectorAll('.bed-filter');
-      const amenityFilters = document.querySelectorAll('.amenity-filter');
-      const applyFiltersBtn = document.getElementById('applyFilters');
-      const resetFiltersBtn = document.getElementById('resetFilters');
-      const sortSelect = document.getElementById('sortResults');
-      const propertyItems = document.querySelectorAll('.property-item');
-      const filteredCount = document.getElementById('filteredCount');
+        // Filter functionality
+        const budgetRange = document.getElementById('budgetRange');
+        const budgetValue = document.getElementById('budgetValue');
+        const ratingFilters = document.querySelectorAll('.rating-filter');
+        const bedFilters = document.querySelectorAll('.bed-filter');
+        const amenityFilters = document.querySelectorAll('.amenity-filter');
+        const applyFiltersBtn = document.getElementById('applyFilters');
+        const resetFiltersBtn = document.getElementById('resetFilters');
+        const sortSelect = document.getElementById('sortResults');
+        const propertyItems = document.querySelectorAll('.property-item');
+        const filteredCount = document.getElementById('filteredCount');
 
-      // Initialize budget slider
-      budgetRange.addEventListener('input', function () {
-        if (this.value == 6000) {
-          budgetValue.textContent = '₹ 6,000+';
-        } else {
-          budgetValue.textContent = `₹ ${Number(this.value).toLocaleString()}`;
+        // Initialize budget slider
+        budgetRange.addEventListener('input', function () {
+          if (this.value == 6000) {
+            budgetValue.textContent = '₹ 6,000+';
+          } else {
+            budgetValue.textContent = `₹ ${Number(this.value).toLocaleString()}`;
+          }
+        });
+
+        // Apply filters function
+        function applyFilters() {
+          const maxPrice = parseInt(budgetRange.value);
+          const selectedRatings = Array.from(ratingFilters)
+            .filter(filter => filter.checked)
+            .map(filter => parseInt(filter.value));
+
+          const selectedBeds = Array.from(bedFilters)
+            .filter(filter => filter.checked)
+            .map(filter => filter.value.toLowerCase());
+
+          const selectedAmenities = Array.from(amenityFilters)
+            .filter(filter => filter.checked)
+            .map(filter => filter.value.toLowerCase());
+
+          let visibleCount = 0;
+
+          propertyItems.forEach(item => {
+            const itemPrice = parseInt(item.dataset.price);
+            const itemAmenities = item.dataset.amenities.toLowerCase();
+            const itemBeds = item.dataset.beds.toLowerCase();
+
+            // Price filter
+            if (itemPrice > maxPrice) {
+              item.style.display = 'none';
+              return;
+            }
+
+            // Rating filter (if any selected)
+            if (selectedRatings.length > 0) {
+              const itemRating = parseInt(item.dataset.rating);
+              if (!selectedRatings.includes(itemRating)) {
+                item.style.display = 'none';
+                return;
+              }
+            }
+
+            // Bed size filter (if any selected)
+            if (selectedBeds.length > 0) {
+              let hasSelectedBed = false;
+              for (const bed of selectedBeds) {
+                if (itemBeds.includes(bed)) {
+                  hasSelectedBed = true;
+                  break;
+                }
+              }
+              if (!hasSelectedBed) {
+                item.style.display = 'none';
+                return;
+              }
+            }
+
+            // Amenities filter (if any selected)
+            if (selectedAmenities.length > 0) {
+              let hasAllAmenities = true;
+              for (const amenity of selectedAmenities) {
+                if (!itemAmenities.includes(amenity)) {
+                  hasAllAmenities = false;
+                  break;
+                }
+              }
+              if (!hasAllAmenities) {
+                item.style.display = 'none';
+                return;
+              }
+            }
+
+            // If all filters passed, show the item
+            item.style.display = '';
+            visibleCount++;
+          });
+
+          filteredCount.textContent = visibleCount;
         }
-      });
 
-      // Apply filters function
-      function applyFilters() {
-        const maxPrice = parseInt(budgetRange.value);
-        const selectedRatings = Array.from(ratingFilters)
-          .filter(filter => filter.checked)
-          .map(filter => parseInt(filter.value));
+        // Sort function
+        function sortProperties() {
+          const sortValue = sortSelect.value;
+          const container = document.getElementById('propertyListings');
+          const items = Array.from(propertyItems).filter(item => item.style.display !== 'none');
 
-        const selectedBeds = Array.from(bedFilters)
-          .filter(filter => filter.checked)
-          .map(filter => filter.value.toLowerCase());
-
-        const selectedAmenities = Array.from(amenityFilters)
-          .filter(filter => filter.checked)
-          .map(filter => filter.value.toLowerCase());
-
-        let visibleCount = 0;
-
-        propertyItems.forEach(item => {
-          const itemPrice = parseInt(item.dataset.price);
-          const itemAmenities = item.dataset.amenities.toLowerCase();
-          const itemBeds = item.dataset.beds.toLowerCase();
-
-          // Price filter
-          if (itemPrice > maxPrice) {
-            item.style.display = 'none';
-            return;
-          }
-
-          // Rating filter (if any selected)
-          if (selectedRatings.length > 0) {
-            const itemRating = parseInt(item.dataset.rating);
-            if (!selectedRatings.includes(itemRating)) {
-              item.style.display = 'none';
-              return;
+          items.sort((a, b) => {
+            const aPrice = parseInt(a.dataset.price);
+            const bPrice = parseInt(b.dataset.price);
+            switch (sortValue) {
+              case 'price-low':
+                return aPrice - bPrice;
+              case 'price-high':
+                return bPrice - aPrice;
+              case 'rating':
+                const aRating = parseInt(a.dataset.rating);
+                const bRating = parseInt(b.dataset.rating);
+                return bRating - aRating;
+              default:
+                return 0;
             }
-          }
-
-          // Bed size filter (if any selected)
-          if (selectedBeds.length > 0) {
-            let hasSelectedBed = false;
-            for (const bed of selectedBeds) {
-              if (itemBeds.includes(bed)) {
-                hasSelectedBed = true;
-                break;
-              }
-            }
-            if (!hasSelectedBed) {
-              item.style.display = 'none';
-              return;
-            }
-          }
-
-          // Amenities filter (if any selected)
-          if (selectedAmenities.length > 0) {
-            let hasAllAmenities = true;
-            for (const amenity of selectedAmenities) {
-              if (!itemAmenities.includes(amenity)) {
-                hasAllAmenities = false;
-                break;
-              }
-            }
-            if (!hasAllAmenities) {
-              item.style.display = 'none';
-              return;
-            }
-          }
-
-          // If all filters passed, show the item
-          item.style.display = '';
-          visibleCount++;
+          });
+          items.forEach(item => item.remove());
+          items.forEach(item => container.appendChild(item));
+        }
+        applyFiltersBtn.addEventListener('click', applyFilters);
+        resetFiltersBtn.addEventListener('click', function () {
+          budgetRange.value = 6000;
+          budgetValue.textContent = '₹ 6,000+';
+          ratingFilters.forEach(filter => filter.checked = false);
+          bedFilters.forEach(filter => filter.checked = false);
+          amenityFilters.forEach(filter => filter.checked = false);
+          propertyItems.forEach(item => item.style.display = '');
+          filteredCount.textContent = propertyItems.length;
+          sortSelect.value = 'default';
         });
 
-        filteredCount.textContent = visibleCount;
-      }
-
-      // Sort function
-      function sortProperties() {
-        const sortValue = sortSelect.value;
-        const container = document.getElementById('propertyListings');
-        const items = Array.from(propertyItems).filter(item => item.style.display !== 'none');
-
-        items.sort((a, b) => {
-          const aPrice = parseInt(a.dataset.price);
-          const bPrice = parseInt(b.dataset.price);
-
-          switch (sortValue) {
-            case 'price-low':
-              return aPrice - bPrice;
-            case 'price-high':
-              return bPrice - aPrice;
-            case 'rating':
-              const aRating = parseInt(a.dataset.rating);
-              const bRating = parseInt(b.dataset.rating);
-              return bRating - aRating;
-            default:
-              return 0;
-          }
-        });
-        items.forEach(item => item.remove());
-        items.forEach(item => container.appendChild(item));
-      }
-      applyFiltersBtn.addEventListener('click', applyFilters);
-      resetFiltersBtn.addEventListener('click', function () {
-        budgetRange.value = 6000;
-        budgetValue.textContent = '₹ 6,000+';
-        ratingFilters.forEach(filter => filter.checked = false);
-        bedFilters.forEach(filter => filter.checked = false);
-        amenityFilters.forEach(filter => filter.checked = false);
-        propertyItems.forEach(item => item.style.display = '');
-        filteredCount.textContent = propertyItems.length;
-        sortSelect.value = 'default';
+        sortSelect.addEventListener('change', sortProperties);
       });
-
-      sortSelect.addEventListener('change', sortProperties);
-    });
-  </script>
+    </script>
 </body>
 
 </html>

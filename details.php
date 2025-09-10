@@ -1264,13 +1264,13 @@ function getRoomImages($pdo, $roomTypeId)
             <?php
             foreach ($mealTypes as $mealName => $mealType) {
               $roomPriceData = getRoomPrice($pdo, $roomTypeId, $mealType, $checkin, $checkout, $promotions);
-              $totalPrice = $roomPriceData['price']; // total price from DB
+              $totalPrice = $roomPriceData['price'];
               $appliedPromotions = $roomPriceData['applied_promotions'];
 
               if ($totalPrice > 0) {
-                $taxAmount = $totalPrice * 0.12; // 12% of total as tax
-                $discountedPrice = $totalPrice - $taxAmount; // base/discounted price
-          
+                $taxAmount = $totalPrice * 0.12;
+                $discountedPrice = $totalPrice - $taxAmount;
+
                 $isHighlighted = $mealName === 'With Breakfast' ? 'highlighted' : '';
                 ?>
                 <div class="room-option <?php echo $isHighlighted; ?>">
@@ -1301,13 +1301,9 @@ function getRoomImages($pdo, $roomTypeId)
                     </div>
 
                     <div class="option-price-container">
-                      <!-- Original price (crossed out) -->
+
                       <span class="original-price">₹<?php echo number_format($totalPrice + 200, 2); ?></span>
-
-                      <!-- Discounted price (base price without tax) -->
                       <span class="discounted-price">₹<?php echo number_format($discountedPrice, 2); ?></span>
-
-                      <!-- Taxes -->
                       <div class="taxes">+ ₹<?php echo number_format($taxAmount, 2); ?> Taxes & Fees per night</div>
 
                       <a href="cart.php?

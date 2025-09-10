@@ -2,25 +2,25 @@
 session_start();
 require_once 'db.php';
 $userDetails = [
-    'first_name' => '',
-    'last_name'  => '',
-    'email'      => '',
-    'phone'      => '',
-    'title'      => ''
+  'first_name' => '',
+  'last_name' => '',
+  'email' => '',
+  'phone' => '',
+  'title' => ''
 ];
 
 if (isset($_SESSION['user_id'])) {
-    $userId = $_SESSION['user_id'];
+  $userId = $_SESSION['user_id'];
 
-    $stmt = $pdo->prepare("SELECT first_name, last_name, email, phone
+  $stmt = $pdo->prepare("SELECT first_name, last_name, email, phone
                            FROM user 
                            WHERE id = :id LIMIT 1");
-    $stmt->execute(['id' => $userId]);
-    $fetchedDetails = $stmt->fetch(PDO::FETCH_ASSOC);
+  $stmt->execute(['id' => $userId]);
+  $fetchedDetails = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($fetchedDetails) {
-        $userDetails = $fetchedDetails;
-    }
+  if ($fetchedDetails) {
+    $userDetails = $fetchedDetails;
+  }
 }
 $userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
 $stmt = $pdo->prepare("SELECT first_name, last_name, email, phone FROM user WHERE id = :id LIMIT 1");
@@ -28,49 +28,50 @@ $stmt->execute(['id' => $userId]);
 $userDetails = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$userDetails) {
-    $userDetails = [
-        'first_name' => '',
-        'last_name'  => '',
-        'email'      => '',
-        'phone'      => ''
-    ];
+  $userDetails = [
+    'first_name' => '',
+    'last_name' => '',
+    'email' => '',
+    'phone' => ''
+  ];
 }
-$roomTypeId  = $_GET['room_type_id'] ?? null;  
-$roomName    = $_GET['room_name'] ?? 'Unknown';
-$mealName    = $_GET['meal_name'] ?? 'Room Only'; 
-$roomPrice   = $_GET['price'] ?? 0;
-$taxes       = $_GET['taxes'] ?? 0;
-$rooms = $_GET['rooms'] ?? 1;  
-$checkinDate  = $_GET['checkin'] ?? null;
+$roomTypeId = $_GET['room_type_id'] ?? null;
+$roomName = $_GET['room_name'] ?? 'Unknown';
+$mealName = $_GET['meal_name'] ?? 'Room Only';
+$roomPrice = $_GET['price'] ?? 0;
+$taxes = $_GET['taxes'] ?? 0;
+$rooms = $_GET['rooms'] ?? 1;
+$checkinDate = $_GET['checkin'] ?? null;
 $checkoutDate = $_GET['checkout'] ?? null;
 
 if ($checkinDate && $checkoutDate) {
-    $nights = (strtotime($checkoutDate) - strtotime($checkinDate)) / 86400;
-    $nights = ($nights > 0) ? $nights : 1;
+  $nights = (strtotime($checkoutDate) - strtotime($checkinDate)) / 86400;
+  $nights = ($nights > 0) ? $nights : 1;
 } else {
-    $nights = 1;
+  $nights = 1;
 }
-$subtotal    = $roomPrice * $rooms * $nights;
+$subtotal = $roomPrice * $rooms * $nights;
 $totalAmount = $subtotal + $taxes;
 
-if ($nights <= 0) $nights = 1; 
+if ($nights <= 0)
+  $nights = 1;
 $subtotal = $roomPrice * $rooms * $nights;
 $totalAmount = $subtotal + $taxes;
 $availability = $_GET['availability'] ?? 'N/A';
-$mealPlanCode = 'EP'; 
+$mealPlanCode = 'EP';
 if ($mealName === 'With Breakfast') {
-    $mealPlanCode = 'CP'; 
+  $mealPlanCode = 'CP';
 } elseif ($mealName === 'Breakfast+lunch/dinner') {
-    $mealPlanCode = 'MAP'; 
+  $mealPlanCode = 'MAP';
 }
 $_SESSION['selected_room'] = [
-    'room_type_id' => $roomTypeId,
-    'room_name'    => $roomName,
-    'meal_name'    => $mealName,
-    'meal_plan_code' => $mealPlanCode,
-    'room_price'   => $roomPrice,
-    'taxes'        => $taxes,
-    'availability' => $availability
+  'room_type_id' => $roomTypeId,
+  'room_name' => $roomName,
+  'meal_name' => $mealName,
+  'meal_plan_code' => $mealPlanCode,
+  'room_price' => $roomPrice,
+  'taxes' => $taxes,
+  'availability' => $availability
 ];
 
 $selectedRoom = $_SESSION['selected_room'] ?? null;
@@ -78,37 +79,37 @@ $roomPrice = $selectedRoom['room_price'] ?? 7700;
 $taxes = $selectedRoom['taxes'] ?? 1356;
 $totalAmount = $roomPrice + $taxes;
 $bookingDetails = [
-    'property_id'    => $_GET['property_id'] ?? '',   
-    'property_image' => $_GET['property_image'] ?? 'images/goa.jpg',
-    'property_name'  => $_GET['property_name'] ?? 'Unknown Hotel',
-    'city'           => $_GET['city'] ?? '',
-    'country'        => $_GET['country'] ?? '',
-    'room_name'      => $_GET['room_name'] ?? 'Standard Room',
-    'meal_name'      => $mealName, 
-    'meal_plan_code' => $mealPlanCode, 
-    'max_guests'     => $_GET['adults'] ?? '2',    
-    'amenities'      => $_GET['amenities'] ?? 'WiFi, AC, TV',
-    'checkin_date'   => $_GET['checkin'] ?? 'N/A',       
-    'checkout_date'  => $_GET['checkout'] ?? 'N/A',
-    'admin_id'       => $_GET['admin_id'] ?? 1
+  'property_id' => $_GET['property_id'] ?? '',
+  'property_image' => $_GET['property_image'] ?? 'images/goa.jpg',
+  'property_name' => $_GET['property_name'] ?? 'Unknown Hotel',
+  'city' => $_GET['city'] ?? '',
+  'country' => $_GET['country'] ?? '',
+  'room_name' => $_GET['room_name'] ?? 'Standard Room',
+  'meal_name' => $mealName,
+  'meal_plan_code' => $mealPlanCode,
+  'max_guests' => $_GET['adults'] ?? '2',
+  'amenities' => $_GET['amenities'] ?? 'WiFi, AC, TV',
+  'checkin_date' => $_GET['checkin'] ?? 'N/A',
+  'checkout_date' => $_GET['checkout'] ?? 'N/A',
+  'admin_id' => $_GET['admin_id'] ?? 1
 ];
 
 if (
-    (!isset($_GET['property_image']) || $bookingDetails['property_image'] === 'images/goa.jpg') 
-    && !empty($bookingDetails['property_id'])
+  (!isset($_GET['property_image']) || $bookingDetails['property_image'] === 'images/goa.jpg')
+  && !empty($bookingDetails['property_id'])
 ) {
-    $stmt = $pdo->prepare("
+  $stmt = $pdo->prepare("
         SELECT image_path 
         FROM property_images 
         WHERE property_id = :pid AND is_main = 1 
         LIMIT 1
     ");
-    $stmt->execute([':pid' => $bookingDetails['property_id']]);
-    $mainImage = $stmt->fetchColumn();
+  $stmt->execute([':pid' => $bookingDetails['property_id']]);
+  $mainImage = $stmt->fetchColumn();
 
-    if ($mainImage) {
-        $bookingDetails['property_image'] = $mainImage;
-    }
+  if ($mainImage) {
+    $bookingDetails['property_image'] = $mainImage;
+  }
 }
 ?>
 <!DOCTYPE html>
@@ -124,50 +125,50 @@ if (
   <link rel="icon" href="images/favicon.ico" type="image/ico" />
   <link rel="stylesheet" href="styles/style.css">
   <style>
-  .meal-plan-badge {
-    background-color: #0a55ff;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: bold;
-    margin-left: 8px;
-  }
+    .meal-plan-badge {
+      background-color: #0a55ff;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-left: 8px;
+    }
 
-  .booking-card {
-    background: white;
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  }
+    .booking-card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
 
-  .summary-item {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-  }
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
 
-  .payment-method {
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    cursor: pointer;
-    transition: all 0.3s;
-  }
+    .payment-method {
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
 
-  .payment-method.active {
-    border-color: #0a55ff;
-    background-color: #f8f9ff;
-  }
+    .payment-method.active {
+      border-color: #0a55ff;
+      background-color: #f8f9ff;
+    }
 
-  .hotel-img {
-    border-radius: 10px;
-    height: 200px;
-    object-fit: cover;
-    width: 100%;
-  }
+    .hotel-img {
+      border-radius: 10px;
+      height: 200px;
+      object-fit: cover;
+      width: 100%;
+    }
   </style>
 </head>
 
@@ -262,14 +263,14 @@ if (
               <div class="col-md-2 mb-3">
                 <label for="title" class="form-label">Title</label>
                 <select class="form-control" id="title" name="title" required>
-                  <option value="Mr" <?php echo ($userDetails['title'] ?? '' )==='Mr' ? 'selected'
-                                        : '' ; ?>>Mr</option>
-                  <option value="Ms" <?php echo ($userDetails['title'] ?? '' )==='Ms' ? 'selected'
-                                        : '' ; ?>>Ms</option>
-                  <option value="Mrs" <?php echo ($userDetails['title'] ?? '' )==='Mrs' ? 'selected'
-                                        : '' ; ?>>Mrs</option>
-                  <option value="Dr" <?php echo ($userDetails['title'] ?? '' )==='Dr' ? 'selected'
-                                        : '' ; ?>>Dr</option>
+                  <option value="Mr" <?php echo ($userDetails['title'] ?? '') === 'Mr' ? 'selected'
+                    : ''; ?>>Mr</option>
+                  <option value="Ms" <?php echo ($userDetails['title'] ?? '') === 'Ms' ? 'selected'
+                    : ''; ?>>Ms</option>
+                  <option value="Mrs" <?php echo ($userDetails['title'] ?? '') === 'Mrs' ? 'selected'
+                    : ''; ?>>Mrs</option>
+                  <option value="Dr" <?php echo ($userDetails['title'] ?? '') === 'Dr' ? 'selected'
+                    : ''; ?>>Dr</option>
                 </select>
               </div>
               <div class="col-md-5 mb-3">
@@ -419,12 +420,7 @@ if (
                 <?php echo number_format($roomPrice * $rooms * $nights); ?>
               </span>
             </div>
-            <div class="summary-item">
-              <span>Meal Plan (
-                <?php echo htmlspecialchars($bookingDetails['meal_plan_code']); ?>)
-              </span>
-              <span>Included</span>
-            </div>
+
             <div class="summary-item">
               <span>Taxes & Fees</span>
               <span>₹
@@ -504,120 +500,121 @@ if (
   <?php include 'footer.php'; ?>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-  let availableVouchers = [];
-  let appliedCoupon = null;
-  let originalTotal = <?php echo $totalAmount; ?>;
-  async function loadVouchersForBooking() {
-    try {
-      const res = await fetch('tripsorus-admin/api/vouchers_sub.php');
-      const vouchers = await res.json();
-      availableVouchers = vouchers;
-      displayVouchers();
-      applyVoucher();
-    } catch (err) {
-      console.error('Failed to load vouchers:', err);
+    let availableVouchers = [];
+    let appliedCoupon = null;
+    let originalTotal = <?php echo $totalAmount; ?>;
+    async function loadVouchersForBooking() {
+      try {
+        const res = await fetch('tripsorus-admin/api/vouchers_sub.php/vouchers');
+        const vouchers = await res.json();
+        availableVouchers = vouchers;
+
+        displayVouchers();
+        applyVoucher();
+      } catch (err) {
+        console.error('Failed to load vouchers:', err);
+      }
     }
-  }
 
-  function displayVouchers() {
-    const couponDiv = document.getElementById('couponMessage');
-    couponDiv.innerHTML = '';
+    function displayVouchers() {
+      const couponDiv = document.getElementById('couponMessage');
+      couponDiv.innerHTML = '';
 
-    availableVouchers.forEach(v => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'btn btn-outline-primary fw-bold shadow-sm';
-      btn.style.padding = '8px 16px';
-      btn.style.borderRadius = '8px';
-      btn.style.fontSize = '0.9rem';
-      btn.style.transition = '0.2s';
-      btn.style.color = 'black'
-      btn.style.background = '#8ab2dcff'
-      btn.onmouseover = () => btn.style.backgroundColor = '#64a9f3ff';
-      btn.onmouseout = () => btn.style.backgroundColor = '#0d6efd';
-      btn.textContent = v.code + (v.discount_type === 'percentage' ? ` (${v.discount_value}%)` :
-        ` (₹${v.discount_value})`);
-      btn.onclick = () => applyVoucher(v.code);
-      couponDiv.appendChild(btn);
-    });
-  }
+      availableVouchers.forEach(v => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn btn-outline-primary fw-bold shadow-sm';
+        btn.style.padding = '8px 16px';
+        btn.style.borderRadius = '8px';
+        btn.style.fontSize = '0.9rem';
+        btn.style.transition = '0.2s';
+        btn.style.color = 'black'
+        btn.style.background = '#8ab2dcff'
+        btn.onmouseover = () => btn.style.backgroundColor = '#64a9f3ff';
+        btn.onmouseout = () => btn.style.backgroundColor = '#0d6efd';
+        btn.textContent = v.code + (v.discount_type === 'percentage' ? ` (${v.discount_value}%)` :
+          ` (₹${v.discount_value})`);
+        btn.onclick = () => applyVoucher(v.code);
+        couponDiv.appendChild(btn);
+      });
+    }
 
-  function applyVoucher(code = null) {
-    let coupon = null;
+    function applyVoucher(code = null) {
+      let coupon = null;
 
-    if (code) {
-      coupon = availableVouchers.find(v => v.code === code);
-      document.getElementById('couponCode').value = code;
-    } else {
-      coupon = availableVouchers
-        .filter(v => new Date(v.expiry_date) > new Date())
-        .sort((a, b) => {
-          const aAmount = a.discount_type === 'percentage' ? originalTotal * (a.discount_value / 100) : a
-            .discount_value;
-          const bAmount = b.discount_type === 'percentage' ? originalTotal * (b.discount_value / 100) : b
-            .discount_value;
-          return bAmount - aAmount;
-        })[0];
+      if (code) {
+        coupon = availableVouchers.find(v => v.code === code);
+        document.getElementById('couponCode').value = code;
+      } else {
+        coupon = availableVouchers
+          .filter(v => new Date(v.expiry_date) > new Date())
+          .sort((a, b) => {
+            const aAmount = a.discount_type === 'percentage' ? originalTotal * (a.discount_value / 100) : a
+              .discount_value;
+            const bAmount = b.discount_type === 'percentage' ? originalTotal * (b.discount_value / 100) : b
+              .discount_value;
+            return bAmount - aAmount;
+          })[0];
 
+        if (coupon) {
+          document.getElementById('couponCode').value = coupon.code;
+        }
+      }
+      appliedCoupon = coupon;
+      let discount = 0;
       if (coupon) {
-        document.getElementById('couponCode').value = coupon.code;
+        discount = coupon.discount_type === 'percentage' ? Math.round(originalTotal * (coupon.discount_value / 100)) :
+          coupon.discount_value;
+      }
+      document.getElementById('discountAmount').textContent = `- ₹ ${discount.toLocaleString()}`;
+      document.getElementById('totalAmount').textContent = `₹ ${(originalTotal - discount).toLocaleString()}`;
+      document.getElementById('finalAmount').value = originalTotal - discount;
+      document.getElementById('appliedCouponField').value = coupon ? coupon.code : '';
+    }
+
+    function applyManualCoupon() {
+      const codeInput = document.getElementById('couponCode').value.trim().toUpperCase();
+      if (!codeInput) return alert('Please enter a coupon code');
+
+      const found = availableVouchers.find(v => v.code.toUpperCase() === codeInput);
+      if (found) {
+        applyVoucher(found.code);
+        alert(`Coupon applied: ${found.code}`);
+      } else {
+        alert('Invalid coupon code');
       }
     }
-    appliedCoupon = coupon;
-    let discount = 0;
-    if (coupon) {
-      discount = coupon.discount_type === 'percentage' ? Math.round(originalTotal * (coupon.discount_value / 100)) :
-        coupon.discount_value;
-    }
-    document.getElementById('discountAmount').textContent = `- ₹ ${discount.toLocaleString()}`;
-    document.getElementById('totalAmount').textContent = `₹ ${(originalTotal - discount).toLocaleString()}`;
-    document.getElementById('finalAmount').value = originalTotal - discount;
-    document.getElementById('appliedCouponField').value = coupon ? coupon.code : '';
-  }
 
-  function applyManualCoupon() {
-    const codeInput = document.getElementById('couponCode').value.trim().toUpperCase();
-    if (!codeInput) return alert('Please enter a coupon code');
+    function selectPayment(method) {
+      document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('active'));
+      document.getElementById('creditCardFields').style.display = 'none';
+      document.getElementById('upiFields').style.display = 'none';
+      document.getElementById('netbankingFields').style.display = 'none';
+      document.getElementById('payAtPropertyFields').style.display = 'none';
+      const selectedMethod = document.querySelector(`.payment-method[data-method="${method}"]`);
+      if (selectedMethod) {
+        selectedMethod.classList.add('active');
+        selectedMethod.querySelector('input[type="radio"]').checked = true;
 
-    const found = availableVouchers.find(v => v.code.toUpperCase() === codeInput);
-    if (found) {
-      applyVoucher(found.code);
-      alert(`Coupon applied: ${found.code}`);
-    } else {
-      alert('Invalid coupon code');
-    }
-  }
-
-  function selectPayment(method) {
-    document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('active'));
-    document.getElementById('creditCardFields').style.display = 'none';
-    document.getElementById('upiFields').style.display = 'none';
-    document.getElementById('netbankingFields').style.display = 'none';
-    document.getElementById('payAtPropertyFields').style.display = 'none';
-    const selectedMethod = document.querySelector(`.payment-method[data-method="${method}"]`);
-    if (selectedMethod) {
-      selectedMethod.classList.add('active');
-      selectedMethod.querySelector('input[type="radio"]').checked = true;
-
-      if (method === 'credit') {
-        document.getElementById('creditCardFields').style.display = 'block';
-      } else if (method === 'upi') {
-        document.getElementById('upiFields').style.display = 'block';
-      } else if (method === 'netbanking') {
-        document.getElementById('netbankingFields').style.display = 'block';
-      } else if (method === 'payAtProperty') {
-        document.getElementById('payAtPropertyFields').style.display = 'block';
+        if (method === 'credit') {
+          document.getElementById('creditCardFields').style.display = 'block';
+        } else if (method === 'upi') {
+          document.getElementById('upiFields').style.display = 'block';
+        } else if (method === 'netbanking') {
+          document.getElementById('netbankingFields').style.display = 'block';
+        } else if (method === 'payAtProperty') {
+          document.getElementById('payAtPropertyFields').style.display = 'block';
+        }
       }
     }
-  }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    loadVouchersForBooking();
-    document.getElementById('creditCardFields').style.display = 'block';
-  });
-  document.getElementById("gstCheck").addEventListener("change", function() {
-    document.getElementById("gstFields").style.display = this.checked ? "block" : "none";
-  });
+    document.addEventListener('DOMContentLoaded', () => {
+      loadVouchersForBooking();
+      document.getElementById('creditCardFields').style.display = 'block';
+    });
+    document.getElementById("gstCheck").addEventListener("change", function () {
+      document.getElementById("gstFields").style.display = this.checked ? "block" : "none";
+    });
   </script>
 </body>
 

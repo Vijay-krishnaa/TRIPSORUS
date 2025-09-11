@@ -55,7 +55,7 @@
       <p>
         Developed and Managed by
         <a href="https://paultechsoftwareservices.com/" target="_blank" style="text-decoration: none; color: inherit;">
-          PaulTech Software Services
+          PaulTech Software Services Pvt. Ltd.
         </a>
       </p>
     </div>

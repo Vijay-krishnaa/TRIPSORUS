@@ -5,9 +5,10 @@ require 'vendor/autoload.php';
 require 'db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $email = trim($_POST['email']);
+  $email = trim($_POST['email'] ?? '');
+
   if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    echo "Please provide a valid email address.";
+    echo "<script>alert('Please provide a valid email address.'); window.history.back();</script>";
     exit;
   }
 
@@ -18,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($user) {
       $token = bin2hex(random_bytes(50));
-      $expires = gmdate("Y-m-d H:i:s", time() + 3600);
+      $expires = gmdate("Y-m-d H:i:s", time() + 3600); // 1 hour
       $pdo->prepare("DELETE FROM password_resets WHERE user_id = ?")->execute([$user['id']]);
       $pdo->prepare("INSERT INTO password_resets (user_id, token, expires_at) VALUES (?, ?, ?)")
         ->execute([$user['id'], $token, $expires]);
@@ -43,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <p>Click the link below to reset your password:</p>
                 <a href='$resetLink'>Reset Password</a>
                 <p>This link is valid for 1 hour.</p>
-                <p>If you didn't request this, ignore this email.</p>
+                <p>If you didn't request this, please ignore this email.</p>
             ";
       $mail->SMTPOptions = [
         'ssl' => [
@@ -54,12 +55,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       ];
       $mail->send();
     }
-
-    echo "If that email exists, a reset link has been sent.";
+    echo "<script>
+            alert('A reset link has been sent succesfully.');
+            window.location.href = 'index.php';
+        </script>";
+    exit;
 
   } catch (Exception $e) {
-    error_log("Forgot password error: " . $e->getMessage());
-    echo "An error occurred. Please try again.";
+    error_log('Forgot password error: ' . $e->getMessage());
+    echo "<script>alert('An error occurred. Please try again later.'); window.history.back();</script>";
+    exit;
   }
 }
 ?>

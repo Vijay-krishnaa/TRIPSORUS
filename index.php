@@ -261,9 +261,21 @@
                 });
                 const guestSelector = document.getElementById("guest-selector");
                 const counters = {
-                  adults: { value: 2, min: 1, element: document.querySelector(".counter-item:nth-child(1) .counter-value") },
-                  children: { value: 0, min: 0, element: document.querySelector(".counter-item:nth-child(2) .counter-value") },
-                  rooms: { value: 1, min: 1, element: document.querySelector(".counter-item:nth-child(3) .counter-value") },
+                  adults: {
+                    value: 2,
+                    min: 1,
+                    element: document.querySelector(".counter-item:nth-child(1) .counter-value")
+                  },
+                  children: {
+                    value: 0,
+                    min: 0,
+                    element: document.querySelector(".counter-item:nth-child(2) .counter-value")
+                  },
+                  rooms: {
+                    value: 1,
+                    min: 1,
+                    element: document.querySelector(".counter-item:nth-child(3) .counter-value")
+                  },
                 };
                 document.querySelectorAll(".counter-btn").forEach(btn => {
                   btn.addEventListener("click", function () {
@@ -474,38 +486,38 @@
       <br />
       <br />
       <?php
- $destinations = [
-    "Jamshedpur" => "jam.png",
-    "Delhi" => "delhi.jpg",
-    "Varanasi" => "varanasi.jpg",
-    "Agra" => "agra.jpg",
-    "Goa" => "goa.jpg",
-    "Kolkata" => "kolkata.jpg",
-    "Jaipur" => "jaipur.jpg",
-    "Mumbai" => "mumbai.jpg",
-    "Chennai" => "chennai.jpg",
-    "Hyderabad" => "hyderabad.jpg",
-    "Bengaluru" => "bengaluru.jpg",
-    "Amritsar" => "amritsar.jpg"
-];
- ?>
+      $destinations = [
+        "Jamshedpur" => "jam.png",
+        "Delhi" => "delhi.jpg",
+        "Varanasi" => "varanasi.jpg",
+        "Agra" => "agra.jpg",
+        "Goa" => "goa.jpg",
+        "Kolkata" => "kolkata.jpg",
+        "Jaipur" => "jaipur.jpg",
+        "Mumbai" => "mumbai.jpg",
+        "Chennai" => "chennai.jpg",
+        "Hyderabad" => "hyderabad.jpg",
+        "Bengaluru" => "bengaluru.jpg",
+        "Amritsar" => "amritsar.jpg"
+      ];
+      ?>
 
       <div class="mt-6">
         <h5 class="section-title-boxed">Popular destinations</h5>
         <div class="row">
           <?php foreach ($destinations as $destination =>
             $image): ?>
-          <div class="col-6 col-md-4 col-lg-2 mb-3">
-            <a href="searchHotels.php?location=<?= urlencode($destination) ?>" class="text-decoration-none text-dark">
-              <div class="destination-card-compact">
-                <img src="images/<?= htmlspecialchars($image) ?>" class="destination-img-compact"
-                  alt="<?= htmlspecialchars($destination) ?>" />
-                <div class="destination-name-compact">
-                  <?= htmlspecialchars($destination) ?>
+            <div class="col-6 col-md-4 col-lg-2 mb-3">
+              <a href="searchHotels.php?location=<?= urlencode($destination) ?>" class="text-decoration-none text-dark">
+                <div class="destination-card-compact">
+                  <img src="images/<?= htmlspecialchars($image) ?>" class="destination-img-compact"
+                    alt="<?= htmlspecialchars($destination) ?>" />
+                  <div class="destination-name-compact">
+                    <?= htmlspecialchars($destination) ?>
+                  </div>
                 </div>
-              </div>
-            </a>
-          </div>
+              </a>
+            </div>
           <?php endforeach; ?>
         </div>
       </div>
@@ -639,6 +651,30 @@
   <?php include 'footer.php'; ?>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    document.getElementById('forgotPasswordForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      let form = this;
+      let email = form.resetEmail.value;
+
+      fetch('forgot-password.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({
+          email: email
+        })
+      })
+        .then(res => res.json())
+        .then(data => {
+          let messageDiv = document.getElementById('fpMessage');
+          messageDiv.innerHTML =
+            `<div class="alert alert-${data.status === 'success' ? 'success' : 'danger'}">${data.message}</div>`;
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    });
     const buttons = document.querySelectorAll(".user-type-btn");
     const userTypeInput = document.getElementById("userType");
 

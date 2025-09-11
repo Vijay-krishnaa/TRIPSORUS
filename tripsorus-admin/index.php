@@ -334,70 +334,66 @@ function safeOutput($value, $default = '')
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const sidebar = document.getElementById('sidebar');
-      const toggleBtn = document.getElementById('sidebarToggle');
-      const mainContent = document.querySelector('.main-content');
+    < script >
+      document.getElementById('forgotPasswordForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+      const email = document.getElementById('resetEmail').value;
+      const msgDiv = document.getElementById('fpMessage');
 
-      // Toggle sidebar on button click
-      toggleBtn.addEventListener('click', function () {
-        sidebar.classList.toggle('active');
-        mainContent.classList.toggle('sidebar-active');
-      });
+      msgDiv.innerHTML = "Sending...";
 
-      // Handle window resize
-      window.addEventListener('resize', function () {
-        if (window.innerWidth >= 768) {
-          // On desktop, ensure sidebar is always visible
-          sidebar.classList.remove('active');
-          mainContent.classList.remove('sidebar-active');
-        } else {
-          // On mobile, ensure sidebar is hidden by default
-          sidebar.classList.remove('active');
-          mainContent.classList.remove('sidebar-active');
-        }
-      });
+      try {
+        const formData = new FormData();
+      formData.append('email', email);
 
-      // Initialize sidebar state based on screen width
-      if (window.innerWidth < 768) {
-        sidebar.classList.remove('active');
-        mainContent.classList.remove('sidebar-active');
+      const response = await fetch('forgot-password.php', {
+        method: 'POST',
+      body: formData
+        });
+
+      const text = await response.text();
+      msgDiv.innerHTML = text;
+      } catch (err) {
+        msgDiv.innerHTML = "An error occurred. Please try again.";
       }
-
-      // Chart initialization
-      const ctx = document.getElementById('revenueChart').getContext('2d');
-      const revenueChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-          datasets: [{
-            label: 'Revenue (₹)',
-            data: JSON.parse(`<?php echo json_encode($monthlyRevenues); ?>`),
-            backgroundColor: 'rgba(54, 162, 235, 0.7)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 1
-          }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            y: {
-              beginAtZero: true,
-              ticks: {
-                callback: function (value) {
-                  return '₹' + value.toLocaleString();
-                }
-              }
-            }
-          }
-        }
-      });
-
-      // Initialize tooltips
-      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
     });
   </script>
+
+  document.addEventListener('DOMContentLoaded', function () {
+  const sidebar = document.getElementById('sidebar');
+  const toggleBtn = document.getElementById('sidebarToggle');
+  const mainContent = document.querySelector('.main-content');
+
+  // Toggle sidebar on button click
+  toggleBtn.addEventListener('click', function () {
+  sidebar.classList.toggle('active');
+  mainContent.classList.toggle('sidebar-active');
+  });
+
+  // Handle window resize
+  window.addEventListener('resize', function () {
+  if (window.innerWidth >= 768) {
+  // On desktop, ensure sidebar is always visible
+  sidebar.classList.remove('active');
+  mainContent.classList.remove('sidebar-active');
+  } else {
+  // On mobile, ensure sidebar is hidden by default
+  sidebar.classList.remove('active');
+  mainContent.classList.remove('sidebar-active');
+  }
+  });
+
+  // Initialize sidebar state based on screen width
+  if (window.innerWidth < 768) { sidebar.classList.remove('active'); mainContent.classList.remove('sidebar-active'); }
+    // Chart initialization const ctx=document.getElementById('revenueChart').getContext('2d'); const revenueChart=new
+    Chart(ctx, { type: 'bar' , data: { labels: ['Jan', 'Feb' , 'Mar' , 'Apr' , 'May' , 'Jun' , 'Jul' , 'Aug' , 'Sep'
+    , 'Oct' , 'Nov' , 'Dec' ], datasets: [{ label: 'Revenue (₹)' , data: JSON.parse(`<?php echo json_encode($monthlyRevenues); ?>`), backgroundColor: 'rgba(54, 162, 235, 0.7)' ,
+    borderColor: 'rgba(54, 162, 235, 1)' , borderWidth: 1 }] }, options: { responsive: true, scales: { y: { beginAtZero:
+    true, ticks: { callback: function (value) { return '₹' + value.toLocaleString(); } } } } } }); // Initialize
+    tooltips const tooltipTriggerList=document.querySelectorAll('[data-bs-toggle="tooltip" ]'); const
+    tooltipList=[...tooltipTriggerList].map(tooltipTriggerEl=> new bootstrap.Tooltip(tooltipTriggerEl));
+    });
+    </script>
 </body>
 
 </html>

@@ -25,7 +25,11 @@
           <button type="submit" class="btn btn-primary w-100">Login</button>
         </form>
         <div class="text-center mt-3">
-          <a href="#" class="text-decoration-none">Forgot password?</a>
+          <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal"
+            data-bs-dismiss="modal">
+            Forgot password?
+          </a>
+
         </div>
         <hr>
         <div class="text-center">
@@ -56,7 +60,6 @@
               <input type="text" class="form-control" id="lastName" name="last_name" required>
             </div>
           </div>
-
           <div class="mb-3">
             <label for="signupEmail" class="form-label">Email address</label>
             <input type="email" class="form-control" id="signupEmail" name="email" required>
@@ -71,24 +74,19 @@
             <label for="signupPassword" class="form-label">Password</label>
             <input type="password" class="form-control" id="signupPassword" name="password" required>
           </div>
-
           <div class="mb-3">
             <label for="confirmPassword" class="form-label">Confirm Password</label>
             <input type="password" class="form-control" id="confirmPassword" name="confirm_password" required>
           </div>
-
           <input type="hidden" name="user_type" value="user">
-
           <div class="mb-3 form-check">
             <input type="checkbox" class="form-check-input" id="termsAgree" name="termsAgree" required>
             <label class="form-check-label" for="termsAgree">
               I agree to the <a href="#">Terms & Conditions</a>
             </label>
           </div>
-
           <button type="submit" class="btn btn-primary w-100">Create Account</button>
         </form>
-
         <hr>
         <div class="text-center">
           <p class="mb-0">Already have an account? <a href="#" class="text-primary" data-bs-toggle="modal"
@@ -102,52 +100,88 @@
   <div class="container">
     <img id="img_logo" class="img-fluid " src="images/logo.png" alt="Logo">
     <a class="navbar-brand" href="index.php">TRIPSORUS</a>
-
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
-
         <?php if (isset($_SESSION['user_id'])): ?>
-        <li class="nav-item d-flex align-items-center">
-          <span class="nav-link fw-bold fst-italic">
-            <i class="bi bi-person-circle me-1 "></i>
-            <?php
+          <li class="nav-item d-flex align-items-center">
+            <span class="nav-link fw-bold fst-italic">
+              <i class="bi bi-person-circle me-1 "></i>
+              <?php
               if (isset($_SESSION['first_name'])) {
                 echo htmlspecialchars($_SESSION['first_name'] . ' ' . $_SESSION['last_name']);
               } else {
                 echo 'Guest';
               }
               ?>
-          </span>
-
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-danger fw-bold" href="logout.php">
-            <i class="bi bi-box-arrow-right me-1"></i> Logout
-          </a>
-        </li>
-
+            </span>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-danger fw-bold" href="logout.php">
+              <i class="bi bi-box-arrow-right me-1"></i> Logout
+            </a>
+          </li>
         <?php else: ?>
-        <li class="nav-item fw-semibold">
-          <a class="nav-link" href="register-property-owner.php">
-            <i class="bi bi-house-add me-1"></i> List your Property
-          </a>
-        </li>
-        <li class="nav-item fw-semibold">
-          <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">
-            <i class="bi bi-box-arrow-in-right me-1"></i> Login/Externet Login
-          </a>
-        </li>
-        <li class="nav-item ms-2 fw-semibold">
-          <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#signupModal">
-            <i class="bi bi-person-plus me-1"></i> Sign Up
-          </a>
-        </li>
+          <li class="nav-item fw-semibold">
+            <a class="nav-link" href="register-property-owner.php">
+              <i class="bi bi-house-add me-1"></i> List your Property
+            </a>
+          </li>
+          <li class="nav-item fw-semibold">
+            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">
+              <i class="bi bi-box-arrow-in-right me-1"></i> Login/Externet Login
+            </a>
+          </li>
+          <li class="nav-item ms-2 fw-semibold">
+            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#signupModal">
+              <i class="bi bi-person-plus me-1"></i> Sign Up
+            </a>
+          </li>
         <?php endif; ?>
-
       </ul>
     </div>
   </div>
+  <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Reset Password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form method="POST" action="forgot-password.php">
+            <div class="mb-3">
+              <label for="resetEmail" class="form-label">Enter your email</label>
+              <input type="email" class="form-control" id="resetEmail" name="email" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Send Reset Link</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Forgot Password Modal -->
+  <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Reset Password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="forgotPasswordForm">
+            <div class="mb-3">
+              <label for="resetEmail" class="form-label">Enter your email</label>
+              <input type="email" class="form-control" id="resetEmail" name="email" required>
+            </div>
+            <div id="fpMessage" class="mb-3 text-center"></div>
+            <button type="submit" class="btn btn-primary w-100">Send Reset Link</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </nav>

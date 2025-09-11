@@ -10,125 +10,125 @@
   <link rel="icon" href="../images/favicon.ico" type="image/ico" />
   <link rel="stylesheet" href="styles/style.css">
   <style>
-  .room-type-card {
-    background-color: #f8f9fa;
-    border-radius: 5px;
-    padding: 15px;
-    margin-bottom: 15px;
-    border: 1px solid #dee2e6;
-    position: relative;
-  }
+    .room-type-card {
+      background-color: #f8f9fa;
+      border-radius: 5px;
+      padding: 15px;
+      margin-bottom: 15px;
+      border: 1px solid #dee2e6;
+      position: relative;
+    }
 
-  .thumbnail-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 10px;
-    min-height: 50px;
-  }
+    .thumbnail-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+      min-height: 50px;
+    }
 
-  .thumbnail-container.empty::after {
-    content: "No images uploaded yet";
-    color: #6c757d;
-    font-style: italic;
-    width: 100%;
-    padding: 10px;
-  }
+    .thumbnail-container.empty::after {
+      content: "No images uploaded yet";
+      color: #6c757d;
+      font-style: italic;
+      width: 100%;
+      padding: 10px;
+    }
 
-  .thumbnail-wrapper {
-    position: relative;
-    width: 80px;
-    height: 80px;
-  }
+    .thumbnail-wrapper {
+      position: relative;
+      width: 80px;
+      height: 80px;
+    }
 
-  .thumbnail-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-  }
+    .thumbnail-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
 
-  .remove-thumbnail {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: #dc3545;
-    color: white;
-    border: none;
-    font-size: 10px;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-  }
+    .remove-thumbnail {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #dc3545;
+      color: white;
+      border: none;
+      font-size: 10px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
 
-  .remove-room-type {
-    position: absolute;
-    top: 4px;
-    right: 16px;
-    font-size: 9px;
-    background-color: #eb2020;
-  }
+    .remove-room-type {
+      position: absolute;
+      top: 4px;
+      right: 16px;
+      font-size: 9px;
+      background-color: #eb2020;
+    }
 
-  .file-upload-hint {
-    font-size: 0.8rem;
-    color: #6c757d;
-    margin-top: 5px;
-  }
+    .file-upload-hint {
+      font-size: 0.8rem;
+      color: #6c757d;
+      margin-top: 5px;
+    }
 
-  .room-thumbnails-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 10px;
-  }
+    .room-thumbnails-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
 
-  .upload-status {
-    margin-top: 10px;
-    font-size: 0.9rem;
-    color: #28a745;
-  }
+    .upload-status {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: #28a745;
+    }
 
-  .auth-alert {
-    display: none;
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1050;
-    max-width: 400px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
+    .auth-alert {
+      display: none;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1050;
+      max-width: 400px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
 
-  .session-check {
-    display: none;
-  }
+    .session-check {
+      display: none;
+    }
 
-  .main-image-label {
-    font-weight: bold;
-    color: #0d6efd;
-  }
+    .main-image-label {
+      font-weight: bold;
+      color: #0d6efd;
+    }
 
-  .main-image-preview {
-    border: 2px solid #0d6efd;
-  }
+    .main-image-preview {
+      border: 2px solid #0d6efd;
+    }
 
-  .room-image-management {
-    margin-top: 15px;
-    border-top: 1px solid #eee;
-    padding-top: 15px;
-  }
+    .room-image-management {
+      margin-top: 15px;
+      border-top: 1px solid #eee;
+      padding-top: 15px;
+    }
 
-  .image-upload-section {
-    margin-bottom: 20px;
-    padding: 15px;
-    background-color: #f8f9fa;
-    border-radius: 5px;
-  }
+    .image-upload-section {
+      margin-bottom: 20px;
+      padding: 15px;
+      background-color: #f8f9fa;
+      border-radius: 5px;
+    }
   </style>
 </head>
 
@@ -446,17 +446,17 @@
   </div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    let currentPropertyFiles = [];
-    const imageInput = document.getElementById('propertyImages');
-    const thumbnailsContainer = document.getElementById('thumbnailsContainer');
-    const uploadStatus = document.getElementById('uploadStatus');
-    let roomTypeCount = 1;
-    document.getElementById('addRoomType').addEventListener('click', function() {
-      const container = document.getElementById('roomTypesContainer');
-      const newRoomType = document.createElement('div');
-      newRoomType.className = 'room-type-card mt-3';
-      newRoomType.innerHTML = `
+    document.addEventListener('DOMContentLoaded', function () {
+      let currentPropertyFiles = [];
+      const imageInput = document.getElementById('propertyImages');
+      const thumbnailsContainer = document.getElementById('thumbnailsContainer');
+      const uploadStatus = document.getElementById('uploadStatus');
+      let roomTypeCount = 1;
+      document.getElementById('addRoomType').addEventListener('click', function () {
+        const container = document.getElementById('roomTypesContainer');
+        const newRoomType = document.createElement('div');
+        newRoomType.className = 'room-type-card mt-3';
+        newRoomType.innerHTML = `
           <div class="row">
             <div class="col-md-4 mb-3">
               <label class="form-label">Room Type*</label>
@@ -551,20 +551,165 @@
             <i class="fas fa-trash me-1"></i> Remove Room Type
           </button>
         `;
-      container.appendChild(newRoomType);
-      roomTypeCount++;
-      newRoomType.querySelector('.remove-room-type').addEventListener('click', function() {
-        container.removeChild(newRoomType);
+        container.appendChild(newRoomType);
+        roomTypeCount++;
+        newRoomType.querySelector('.remove-room-type').addEventListener('click', function () {
+          container.removeChild(newRoomType);
+        });
+        setupRoomImagePreviewsForCard(newRoomType);
+        setupMainImagePreviewForCard(newRoomType);
       });
-      setupRoomImagePreviewsForCard(newRoomType);
-      setupMainImagePreviewForCard(newRoomType);
-    });
 
-    function setupRoomImagePreviewsForCard(roomCard) {
-      const input = roomCard.querySelector('.room-additional-images');
-      const previewContainer = roomCard.querySelector('.room-thumbnails-container');
-      let currentFiles = input.files ? Array.from(input.files) : [];
-      input.addEventListener('change', function(e) {
+      function setupRoomImagePreviewsForCard(roomCard) {
+        const input = roomCard.querySelector('.room-additional-images');
+        const previewContainer = roomCard.querySelector('.room-thumbnails-container');
+        let currentFiles = input.files ? Array.from(input.files) : [];
+        input.addEventListener('change', function (e) {
+          const newFiles = Array.from(this.files);
+          const validFiles = newFiles.filter(file => {
+            if (!file.type.startsWith('image/')) {
+              alert(`File ${file.name} is not an image and will be skipped`);
+              return false;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+              alert(`File ${file.name} is too large (max 5MB) and will be skipped`);
+              return false;
+            }
+
+            return true;
+          });
+          const allFiles = [...currentFiles, ...validFiles].slice(0, 5);
+          const dataTransfer = new DataTransfer();
+          allFiles.forEach(file => dataTransfer.items.add(file));
+          input.files = dataTransfer.files;
+          currentFiles = allFiles;
+          renderRoomThumbnails(previewContainer, input, currentFiles);
+        });
+        if (currentFiles.length > 0) {
+          renderRoomThumbnails(previewContainer, input, currentFiles);
+        }
+      }
+
+      function renderRoomThumbnails(previewContainer, input, files) {
+        previewContainer.innerHTML = '';
+
+        if (files.length === 0) {
+          previewContainer.classList.add('empty');
+          return;
+        }
+
+        previewContainer.classList.remove('empty');
+
+        files.forEach((file, index) => {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            const thumbnailWrapper = document.createElement('div');
+            thumbnailWrapper.className = 'thumbnail-wrapper';
+
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.className = 'thumbnail-img';
+
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-thumbnail';
+            removeBtn.innerHTML = '×';
+            removeBtn.addEventListener('click', function () {
+              files.splice(index, 1);
+              const dataTransfer = new DataTransfer();
+              files.forEach(file => dataTransfer.items.add(file));
+              input.files = dataTransfer.files;
+              renderRoomThumbnails(previewContainer, input, files);
+            });
+
+            thumbnailWrapper.appendChild(img);
+            thumbnailWrapper.appendChild(removeBtn);
+            previewContainer.appendChild(thumbnailWrapper);
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      function setupMainImagePreviewForCard(roomCard) {
+        const input = roomCard.querySelector('input[name$="[main_image]"]');
+        const previewContainer = roomCard.querySelector('.main-image-preview-container');
+
+        input.addEventListener('change', function () {
+          if (this.files && this.files[0]) {
+            const file = this.files[0];
+            if (!file.type.startsWith('image/')) {
+              alert(`File ${file.name} is not an image`);
+              this.value = '';
+              return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+              alert(`File ${file.name} is too large (max 5MB)`);
+              this.value = '';
+              return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              previewContainer.innerHTML = `
+                <div class="thumbnail-wrapper">
+                  <img src="${e.target.result}" class="thumbnail-img main-image-preview">
+                  <button type="button" class="remove-thumbnail remove-room-main-image">×</button>
+                </div>
+              `;
+              previewContainer.querySelector('.remove-room-main-image').addEventListener('click', function () {
+                previewContainer.innerHTML = '';
+                input.value = '';
+              });
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+      }
+      const firstRoomCard = document.querySelector('.room-type-card');
+      if (firstRoomCard) {
+        setupRoomImagePreviewsForCard(firstRoomCard);
+        setupMainImagePreviewForCard(firstRoomCard);
+      }
+
+      // Property Main Image Preview
+      const propertyMainImageInput = document.getElementById('propertyMainImage');
+      const propertyMainImagePreview = document.getElementById('propertyMainImagePreview');
+
+      propertyMainImageInput.addEventListener('change', function () {
+        if (this.files && this.files[0]) {
+          const file = this.files[0];
+
+          // Validate file type and size
+          if (!file.type.startsWith('image/')) {
+            alert(`File ${file.name} is not an image`);
+            this.value = '';
+            return;
+          }
+
+          if (file.size > 5 * 1024 * 1024) {
+            alert(`File ${file.name} is too large (max 5MB)`);
+            this.value = '';
+            return;
+          }
+
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            propertyMainImagePreview.innerHTML = `
+              <div class="thumbnail-wrapper">
+                <img src="${e.target.result}" class="thumbnail-img main-image-preview">
+                <button type="button" class="remove-thumbnail" id="removePropertyMainImage">×</button>
+              </div>
+            `;
+            document.getElementById('removePropertyMainImage').addEventListener('click', function () {
+              propertyMainImagePreview.innerHTML = '';
+              propertyMainImageInput.value = '';
+            });
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+      imageInput.addEventListener('change', function (e) {
         const newFiles = Array.from(this.files);
         const validFiles = newFiles.filter(file => {
           if (!file.type.startsWith('image/')) {
@@ -579,312 +724,167 @@
 
           return true;
         });
-        const allFiles = [...currentFiles, ...validFiles].slice(0, 5);
+        const allFiles = [...currentPropertyFiles, ...validFiles].slice(0, 10);
         const dataTransfer = new DataTransfer();
         allFiles.forEach(file => dataTransfer.items.add(file));
-        input.files = dataTransfer.files;
-        currentFiles = allFiles;
-        renderRoomThumbnails(previewContainer, input, currentFiles);
+        imageInput.files = dataTransfer.files;
+        currentPropertyFiles = allFiles;
+        renderPropertyThumbnails();
+        uploadStatus.textContent =
+          `Added ${validFiles.length} image(s). Total: ${currentPropertyFiles.length}/10`;
+        uploadStatus.style.color = "#28a745";
+        setTimeout(() => {
+          uploadStatus.textContent = "";
+        }, 2000);
       });
-      if (currentFiles.length > 0) {
-        renderRoomThumbnails(previewContainer, input, currentFiles);
-      }
-    }
 
-    function renderRoomThumbnails(previewContainer, input, files) {
-      previewContainer.innerHTML = '';
+      function renderPropertyThumbnails() {
+        thumbnailsContainer.innerHTML = '';
 
-      if (files.length === 0) {
-        previewContainer.classList.add('empty');
-        return;
-      }
+        if (currentPropertyFiles.length === 0) {
+          thumbnailsContainer.classList.add('empty');
+          return;
+        }
 
-      previewContainer.classList.remove('empty');
-
-      files.forEach((file, index) => {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const thumbnailWrapper = document.createElement('div');
-          thumbnailWrapper.className = 'thumbnail-wrapper';
-
-          const img = document.createElement('img');
-          img.src = e.target.result;
-          img.className = 'thumbnail-img';
-
-          const removeBtn = document.createElement('button');
-          removeBtn.className = 'remove-thumbnail';
-          removeBtn.innerHTML = '×';
-          removeBtn.addEventListener('click', function() {
-            files.splice(index, 1);
-            const dataTransfer = new DataTransfer();
-            files.forEach(file => dataTransfer.items.add(file));
-            input.files = dataTransfer.files;
-            renderRoomThumbnails(previewContainer, input, files);
-          });
-
-          thumbnailWrapper.appendChild(img);
-          thumbnailWrapper.appendChild(removeBtn);
-          previewContainer.appendChild(thumbnailWrapper);
-        };
-        reader.readAsDataURL(file);
-      });
-    }
-
-    function setupMainImagePreviewForCard(roomCard) {
-      const input = roomCard.querySelector('input[name$="[main_image]"]');
-      const previewContainer = roomCard.querySelector('.main-image-preview-container');
-
-      input.addEventListener('change', function() {
-        if (this.files && this.files[0]) {
-          const file = this.files[0];
-          if (!file.type.startsWith('image/')) {
-            alert(`File ${file.name} is not an image`);
-            this.value = '';
-            return;
-          }
-
-          if (file.size > 5 * 1024 * 1024) {
-            alert(`File ${file.name} is too large (max 5MB)`);
-            this.value = '';
-            return;
-          }
-
+        thumbnailsContainer.classList.remove('empty');
+        currentPropertyFiles.forEach((file, index) => {
           const reader = new FileReader();
-          reader.onload = function(e) {
-            previewContainer.innerHTML = `
-                <div class="thumbnail-wrapper">
-                  <img src="${e.target.result}" class="thumbnail-img main-image-preview">
-                  <button type="button" class="remove-thumbnail remove-room-main-image">×</button>
-                </div>
-              `;
-            previewContainer.querySelector('.remove-room-main-image').addEventListener('click', function() {
-              previewContainer.innerHTML = '';
-              input.value = '';
+          reader.onload = function (e) {
+            const thumbnailWrapper = document.createElement('div');
+            thumbnailWrapper.className = 'thumbnail-wrapper';
+
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.className = 'thumbnail-img';
+            img.alt = 'Preview';
+
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-thumbnail';
+            removeBtn.innerHTML = '×';
+            removeBtn.title = 'Remove this image';
+            removeBtn.dataset.index = index;
+
+            removeBtn.addEventListener('click', (event) => {
+              event.preventDefault();
+              currentPropertyFiles.splice(index, 1);
+              const dataTransfer = new DataTransfer();
+              currentPropertyFiles.forEach(file => dataTransfer.items.add(file));
+              imageInput.files = dataTransfer.files;
+              renderPropertyThumbnails();
+              uploadStatus.textContent = `Removed 1 image. Total: ${currentPropertyFiles.length}/10`;
+              uploadStatus.style.color = "#dc3545";
+              setTimeout(() => {
+                uploadStatus.textContent = "";
+              }, 2000);
             });
+
+            thumbnailWrapper.appendChild(img);
+            thumbnailWrapper.appendChild(removeBtn);
+            thumbnailsContainer.appendChild(thumbnailWrapper);
           };
           reader.readAsDataURL(file);
-        }
-      });
-    }
-    const firstRoomCard = document.querySelector('.room-type-card');
-    if (firstRoomCard) {
-      setupRoomImagePreviewsForCard(firstRoomCard);
-      setupMainImagePreviewForCard(firstRoomCard);
-    }
-
-    // Property Main Image Preview
-    const propertyMainImageInput = document.getElementById('propertyMainImage');
-    const propertyMainImagePreview = document.getElementById('propertyMainImagePreview');
-
-    propertyMainImageInput.addEventListener('change', function() {
-      if (this.files && this.files[0]) {
-        const file = this.files[0];
-
-        // Validate file type and size
-        if (!file.type.startsWith('image/')) {
-          alert(`File ${file.name} is not an image`);
-          this.value = '';
-          return;
-        }
-
-        if (file.size > 5 * 1024 * 1024) {
-          alert(`File ${file.name} is too large (max 5MB)`);
-          this.value = '';
-          return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          propertyMainImagePreview.innerHTML = `
-              <div class="thumbnail-wrapper">
-                <img src="${e.target.result}" class="thumbnail-img main-image-preview">
-                <button type="button" class="remove-thumbnail" id="removePropertyMainImage">×</button>
-              </div>
-            `;
-          document.getElementById('removePropertyMainImage').addEventListener('click', function() {
-            propertyMainImagePreview.innerHTML = '';
-            propertyMainImageInput.value = '';
-          });
-        };
-        reader.readAsDataURL(file);
+        });
       }
-    });
-    imageInput.addEventListener('change', function(e) {
-      const newFiles = Array.from(this.files);
-      const validFiles = newFiles.filter(file => {
-        if (!file.type.startsWith('image/')) {
-          alert(`File ${file.name} is not an image and will be skipped`);
-          return false;
-        }
 
-        if (file.size > 5 * 1024 * 1024) {
-          alert(`File ${file.name} is too large (max 5MB) and will be skipped`);
-          return false;
-        }
-
-        return true;
-      });
-      const allFiles = [...currentPropertyFiles, ...validFiles].slice(0, 10);
-      const dataTransfer = new DataTransfer();
-      allFiles.forEach(file => dataTransfer.items.add(file));
-      imageInput.files = dataTransfer.files;
-      currentPropertyFiles = allFiles;
+      // Initial render
       renderPropertyThumbnails();
-      uploadStatus.textContent =
-        `Added ${validFiles.length} image(s). Total: ${currentPropertyFiles.length}/10`;
-      uploadStatus.style.color = "#28a745";
-      setTimeout(() => {
-        uploadStatus.textContent = "";
-      }, 2000);
-    });
+      document.getElementById('resetButton').addEventListener('click', function () {
+        currentPropertyFiles = [];
+        const dataTransfer = new DataTransfer();
+        imageInput.files = dataTransfer.files;
+        renderPropertyThumbnails();
+        document.getElementById('propertyMainImagePreview').innerHTML = '';
+        document.querySelectorAll('.main-image-preview-container').forEach(container => {
+          container.innerHTML = '';
+        });
+        document.querySelectorAll('.room-thumbnails-container').forEach(container => {
+          container.innerHTML = '';
+          container.classList.add('empty');
+        });
 
-    function renderPropertyThumbnails() {
-      thumbnailsContainer.innerHTML = '';
-
-      if (currentPropertyFiles.length === 0) {
-        thumbnailsContainer.classList.add('empty');
-        return;
-      }
-
-      thumbnailsContainer.classList.remove('empty');
-      currentPropertyFiles.forEach((file, index) => {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const thumbnailWrapper = document.createElement('div');
-          thumbnailWrapper.className = 'thumbnail-wrapper';
-
-          const img = document.createElement('img');
-          img.src = e.target.result;
-          img.className = 'thumbnail-img';
-          img.alt = 'Preview';
-
-          const removeBtn = document.createElement('button');
-          removeBtn.className = 'remove-thumbnail';
-          removeBtn.innerHTML = '×';
-          removeBtn.title = 'Remove this image';
-          removeBtn.dataset.index = index;
-
-          removeBtn.addEventListener('click', (event) => {
-            event.preventDefault();
-            currentPropertyFiles.splice(index, 1);
-            const dataTransfer = new DataTransfer();
-            currentPropertyFiles.forEach(file => dataTransfer.items.add(file));
-            imageInput.files = dataTransfer.files;
-            renderPropertyThumbnails();
-            uploadStatus.textContent = `Removed 1 image. Total: ${currentPropertyFiles.length}/10`;
-            uploadStatus.style.color = "#dc3545";
-            setTimeout(() => {
-              uploadStatus.textContent = "";
-            }, 2000);
-          });
-
-          thumbnailWrapper.appendChild(img);
-          thumbnailWrapper.appendChild(removeBtn);
-          thumbnailsContainer.appendChild(thumbnailWrapper);
-        };
-        reader.readAsDataURL(file);
+        uploadStatus.textContent = "All images cleared";
+        uploadStatus.style.color = "#dc3545";
+        setTimeout(() => {
+          uploadStatus.textContent = "";
+        }, 2000);
       });
-    }
-
-    // Initial render
-    renderPropertyThumbnails();
-    document.getElementById('resetButton').addEventListener('click', function() {
-      currentPropertyFiles = [];
-      const dataTransfer = new DataTransfer();
-      imageInput.files = dataTransfer.files;
-      renderPropertyThumbnails();
-      document.getElementById('propertyMainImagePreview').innerHTML = '';
-      document.querySelectorAll('.main-image-preview-container').forEach(container => {
-        container.innerHTML = '';
-      });
-      document.querySelectorAll('.room-thumbnails-container').forEach(container => {
-        container.innerHTML = '';
-        container.classList.add('empty');
-      });
-
-      uploadStatus.textContent = "All images cleared";
-      uploadStatus.style.color = "#dc3545";
-      setTimeout(() => {
-        uploadStatus.textContent = "";
-      }, 2000);
-    });
-    document.getElementById('propertyForm').addEventListener('submit', function(e) {
-      const roomTypes = document.querySelectorAll('.room-type-card');
-      if (roomTypes.length === 0) {
-        e.preventDefault();
-        alert('Please add at least one room type');
-        return;
-      }
-      const propertyMainImage = document.getElementById('propertyMainImage');
-      if (propertyMainImage.files.length === 0) {
-        e.preventDefault();
-        alert('Please upload a main image for the property');
-        return;
-      }
-      let missingRoomMainImages = false;
-      document.querySelectorAll('input[name$="[main_image]"]').forEach(input => {
-        if (input.files.length === 0) {
-          missingRoomMainImages = true;
-        }
-      });
-
-      if (missingRoomMainImages) {
-        e.preventDefault();
-        alert('Please upload a main image for each room type');
-        return;
-      }
-      if (imageInput.files.length === 0) {
-        if (!confirm('You haven\'t uploaded any additional property images. Continue anyway?')) {
+      document.getElementById('propertyForm').addEventListener('submit', function (e) {
+        const roomTypes = document.querySelectorAll('.room-type-card');
+        if (roomTypes.length === 0) {
           e.preventDefault();
+          alert('Please add at least one room type');
           return;
         }
-      }
-      let missingRoomImages = false;
-      document.querySelectorAll('.room-type-card').forEach(card => {
-        const fileInput = card.querySelector('input[name$="[images][]"]');
-        if (fileInput.files.length === 0) {
-          missingRoomImages = true;
+        const propertyMainImage = document.getElementById('propertyMainImage');
+        if (propertyMainImage.files.length === 0) {
+          e.preventDefault();
+          alert('Please upload a main image for the property');
+          return;
+        }
+        let missingRoomMainImages = false;
+        document.querySelectorAll('input[name$="[main_image]"]').forEach(input => {
+          if (input.files.length === 0) {
+            missingRoomMainImages = true;
+          }
+        });
+
+        if (missingRoomMainImages) {
+          e.preventDefault();
+          alert('Please upload a main image for each room type');
+          return;
+        }
+        if (imageInput.files.length === 0) {
+          if (!confirm('You haven\'t uploaded any additional property images. Continue anyway?')) {
+            e.preventDefault();
+            return;
+          }
+        }
+        let missingRoomImages = false;
+        document.querySelectorAll('.room-type-card').forEach(card => {
+          const fileInput = card.querySelector('input[name$="[images][]"]');
+          if (fileInput.files.length === 0) {
+            missingRoomImages = true;
+          }
+        });
+
+        if (missingRoomImages) {
+          if (!confirm('Some room types don\'t have additional images. Continue anyway?')) {
+            e.preventDefault();
+          }
         }
       });
 
-      if (missingRoomImages) {
-        if (!confirm('Some room types don\'t have additional images. Continue anyway?')) {
-          e.preventDefault();
-        }
-      }
-    });
-
-    function checkAuthentication() {
-      fetch('check_session.php', {
+      function checkAuthentication() {
+        fetch('check_session.php', {
           method: 'GET',
           credentials: 'same-origin'
         })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Authentication failed');
-          }
-          return response.json();
-        })
-        .then(data => {
-          if (!data.authenticated || !data.isAdmin) {
-            showAuthError();
-          }
-        })
-        .catch(error => {
-          console.error('Authentication check failed:', error);
-        });
-    }
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Authentication failed');
+            }
+            return response.json();
+          })
+          .then(data => {
+            if (!data.authenticated || !data.isAdmin) {
+              showAuthError();
+            }
+          })
+          .catch(error => {
+            console.error('Authentication check failed:', error);
+          });
+      }
 
-    function showAuthError() {
-      const authAlert = document.getElementById('authAlert');
-      authAlert.style.display = 'block';
-      document.getElementById('submitButton').disabled = true;
-    }
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('error') === '403') {
-      showAuthError();
-    }
-  });
+      function showAuthError() {
+        const authAlert = document.getElementById('authAlert');
+        authAlert.style.display = 'block';
+        document.getElementById('submitButton').disabled = true;
+      }
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('error') === '403') {
+        showAuthError();
+      }
+    });
   </script>
 </body>
 

@@ -1,8 +1,9 @@
-<div class="sidebar p-3 bg-light" style="width:250px; min-height:100vh; position:fixed; top:0; left:0;">
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
   <h4 class="text-center mb-4">TRIPSORUS Admin</h4>
   <ul class="nav flex-column">
     <li class="nav-item">
-      <a class="nav-link" href="index.php">
+      <a class="nav-link active" href="index.php">
         <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
       </a>
     </li>
@@ -11,10 +12,9 @@
         <i class="fas fa-plus-circle"></i> <span>Add Property</span>
       </a>
     </li>
-
     <li class="nav-item">
       <a class="nav-link" href="inventory_calendar.php">
-        <i class="fas fa-money-bill-wave"></i> <span>Inventory</span>
+        <i class="fas fa-calendar-alt"></i> <span>Inventory</span>
       </a>
     </li>
     <li class="nav-item">
@@ -22,18 +22,16 @@
         <i class="fas fa-money-bill-wave"></i> <span>Rates Plans</span>
       </a>
     </li>
-
     <li class="nav-item">
       <a class="nav-link" href="bulk_update.php">
-        <i class="fas fa-hotel"></i> <span>Bulk Update</span>
+        <i class="fas fa-sync-alt"></i> <span>Bulk Update</span>
       </a>
     </li>
     <li class="nav-item">
       <a class="nav-link" href="seasonal_rates.php">
-        <i class="fas fa-money-bill-wave"></i> <span>Seasonal Rates</span>
+        <i class="fas fa-calendar-day"></i> <span>Seasonal Rates</span>
       </a>
     </li>
-
     <li class="nav-item">
       <a class="nav-link" href="properties.php">
         <i class="fas fa-hotel"></i> <span>Manage Properties</span>
@@ -46,17 +44,17 @@
     </li>
     <li class="nav-item">
       <a class="nav-link" href="payment.php">
-        <i class="fas fa-hotel"></i> <span>Payments</span>
+        <i class="fas fa-credit-card"></i> <span>Payments</span>
       </a>
     </li>
     <li class="nav-item">
       <a class="nav-link" href="voucher.php">
-        <i class="fas fa-calendar-check"></i> <span>Vouchers</span>
+        <i class="fas fa-ticket-alt"></i> <span>Vouchers</span>
       </a>
     </li>
     <li class="nav-item">
       <a class="nav-link" href="rule_and_regulations.php">
-        <i class="fas fa-money-bill-wave"></i> <span>Rules & Regulations</span>
+        <i class="fas fa-file-alt"></i> <span>Rules & Regulations</span>
       </a>
     </li>
     <li class="nav-item">

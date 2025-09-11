@@ -137,6 +137,7 @@ if (
 
     .booking-card {
       background: white;
+      position: relative;
       border-radius: 10px;
       padding: 20px;
       margin-bottom: 20px;
@@ -284,7 +285,6 @@ if (
                   value="<?php echo htmlspecialchars($userDetails['last_name']); ?>" required>
               </div>
             </div>
-
             <!-- Email + Phone -->
             <div class="row">
               <div class="col-md-6 mb-3">
@@ -420,7 +420,6 @@ if (
                 <?php echo number_format($roomPrice * $rooms * $nights); ?>
               </span>
             </div>
-
             <div class="summary-item">
               <span>Taxes & Fees</span>
               <span>₹

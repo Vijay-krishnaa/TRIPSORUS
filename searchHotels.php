@@ -419,9 +419,9 @@ $totalPages = ceil($totalHotels / $limit);
                         <?php echo htmlspecialchars($property['location']); ?>
                       </p>
                       <!-- Room type -->
-                      <div class="mb-2">
+                      <!-- <div class="mb-2">
                         <span class="badge bg-light text-dark me-1">Guest room</span>
-                      </div>
+                      </div> -->
                       <!-- Amenities -->
                       <div class="highlights text-muted mb-2">
                         <?php

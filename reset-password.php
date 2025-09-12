@@ -1,7 +1,5 @@
 <?php
 require 'db.php';
-
-// Get token from URL
 $token = $_GET['token'] ?? '';
 if (empty($token)) {
   die("No token provided.");
@@ -11,7 +9,6 @@ $error = '';
 $success = '';
 
 try {
-  // Fetch the reset request and user
   $stmt = $pdo->prepare("
         SELECT pr.user_id, pr.used_at, u.email 
         FROM password_resets pr
@@ -24,8 +21,6 @@ try {
   if (!$resetRequest || $resetRequest['used_at'] !== null) {
     die("Invalid or expired token.");
   }
-
-  // Handle form submission
   if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
     $confirm = $_POST['confirm_password'];
@@ -36,17 +31,13 @@ try {
       $error = "Password must be at least 8 characters long.";
     } else {
       $hashed = password_hash($password, PASSWORD_DEFAULT);
-
-      // Update user password
       $pdo->prepare("UPDATE user SET password = ? WHERE id = ?")
         ->execute([$hashed, $resetRequest['user_id']]);
-
-      // Mark token as used
       $pdo->prepare("UPDATE password_resets SET used_at = UTC_TIMESTAMP() WHERE token = ?")
         ->execute([$token]);
 
       $success = "Password reset successfully! Redirecting to login...";
-      header("refresh:5;url=index.php"); // redirect after 5 seconds
+      header("refresh:2;url=index.php");
     }
   }
 
@@ -55,7 +46,6 @@ try {
   die("An error occurred. Please try again.");
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 

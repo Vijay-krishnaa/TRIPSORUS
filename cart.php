@@ -231,16 +231,17 @@ if (
                   <p><i class="fas fa-user me-2"></i> Max Guests:
                     <?php echo htmlspecialchars($bookingDetails['max_guests']); ?>
                   </p>
-                  <p><i class="fas fa-rupee-sign me-2"></i> Price: ₹
+                  <!-- <p><i class="fas fa-rupee-sign me-2"></i> Price: ₹
                     <?php echo number_format($roomPrice); ?>
-                  </p>
+                  </p> -->
 
                   <p><i class="fas fa-calendar-check me-2"></i> Check-in:
-                    <?php echo htmlspecialchars($bookingDetails['checkin_date']); ?>
+                    <?php echo date("d-m-y", strtotime($bookingDetails['checkin_date'])); ?>
                   </p>
                   <p><i class="fas fa-calendar-times me-2"></i> Check-out:
-                    <?php echo htmlspecialchars($bookingDetails['checkout_date']); ?>
+                    <?php echo date("d-m-y", strtotime($bookingDetails['checkout_date'])); ?>
                   </p>
+
                   <p><b>Amenities:</b>
                     <?php echo htmlspecialchars($bookingDetails['amenities']); ?>
                   </p>

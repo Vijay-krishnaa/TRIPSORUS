@@ -57,11 +57,11 @@
         <i class="fas fa-file-alt"></i> <span>Rules & Regulations</span>
       </a>
     </li>
-    <li class="nav-item">
+    <!-- <li class="nav-item">
       <a class="nav-link" href="#">
         <i class="fas fa-cog"></i> <span>Settings</span>
       </a>
-    </li>
+    </li> -->
     <li class="nav-item mt-3">
       <a class="nav-link text-danger" href="../logout.php">
         <i class="fas fa-sign-out-alt"></i> <span>Logout</span>

@@ -267,7 +267,7 @@ textarea {
 button,
 .btn-generate,
 .btn-copy {
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  background: linear-gradient(135deg, var(--primary), #ffffff00);
   color: white;
   border: none;
   padding: 0.8rem 1.5rem;

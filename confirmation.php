@@ -4,24 +4,97 @@ require_once 'db.php';
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+// Handle cancellation request
+if (isset($_POST['cancel_booking'])) {
+  if (!isset($_POST['booking_id'])) {
+    $_SESSION['message'] = ['type' => 'error', 'text' => 'Booking ID is required for cancellation.'];
+    header("Location: {$_SERVER['PHP_SELF']}?booking_id=" . $_GET['booking_id']);
+    exit();
+  }
+
+  $bookingId = $_POST['booking_id'];
+
+  // Check if booking exists and belongs to the user (add user validation if needed)
+  $stmt = $pdo->prepare("SELECT * FROM bookings WHERE booking_id = :booking_id");
+  $stmt->execute(['booking_id' => $bookingId]);
+  $booking = $stmt->fetch(PDO::FETCH_ASSOC);
+
+  if (!$booking) {
+    $_SESSION['message'] = ['type' => 'error', 'text' => 'Booking not found.'];
+    header("Location: {$_SERVER['PHP_SELF']}?booking_id=" . $_GET['booking_id']);
+    exit();
+  }
+
+  // Update booking status to cancelled
+  $updateStmt = $pdo->prepare("UPDATE bookings SET status = 'cancelled' WHERE booking_id = :booking_id");
+  if ($updateStmt->execute(['booking_id' => $bookingId])) {
+    $_SESSION['message'] = ['type' => 'success', 'text' => 'Booking successfully cancelled.'];
+
+    // Send cancellation email (pseudo-code)
+    // sendCancellationEmail($booking);
+
+    header("Location: {$_SERVER['PHP_SELF']}?booking_id=" . $bookingId);
+    exit();
+  } else {
+    $_SESSION['message'] = ['type' => 'error', 'text' => 'Failed to cancel booking. Please try again.'];
+    header("Location: {$_SERVER['PHP_SELF']}?booking_id=" . $bookingId);
+    exit();
+  }
+}
+
+// Handle modification request (this would redirect to a modification page)
+if (isset($_GET['modify_booking'])) {
+  $bookingId = $_GET['booking_id'];
+
+  // Check if booking exists and can be modified
+  $stmt = $pdo->prepare("SELECT * FROM bookings WHERE booking_id = :booking_id");
+  $stmt->execute(['booking_id' => $bookingId]);
+  $booking = $stmt->fetch(PDO::FETCH_ASSOC);
+
+  if (!$booking) {
+    $_SESSION['message'] = ['type' => 'error', 'text' => 'Booking not found.'];
+    header("Location: {$_SERVER['PHP_SELF']}?booking_id=" . $bookingId);
+    exit();
+  }
+
+  // Check if booking can be modified (e.g., not already cancelled or past check-in date)
+  $checkInDate = new DateTime($booking['check_in']);
+  $today = new DateTime();
+
+  if ($booking['status'] === 'cancelled') {
+    $_SESSION['message'] = ['type' => 'error', 'text' => 'Cannot modify a cancelled booking.'];
+    header("Location: {$_SERVER['PHP_SELF']}?booking_id=" . $bookingId);
+    exit();
+  }
+
+  if ($checkInDate <= $today) {
+    $_SESSION['message'] = ['type' => 'error', 'text' => 'Cannot modify a booking after check-in date.'];
+    header("Location: {$_SERVER['PHP_SELF']}?booking_id=" . $bookingId);
+    exit();
+  }
+
+  // Redirect to modification page
+  header("Location: modify_booking.php?booking_id=" . $bookingId);
+  exit();
+}
+
 if (!isset($_GET['booking_id'])) {
   die("Booking ID is required.");
 }
 $bookingId = $_GET['booking_id'];
 $stmt = $pdo->prepare("
     SELECT b.*, 
-           u.first_name, u.last_name, u.email, u.phone,
            p.name AS property_name, p.city, p.country,
            pi.image_path AS property_image,
            r.name AS room_type_name
     FROM bookings b
-    LEFT JOIN user u ON b.user_id = u.id
     LEFT JOIN properties p ON b.property_id = p.id
     LEFT JOIN property_images pi ON p.id = pi.property_id AND pi.is_main = 1
     LEFT JOIN room_types r ON b.room_type_id = r.id
     WHERE b.booking_id = :booking_id
     LIMIT 1
 ");
+
 
 $stmt->execute(['booking_id' => $bookingId]);
 $booking = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -103,6 +176,15 @@ $country = $booking['country'] ?? "India";
       font-size: 0.85rem;
     }
 
+    .alert-container {
+      position: fixed;
+      top: 80px;
+      left: 0;
+      right: 0;
+      z-index: 9999;
+      padding: 0 15px;
+    }
+
     @media print {
       .no-print {
         display: none !important;
@@ -123,6 +205,20 @@ $country = $booking['country'] ?? "India";
 
 <body>
   <?php include 'navbar.php'; ?>
+
+  <!-- Message Display -->
+  <?php if (isset($_SESSION['message'])): ?>
+    <div class="alert-container">
+      <div
+        class="alert alert-<?php echo $_SESSION['message']['type'] === 'success' ? 'success' : 'danger'; ?> alert-dismissible fade show"
+        role="alert">
+        <?php echo htmlspecialchars($_SESSION['message']['text']); ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    </div>
+    <?php unset($_SESSION['message']); ?>
+  <?php endif; ?>
+
   <section class="confirmation-hero text-center py-5 bg-dark text-white">
     <div class="container">
       <div class="confirmation-icon mb-3">
@@ -186,7 +282,9 @@ $country = $booking['country'] ?? "India";
                 </div>
                 <div class="col-6 col-md-4">
                   <p class="detail-label">Booking Status</p>
-                  <p><span class="badge bg-success"><?php echo htmlspecialchars($booking['status']); ?></span></p>
+                  <p><span
+                      class="badge bg-<?php echo $booking['status'] === 'cancelled' ? 'danger' : 'success'; ?>"><?php echo htmlspecialchars($booking['status']); ?></span>
+                  </p>
                 </div>
               </div>
             </div>
@@ -199,7 +297,8 @@ $country = $booking['country'] ?? "India";
           <div class="row">
             <div class="col-md-6 mb-3">
               <p class="detail-label">First Name</p>
-              <p><strong><?php echo htmlspecialchars($booking['first_name']); ?></strong></p>
+              <p><strong><?php echo htmlspecialchars($booking['first_name'] ?? 'Guest'); ?></strong></p>
+
             </div>
             <div class="col-md-6 mb-3">
               <p class="detail-label">Last Name</p>
@@ -229,9 +328,28 @@ $country = $booking['country'] ?? "India";
               <?php echo htmlspecialchars($booking['email'] ?? 'you'); ?>
             </li>
             <li class="mb-3"><i class="fas fa-bed me-2"></i> Present booking reference at check-in</li>
-            <li><i class="fas fa-umbrella-beach me-2"></i> Enjoy your stay at
+            <li class="mb-4"><i class="fas fa-umbrella-beach me-2"></i> Enjoy your stay at
               <?php echo htmlspecialchars($booking['property_name']); ?>
             </li>
+
+            <!-- Add Modify and Cancel buttons -->
+            <?php if ($booking['status'] !== 'cancelled'): ?>
+              <li class="border-top pt-3">
+                <div class="d-grid gap-2 d-md-flex">
+                  <!-- Modify Button -->
+                  <a href="?booking_id=<?php echo $bookingId; ?>&modify_booking=true"
+                    class="btn btn-outline-primary me-md-2 no-print">
+                    <i class="fas fa-edit me-2"></i>Modify Booking
+                  </a>
+
+                  <!-- Cancel Button (triggers modal) -->
+                  <button type="button" class="btn btn-outline-danger no-print" data-bs-toggle="modal"
+                    data-bs-target="#cancelModal">
+                    <i class="fas fa-times-circle me-2"></i>Cancel Booking
+                  </button>
+                </div>
+              </li>
+            <?php endif; ?>
           </ul>
         </div>
       </div>
@@ -251,7 +369,9 @@ $country = $booking['country'] ?? "India";
             <span>Total Paid</span>
             <span>₹<?php echo number_format($totalAmount); ?></span>
           </div>
-          <p class="mt-3"><span class="badge bg-success">Payment Completed</span></p>
+          <p class="mt-3"><span
+              class="badge bg-<?php echo $booking['status'] === 'cancelled' ? 'danger' : 'success'; ?>"><?php echo $booking['status'] === 'cancelled' ? 'Cancelled' : 'Payment Completed'; ?></span>
+          </p>
         </div>
         <div class="confirmation-card mb-4 p-4 border rounded shadow-sm">
           <h3 class="mb-4"><i class="fas fa-question-circle me-2"></i>Need Help?</h3>
@@ -262,8 +382,44 @@ $country = $booking['country'] ?? "India";
       </div>
     </div>
   </div>
+
+  <!-- Cancel Booking Modal -->
+  <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="cancelModalLabel">Cancel Booking</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to cancel your booking at
+            <strong><?php echo htmlspecialchars($booking['property_name']); ?></strong>?
+          </p>
+          <p class="text-danger">Cancellation fees may apply depending on the property's policy.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Keep Booking</button>
+          <form method="POST" action="">
+            <input type="hidden" name="booking_id" value="<?php echo $bookingId; ?>">
+            <button type="submit" name="cancel_booking" class="btn btn-danger">Confirm Cancellation</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <?php include 'footer.php'; ?>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Auto-dismiss alerts after 5 seconds
+    setTimeout(function () {
+      const alerts = document.querySelectorAll('.alert');
+      alerts.forEach(alert => {
+        const bsAlert = new bootstrap.Alert(alert);
+        bsAlert.close();
+      });
+    }, 5000);
+  </script>
 </body>
 
 </html>

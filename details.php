@@ -506,6 +506,20 @@ function getRoomImages($pdo, $roomTypeId)
         padding: 20px;
       }
 
+      .room-header {
+        min-width: -webkit-fill-available;
+      }
+
+      .room-card {
+        display: flow-root;
+        gap: 35px;
+        border: 1px solid #e6e6e6;
+        border-radius: 3px;
+        padding: 15px;
+        margin-bottom: 15px;
+        transition: box-shadow 0.3s;
+      }
+
       .hotel-rules-container {
         background: white;
         width: 100%;
@@ -730,9 +744,10 @@ function getRoomImages($pdo, $roomTypeId)
       }
 
       .single-room-image {
-        width: 100%;
-        height: auto;
+        width: 278px;
         max-height: 200px;
+        object-fit: cover;
+
       }
     }
 
@@ -788,7 +803,7 @@ function getRoomImages($pdo, $roomTypeId)
 
     .room-header {
       margin: 10px;
-      padding: 5px;
+      padding: 1px;
       max-width: min-content;
 
     }
@@ -1168,24 +1183,26 @@ function getRoomImages($pdo, $roomTypeId)
         <div class="room-card">
           <div class="room-header">
             <div id="availabil-room">
-              <div class="mt-2 mb-2">
-                <img src="tripsorus-admin/<?php echo htmlspecialchars($roomType['image']); ?>"
-                  alt="<?php echo htmlspecialchars($roomTypeName); ?>" class="single-room-image">
-                <a href="#" class="" data-bs-toggle="modal" data-bs-target="#photosModal<?php echo $roomTypeId; ?>">View
-                  all photos </a>
+              <div class="mt-2 mb-2 position-relative d-inline-block">
+                <a href="#" data-bs-toggle="modal" data-bs-target="#photosModal<?php echo $roomTypeId; ?>">
+                  <img src="tripsorus-admin/<?php echo htmlspecialchars($roomType['image']); ?>"
+                    alt="<?php echo htmlspecialchars($roomTypeName); ?>" class="single-room-image">
+                  <span class="position-absolute bottom-0 end-0 m-2 text-dark fw-semibold ">
+                    more photos >
+                  </span>
+                </a>
               </div>
-              <!-- View all photos link -->
               <h3 class="room-title fst-italic">
                 <?php echo htmlspecialchars($roomTypeName); ?>
               </h3>
               <?php
               $words = explode(" ", strip_tags($roomTypeDescription));
               $wordCount = count($words);
-              $shortDescription = $wordCount > 5 ? implode(" ", array_slice($words, 0, 5)) . "..." : $roomTypeDescription;
+              $shortDescription = $wordCount > 4 ? implode(" ", array_slice($words, 0, 4)) . "..." : $roomTypeDescription;
               ?>
               <div class="fst-italic">
                 <?php echo nl2br(htmlspecialchars($shortDescription)); ?>
-                <?php if ($wordCount > 5): ?>
+                <?php if ($wordCount > 4): ?>
                   <button type="button" class="btn p-0 ms-2 text-primary" data-bs-toggle="modal"
                     data-bs-target="#descModal<?php echo $roomTypeId; ?>">
                     Read More
@@ -1193,8 +1210,7 @@ function getRoomImages($pdo, $roomTypeId)
                 <?php endif; ?>
               </div>
 
-              <?php if ($wordCount > 5): ?>
-                <!-- Bootstrap Modal for Description -->
+              <?php if ($wordCount > 4): ?>
                 <div class="modal fade" id="descModal<?php echo $roomTypeId; ?>" tabindex="-1" aria-hidden="true">
                   <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
@@ -1209,20 +1225,23 @@ function getRoomImages($pdo, $roomTypeId)
                   </div>
                 </div>
               <?php endif; ?>
-
               <?php if (!empty($roomAmenities)): ?>
-                <div class="room-amenities">
-                  <ul style="list-style-type: none; padding: 0;">
+                <?php
+                $amenities = explode(',', $roomAmenities);
+                $totalAmenities = count($amenities);
+                ?>
+                <div class="room-amenities d-flex align-items-center flex-wrap gap-3">
+                  <ul class="d-flex align-items-center flex-wrap gap-3 mb-0" style="list-style-type: none; padding: 0;">
                     <?php
-                    $amenities = explode(',', $roomAmenities);
-                    foreach ($amenities as $amenity):
+                    $shownAmenities = ($totalAmenities > 2) ? array_slice($amenities, 0, 2) : $amenities;
+                    foreach ($shownAmenities as $amenity):
                       $amenity = trim($amenity);
                       if (!empty($amenity)):
                         $key = strtolower($amenity);
                         $iconClass = $amenityIcons[$key] ?? $amenityIcons['default'];
                         ?>
-                        <li>
-                          <i class="fas <?php echo $iconClass; ?>"></i>
+                        <li class="d-flex align-items-center">
+                          <i class="fas <?php echo $iconClass; ?> me-1"></i>
                           <?php echo htmlspecialchars($amenity); ?>
                         </li>
                         <?php
@@ -1230,8 +1249,48 @@ function getRoomImages($pdo, $roomTypeId)
                     endforeach;
                     ?>
                   </ul>
+
+                  <?php if ($totalAmenities > 2): ?>
+                    <!-- View all button -->
+                    <a href="#" class="btn text-primary" style="padding: 0;" data-bs-toggle="modal"
+                      data-bs-target="#amenitiesModal<?php echo $roomTypeId; ?>">
+                      View all
+                    </a>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="amenitiesModal<?php echo $roomTypeId; ?>" tabindex="-1" aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title">All Amenities</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <ul class="d-flex flex-wrap gap-3" style="list-style-type: none; padding: 0;">
+                              <?php
+                              foreach ($amenities as $amenity):
+                                $amenity = trim($amenity);
+                                if (!empty($amenity)):
+                                  $key = strtolower($amenity);
+                                  $iconClass = $amenityIcons[$key] ?? $amenityIcons['default'];
+                                  ?>
+                                  <li class="d-flex align-items-center">
+                                    <i class="fas <?php echo $iconClass; ?> me-1"></i>
+                                    <?php echo htmlspecialchars($amenity); ?>
+                                  </li>
+                                  <?php
+                                endif;
+                              endforeach;
+                              ?>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  <?php endif; ?>
                 </div>
               <?php endif; ?>
+
             </div>
             <!-- Modal for all photos -->
             <div class="modal fade" id="photosModal<?php echo $roomTypeId; ?>" tabindex="-1" aria-hidden="true">
@@ -1243,16 +1302,20 @@ function getRoomImages($pdo, $roomTypeId)
                   </div>
                   <div class="modal-body">
                     <div class="row">
+                      <?php
+                      $roomImages = getRoomImages($pdo, $roomTypeId);
+                      ?>
                       <?php if (!empty($roomImages)): ?>
                         <?php foreach ($roomImages as $img): ?>
                           <div class="col-md-4 mb-3">
-                            <img src="tripsorus-admin/<?php echo htmlspecialchars($img); ?>"
+                            <img src="tripsorus-admin/<?php echo htmlspecialchars($img['image_path']); ?>"
                               class="img-fluid rounded shadow-sm" alt="Room Image">
                           </div>
                         <?php endforeach; ?>
                       <?php else: ?>
                         <p>No additional photos available.</p>
                       <?php endif; ?>
+
                     </div>
                   </div>
                 </div>

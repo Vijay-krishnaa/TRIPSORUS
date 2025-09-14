@@ -29,10 +29,6 @@ if (isset($_POST['cancel_booking'])) {
   $updateStmt = $pdo->prepare("UPDATE bookings SET status = 'cancelled' WHERE booking_id = :booking_id");
   if ($updateStmt->execute(['booking_id' => $bookingId])) {
     $_SESSION['message'] = ['type' => 'success', 'text' => 'Booking successfully cancelled.'];
-
-    // Send cancellation email (pseudo-code)
-    // sendCancellationEmail($booking);
-
     header("Location: {$_SERVER['PHP_SELF']}?booking_id=" . $bookingId);
     exit();
   } else {
@@ -41,8 +37,6 @@ if (isset($_POST['cancel_booking'])) {
     exit();
   }
 }
-
-// Handle modification request (this would redirect to a modification page)
 if (isset($_GET['modify_booking'])) {
   $bookingId = $_GET['booking_id'];
 
@@ -411,7 +405,6 @@ $country = $booking['country'] ?? "India";
   <?php include 'footer.php'; ?>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Auto-dismiss alerts after 5 seconds
     setTimeout(function () {
       const alerts = document.querySelectorAll('.alert');
       alerts.forEach(alert => {

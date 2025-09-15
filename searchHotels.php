@@ -1,65 +1,76 @@
 <?php session_start(); ?>
 <?php
 include 'db.php';
+
 $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 $limit = 4;
 $offset = ($page - 1) * $limit;
+
 $location = $_GET['location'] ?? '';
 $checkin = $_GET['checkin'] ?? '';
 $checkout = $_GET['checkout'] ?? '';
 $rooms = isset($_GET['rooms']) ? (int) $_GET['rooms'] : 1;
 $adults = isset($_GET['adults']) ? (int) $_GET['adults'] : 2;
 $children = isset($_GET['children']) ? (int) $_GET['children'] : 0;
+
 if (empty($checkin)) {
   $checkin = date('Y-m-d');
 }
 if (empty($checkout)) {
-  $tomorrow = date('Y-m-d', strtotime('+1 day'));
-  $checkout = $tomorrow;
+  $checkout = date('Y-m-d', strtotime('+1 day'));
 }
+
 $searchTerm = "%$location%";
+
+// Main query with unique parameter names
 $sql = "SELECT
-p.id,
-p.name,
-p.city AS location,
-p.description,
-p.amenities,
-(SELECT pi.image_path FROM property_images pi WHERE pi.property_id = p.id LIMIT 1) AS image,
-(SELECT MIN(rt.price) FROM room_types rt WHERE rt.property_id = p.id) AS price
+    p.id,
+    p.name,
+    p.city AS location,
+    p.description,
+    p.amenities,
+    (SELECT pi.image_path FROM property_images pi WHERE pi.property_id = p.id LIMIT 1) AS image,
+    (SELECT MIN(rt.price) FROM room_types rt WHERE rt.property_id = p.id) AS price
 FROM properties p
-WHERE p.city LIKE :location
+WHERE (p.city LIKE :search1 OR p.name LIKE :search2 OR p.description LIKE :search3)
   AND p.status = 'approved'
-LIMIT :limit OFFSET :offset";
+LIMIT $limit OFFSET $offset";
+
 $stmt = $pdo->prepare($sql);
-$stmt->bindValue(':location', $searchTerm, PDO::PARAM_STR);
-$stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+$stmt->bindValue(':search1', $searchTerm, PDO::PARAM_STR);
+$stmt->bindValue(':search2', $searchTerm, PDO::PARAM_STR);
+$stmt->bindValue(':search3', $searchTerm, PDO::PARAM_STR);
 $stmt->execute();
-$results = $stmt->fetchAll();
-$countSql = "SELECT COUNT(*) as total 
-             FROM properties 
-             WHERE city LIKE :location 
+$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Count query
+$countSql = "SELECT COUNT(*) as total
+             FROM properties
+             WHERE (city LIKE :search1 OR name LIKE :search2 OR description LIKE :search3)
                AND status = 'approved'";
+
 $countStmt = $pdo->prepare($countSql);
-$countStmt->bindValue(':location', $searchTerm, PDO::PARAM_STR);
+$countStmt->bindValue(':search1', $searchTerm, PDO::PARAM_STR);
+$countStmt->bindValue(':search2', $searchTerm, PDO::PARAM_STR);
+$countStmt->bindValue(':search3', $searchTerm, PDO::PARAM_STR);
 $countStmt->execute();
-$totalRow = $countStmt->fetch();
+$totalRow = $countStmt->fetch(PDO::FETCH_ASSOC);
+
 $totalHotels = $totalRow['total'];
 $totalPages = ceil($totalHotels / $limit);
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hotels in
-    <?php echo htmlspecialchars($location); ?> - TRIPSORUS
-  </title>
+  <title>Hotels in <?php echo htmlspecialchars($location); ?> - TRIPSORUS</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
   <link rel="icon" href="images/favicon.ico" type="image/png">
   <link rel="stylesheet" href="styles/style.css">
   <style>
@@ -176,50 +187,93 @@ $totalPages = ceil($totalHotels / $limit);
         border-left: none;
         border-top: 1px solid #e3e8ef;
         margin-top: 0.5rem;
-
       }
+    }
+
+    .filter-sidebar {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+    }
+
+    .filter-section {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .filter-title {
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: #333;
+    }
+
+    .filter-option {
+      margin-bottom: 0.5rem;
+    }
+
+    .booking-categories {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .category-btn {
+      background: white;
+      border: 1px solid #dee2e6;
+      border-radius: 20px;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .category-btn:hover {
+      background: #0a55ff;
+      color: white;
+      border-color: #0a55ff;
     }
   </style>
 </head>
 
 <body>
   <?php include 'navbar.php'; ?>
+
   <section class="search-header py-3 bg-light">
     <div class="container">
       <form action="searchHotels.php" method="GET">
-        <input type="hidden" name="adults" id="adultsInput" value="<?php echo $adults; ?>">
-        <input type="hidden" name="children" id="childrenInput" value="<?php echo $children; ?>">
-        <input type="hidden" name="rooms" id="roomsInput" value="<?php echo $rooms; ?>">
-        <input type="hidden" name="checkin" id="checkinHidden" value="<?php echo htmlspecialchars($checkin); ?>">
-        <input type="hidden" name="checkout" id="checkoutHidden" value="<?php echo htmlspecialchars($checkout); ?>">
-        <input type="hidden" name="location" id="locationHidden" value="<?php echo htmlspecialchars($location); ?>">
         <div class="row align-items-center">
           <div class="col-md-6 col-lg-3 mb-3 mb-lg-0">
             <label for="location" class="form-label">Destination</label>
-            <input type="text" id="locationDisplay" name="location_display" class="form-control"
-              placeholder="City, Hotel, or Area" value="<?php echo htmlspecialchars($location); ?>" required>
+            <input type="text" id="location" name="location" class="form-control" placeholder="City, Hotel, or Area"
+              value="<?php echo htmlspecialchars($location); ?>" required>
           </div>
           <div class="col-md-6 col-lg-2 mb-3 mb-lg-0">
-            <label for="checkinDisplay" class="form-label">Check-in</label>
-            <input type="date" id="checkinDisplay" name="checkin_display" class="form-control"
+            <label for="checkin" class="form-label">Check-in</label>
+            <input type="date" id="checkin" name="checkin" class="form-control"
               value="<?php echo htmlspecialchars($checkin); ?>" required>
           </div>
           <div class="col-md-6 col-lg-2 mb-3 mb-lg-0">
-            <label for="checkoutDisplay" class="form-label">Check-out</label>
-            <input type="date" id="checkoutDisplay" name="checkout_display" class="form-control"
+            <label for="checkout" class="form-label">Check-out</label>
+            <input type="date" id="checkout" name="checkout" class="form-control"
               value="<?php echo htmlspecialchars($checkout); ?>" required>
           </div>
-          <div class="col-md-6 col-lg-4 mb-3 mb-lg-0">
+          <div class="col-md-6 col-lg-3 mb-3 mb-lg-0">
             <label for="guest-selector" class="form-label">Guests & Rooms</label>
             <input type="text" id="guest-selector" class="form-control" readonly data-bs-toggle="modal"
-              data-bs-target="#guestModal">
+              data-bs-target="#guestModal" placeholder="Select guests and rooms">
+            <input type="hidden" name="adults" id="adultsInput" value="<?php echo $adults; ?>">
+            <input type="hidden" name="children" id="childrenInput" value="<?php echo $children; ?>">
+            <input type="hidden" name="rooms" id="roomsInput" value="<?php echo $rooms; ?>">
           </div>
-          <div class="col-md-6 col-lg-1 d-flex align-items-end">
+          <div class="col-md-6 col-lg-2 d-flex align-items-end">
             <button type="submit" class="btn btn-primary w-100 s-btn search--btn">Search</button>
           </div>
         </div>
       </form>
     </div>
+
     <!-- Guest Selection Modal -->
     <div class="modal fade" id="guestModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
@@ -229,28 +283,34 @@ $totalPages = ceil($totalHotels / $limit);
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body p-4">
-            <div class="counter-item">
-              <label style="color: #0a55ff">Adults</label>
-              <div class="counter-control">
-                <button type="button" class="counter-btn" data-counter="adults" data-direction="-">-</button>
-                <span class="counter-value" style="color: blue" id="adultsCounter"><?php echo $adults; ?></span>
-                <button type="button" class="counter-btn" data-counter="adults" data-direction="+">+</button>
+            <div class="counter-item mb-3">
+              <label class="fw-bold">Adults</label>
+              <div class="counter-control d-flex align-items-center">
+                <button type="button" class="btn btn-outline-primary counter-btn" data-counter="adults"
+                  data-direction="-">-</button>
+                <span class="counter-value mx-3 fw-bold" id="adultsCounter"><?php echo $adults; ?></span>
+                <button type="button" class="btn btn-outline-primary counter-btn" data-counter="adults"
+                  data-direction="+">+</button>
               </div>
             </div>
-            <div class="counter-item">
-              <label style="color: #0a55ff">Children</label>
-              <div class="counter-control">
-                <button type="button" class="counter-btn" data-counter="children" data-direction="-">-</button>
-                <span class="counter-value" style="color: blue" id="childrenCounter"><?php echo $children; ?></span>
-                <button type="button" class="counter-btn" data-counter="children" data-direction="+">+</button>
+            <div class="counter-item mb-3">
+              <label class="fw-bold">Children</label>
+              <div class="counter-control d-flex align-items-center">
+                <button type="button" class="btn btn-outline-primary counter-btn" data-counter="children"
+                  data-direction="-">-</button>
+                <span class="counter-value mx-3 fw-bold" id="childrenCounter"><?php echo $children; ?></span>
+                <button type="button" class="btn btn-outline-primary counter-btn" data-counter="children"
+                  data-direction="+">+</button>
               </div>
             </div>
-            <div class="counter-item">
-              <label style="color: #0a55ff">Rooms</label>
-              <div class="counter-control">
-                <button type="button" class="counter-btn" data-counter="rooms" data-direction="-">-</button>
-                <span class="counter-value" style="color: blue" id="roomsCounter"><?php echo $rooms; ?></span>
-                <button type="button" class="counter-btn" data-counter="rooms" data-direction="+">+</button>
+            <div class="counter-item mb-3">
+              <label class="fw-bold">Rooms</label>
+              <div class="counter-control d-flex align-items-center">
+                <button type="button" class="btn btn-outline-primary counter-btn" data-counter="rooms"
+                  data-direction="-">-</button>
+                <span class="counter-value mx-3 fw-bold" id="roomsCounter"><?php echo $rooms; ?></span>
+                <button type="button" class="btn btn-outline-primary counter-btn" data-counter="rooms"
+                  data-direction="+">+</button>
               </div>
             </div>
             <button type="button" class="btn btn-primary w-100 mt-3" data-bs-dismiss="modal">
@@ -281,6 +341,7 @@ $totalPages = ceil($totalHotels / $limit);
               <span id="budgetValue">₹ 6,000+</span>
             </div>
           </div>
+
           <!-- Star Rating -->
           <div class="filter-section">
             <h6 class="filter-title">Star Rating</h6>
@@ -336,38 +397,38 @@ $totalPages = ceil($totalHotels / $limit);
               <label class="form-check-label" for="bedTwin">Twin Beds</label>
             </div>
           </div>
+
           <!-- Popular Filters -->
           <div class="filter-section">
             <h6 class="filter-title">Popular Filters</h6>
             <div class="filter-option form-check">
               <input class="form-check-input amenity-filter" type="checkbox" id="breakfast" value="Breakfast">
-              <label class="form-check-label" for="breakfast">Breakfast included <span
-                  class="text-muted">(359)</span></label>
+              <label class="form-check-label" for="breakfast">Breakfast included</label>
             </div>
             <div class="filter-option form-check">
               <input class="form-check-input amenity-filter" type="checkbox" id="freeCancel" value="Free Cancellation">
-              <label class="form-check-label" for="freeCancel">Free cancellation <span
-                  class="text-muted">(356)</span></label>
+              <label class="form-check-label" for="freeCancel">Free cancellation</label>
             </div>
             <div class="filter-option form-check">
               <input class="form-check-input amenity-filter" type="checkbox" id="aircon" value="Air Conditioning">
-              <label class="form-check-label" for="aircon">Air conditioning <span
-                  class="text-muted">(157)</span></label>
+              <label class="form-check-label" for="aircon">Air conditioning</label>
             </div>
             <div class="filter-option form-check">
               <input class="form-check-input amenity-filter" type="checkbox" id="balcony" value="Balcony">
-              <label class="form-check-label" for="balcony">Balcony <span class="text-muted">(21)</span></label>
+              <label class="form-check-label" for="balcony">Balcony</label>
             </div>
           </div>
+
           <button class="btn btn-primary w-100 mt-2" id="applyFilters">Apply Filters</button>
           <button class="btn btn-outline-secondary w-100 mt-2" id="resetFilters">Reset All</button>
         </div>
       </div>
+
       <!-- Results Column -->
       <div class="col-lg-9">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h4 class="mb-0">
-            <?php echo htmlspecialchars($location); ?>:
+            <?php echo htmlspecialchars($location ? $location : 'All Locations'); ?>:
             <span id="filteredCount"><?php echo $totalHotels; ?></span> properties found
           </h4>
 
@@ -380,14 +441,16 @@ $totalPages = ceil($totalHotels / $limit);
             </select>
           </div>
         </div>
+
         <div class="booking-categories">
           <button class="category-btn">Solo</button>
           <button class="category-btn">Corporate</button>
           <button class="category-btn">Single Lady</button>
           <button class="category-btn">Couple</button>
           <button class="category-btn">Student</button>
-          <button class="category-btn">Budget Filer</button>
+          <button class="category-btn">Budget Filter</button>
         </div>
+
         <!-- Property Listings -->
         <div id="propertyListings">
           <?php if (count($results) > 0): ?>
@@ -409,6 +472,7 @@ $totalPages = ceil($totalHotels / $limit);
                         alt="<?php echo htmlspecialchars($property['name']); ?>">
                     </div>
                   </div>
+
                   <!-- Middle Content -->
                   <div class="col-md-5">
                     <div class="card-body">
@@ -418,10 +482,7 @@ $totalPages = ceil($totalHotels / $limit);
                       <p class="card-text small text-primary">
                         <?php echo htmlspecialchars($property['location']); ?>
                       </p>
-                      <!-- Room type -->
-                      <!-- <div class="mb-2">
-                        <span class="badge bg-light text-dark me-1">Guest room</span>
-                      </div> -->
+
                       <!-- Amenities -->
                       <div class="highlights text-muted mb-2">
                         <?php
@@ -437,10 +498,10 @@ $totalPages = ceil($totalHotels / $limit);
                     </div>';
 
                         $stmt = $pdo->prepare("
-        SELECT COUNT(*) as cnt 
-        FROM room_inventory 
-        WHERE property_id = ? AND meal_type = 'with_breakfast'
-    ");
+                          SELECT COUNT(*) as cnt 
+                          FROM room_inventory 
+                          WHERE property_id = ? AND meal_type = 'with_breakfast'
+                        ");
                         $stmt->execute([$property['id']]);
                         $result = $stmt->fetch();
 
@@ -460,6 +521,7 @@ $totalPages = ceil($totalHotels / $limit);
                       </p>
                     </div>
                   </div>
+
                   <!-- Right Sidebar -->
                   <div class="col-md-3">
                     <div class="property-sidebar">
@@ -480,97 +542,96 @@ $totalPages = ceil($totalHotels / $limit);
                         </a>
                       </div>
                     </div>
-
                   </div>
                 </div>
               </div>
             <?php endforeach; ?>
           <?php else: ?>
-            <p>No properties found for "<?php echo htmlspecialchars($location); ?>".</p>
+            <div class="alert alert-info">
+              <p>No properties found for "<?php echo htmlspecialchars($location); ?>".</p>
+              <p class="mb-0">Try searching with different keywords or browse our <a href="index.php">featured
+                  properties</a>.</p>
+            </div>
           <?php endif; ?>
         </div>
+
         <!-- Pagination -->
-        <nav aria-label="Search results pagination" class="mt-4">
-          <ul class="pagination justify-content-center">
-            <li class="page-item <?php if ($page <= 1)
-              echo 'disabled'; ?>">
-              <a class="page-link"
-                href="?location=<?php echo urlencode($location); ?>&checkin=<?php echo $checkin; ?>&checkout=<?php echo $checkout; ?>&rooms=<?php echo $rooms; ?>&adults=<?php echo $adults; ?>&children=<?php echo $children; ?>&page=<?php echo $page - 1; ?>">Previous</a>
-            </li>
-            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-              <li class="page-item <?php if ($i == $page)
-                echo 'active'; ?>">
+        <?php if ($totalPages > 1): ?>
+          <nav aria-label="Search results pagination" class="mt-4">
+            <ul class="pagination justify-content-center">
+              <li class="page-item <?php if ($page <= 1)
+                echo 'disabled'; ?>">
                 <a class="page-link"
-                  href="?location=<?php echo urlencode($location); ?>&checkin=<?php echo $checkin; ?>&checkout=<?php echo $checkout; ?>&rooms=<?php echo $rooms; ?>&adults=<?php echo $adults; ?>&children=<?php echo $children; ?>&page=<?php echo $i; ?>">
-                  <?php echo $i; ?>
-                </a>
+                  href="?location=<?php echo urlencode($location); ?>&checkin=<?php echo $checkin; ?>&checkout=<?php echo $checkout; ?>&rooms=<?php echo $rooms; ?>&adults=<?php echo $adults; ?>&children=<?php echo $children; ?>&page=<?php echo $page - 1; ?>">Previous</a>
               </li>
-            <?php endfor; ?>
-            <li class="page-item <?php if ($page >= $totalPages)
-              echo 'disabled'; ?>">
-              <a class="page-link"
-                href="?location=<?php echo urlencode($location); ?>&checkin=<?php echo $checkin; ?>&checkout=<?php echo $checkout; ?>&rooms=<?php echo $rooms; ?>&adults=<?php echo $adults; ?>&children=<?php echo $children; ?>&page=<?php echo $page + 1; ?>">Next</a>
-            </li>
-          </ul>
-        </nav>
+              <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                <li class="page-item <?php if ($i == $page)
+                  echo 'active'; ?>">
+                  <a class="page-link"
+                    href="?location=<?php echo urlencode($location); ?>&checkin=<?php echo $checkin; ?>&checkout=<?php echo $checkout; ?>&rooms=<?php echo $rooms; ?>&adults=<?php echo $adults; ?>&children=<?php echo $children; ?>&page=<?php echo $i; ?>">
+                    <?php echo $i; ?>
+                  </a>
+                </li>
+              <?php endfor; ?>
+              <li class="page-item <?php if ($page >= $totalPages)
+                echo 'disabled'; ?>">
+                <a class="page-link"
+                  href="?location=<?php echo urlencode($location); ?>&checkin=<?php echo $checkin; ?>&checkout=<?php echo $checkout; ?>&rooms=<?php echo $rooms; ?>&adults=<?php echo $adults; ?>&children=<?php echo $children; ?>&page=<?php echo $page + 1; ?>">Next</a>
+              </li>
+            </ul>
+          </nav>
+        <?php endif; ?>
       </div>
     </div>
   </div>
+
   <!-- Footer -->
   <?php include 'footer.php'; ?>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
+      // Date initialization
       const today = new Date();
       const tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate() + 1);
+
       const formatDate = (date) => {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
       };
-      const checkinDisplay = document.getElementById('checkinDisplay');
-      const checkoutDisplay = document.getElementById('checkoutDisplay');
-      const checkinHidden = document.getElementById('checkinHidden');
-      const checkoutHidden = document.getElementById('checkoutHidden');
+
+      const checkinInput = document.getElementById('checkin');
+      const checkoutInput = document.getElementById('checkout');
+
       const todayFormatted = formatDate(today);
-      checkinDisplay.setAttribute('min', todayFormatted);
-      checkoutDisplay.setAttribute('min', formatDate(tomorrow));
-      if (!checkinDisplay.value) {
-        checkinDisplay.value = todayFormatted;
-        checkinHidden.value = todayFormatted;
+      checkinInput.setAttribute('min', todayFormatted);
+      checkoutInput.setAttribute('min', formatDate(tomorrow));
+
+      if (!checkinInput.value) {
+        checkinInput.value = todayFormatted;
       }
-      if (!checkoutDisplay.value) {
+      if (!checkoutInput.value) {
         const tomorrowFormatted = formatDate(tomorrow);
-        checkoutDisplay.value = tomorrowFormatted;
-        checkoutHidden.value = tomorrowFormatted;
+        checkoutInput.value = tomorrowFormatted;
       }
 
-      checkinDisplay.addEventListener('change', function () {
+      checkinInput.addEventListener('change', function () {
         const checkinDate = new Date(this.value);
         const newMinCheckout = new Date(checkinDate);
         newMinCheckout.setDate(newMinCheckout.getDate() + 1);
-        checkoutDisplay.setAttribute('min', formatDate(newMinCheckout));
-        const checkoutDate = new Date(checkoutDisplay.value);
+        checkoutInput.setAttribute('min', formatDate(newMinCheckout));
+
+        const checkoutDate = new Date(checkoutInput.value);
         if (checkoutDate <= checkinDate) {
           const newCheckout = formatDate(newMinCheckout);
-          checkoutDisplay.value = newCheckout;
-          checkoutHidden.value = newCheckout;
+          checkoutInput.value = newCheckout;
         }
-
-        checkinHidden.value = this.value;
-      });
-      checkoutDisplay.addEventListener('change', function () {
-        checkoutHidden.value = this.value;
-      });
-      const locationDisplay = document.getElementById('locationDisplay');
-      const locationHidden = document.getElementById('locationHidden');
-      locationDisplay.addEventListener('change', function () {
-        locationHidden.value = this.value;
       });
 
-      // Initialize counters
+      // Guest counter functionality
       const counters = {
         adults: {
           value: <?php echo (int) $adults; ?>,
@@ -591,6 +652,7 @@ $totalPages = ceil($totalHotels / $limit);
           input: document.getElementById("roomsInput")
         }
       };
+
       const guestSelector = document.getElementById("guest-selector");
 
       function updateGuestText() {
@@ -600,6 +662,7 @@ $totalPages = ceil($totalHotels / $limit);
       }
 
       updateGuestText();
+
       document.querySelectorAll(".counter-btn").forEach((btn) => {
         btn.addEventListener("click", function () {
           const counterType = this.getAttribute("data-counter");
@@ -617,9 +680,6 @@ $totalPages = ceil($totalHotels / $limit);
           updateGuestText();
         });
       });
-      document.getElementById("guestModal").addEventListener("hidden.bs.modal", function () {
-        updateGuestText();
-      });
 
       // Filter functionality
       const budgetRange = document.getElementById('budgetRange');
@@ -632,6 +692,7 @@ $totalPages = ceil($totalHotels / $limit);
       const sortSelect = document.getElementById('sortResults');
       const propertyItems = document.querySelectorAll('.property-item');
       const filteredCount = document.getElementById('filteredCount');
+
       budgetRange.addEventListener('input', function () {
         if (this.value == 6000) {
           budgetValue.textContent = '₹ 6,000+';
@@ -653,15 +714,19 @@ $totalPages = ceil($totalHotels / $limit);
         const selectedAmenities = Array.from(amenityFilters)
           .filter(filter => filter.checked)
           .map(filter => filter.value.toLowerCase());
+
         let visibleCount = 0;
+
         propertyItems.forEach(item => {
           const itemPrice = parseInt(item.dataset.price);
           const itemAmenities = item.dataset.amenities.toLowerCase();
           const itemBeds = item.dataset.beds.toLowerCase();
+
           if (itemPrice > maxPrice) {
             item.style.display = 'none';
             return;
           }
+
           if (selectedRatings.length > 0) {
             const itemRating = parseInt(item.dataset.rating);
             if (!selectedRatings.includes(itemRating)) {
@@ -669,6 +734,7 @@ $totalPages = ceil($totalHotels / $limit);
               return;
             }
           }
+
           if (selectedBeds.length > 0) {
             let hasSelectedBed = false;
             for (const bed of selectedBeds) {
@@ -682,6 +748,7 @@ $totalPages = ceil($totalHotels / $limit);
               return;
             }
           }
+
           if (selectedAmenities.length > 0) {
             let hasAllAmenities = true;
             for (const amenity of selectedAmenities) {
@@ -695,6 +762,7 @@ $totalPages = ceil($totalHotels / $limit);
               return;
             }
           }
+
           item.style.display = '';
           visibleCount++;
         });
@@ -710,6 +778,7 @@ $totalPages = ceil($totalHotels / $limit);
         items.sort((a, b) => {
           const aPrice = parseInt(a.dataset.price);
           const bPrice = parseInt(b.dataset.price);
+
           switch (sortValue) {
             case 'price-low':
               return aPrice - bPrice;
@@ -723,10 +792,13 @@ $totalPages = ceil($totalHotels / $limit);
               return 0;
           }
         });
+
         items.forEach(item => item.remove());
         items.forEach(item => container.appendChild(item));
       }
+
       applyFiltersBtn.addEventListener('click', applyFilters);
+
       resetFiltersBtn.addEventListener('click', function () {
         budgetRange.value = 6000;
         budgetValue.textContent = '₹ 6,000+';
@@ -737,6 +809,7 @@ $totalPages = ceil($totalHotels / $limit);
         filteredCount.textContent = propertyItems.length;
         sortSelect.value = 'default';
       });
+
       sortSelect.addEventListener('change', sortProperties);
     });
   </script>

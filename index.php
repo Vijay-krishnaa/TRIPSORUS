@@ -125,8 +125,13 @@
               <div class="row">
                 <div class="col-md-6 col-lg-3 mb-3 mb-lg-0">
                   <label for="location">Destination</label>
-                  <input type="text" name="location" class="form-control" placeholder="City, Hotel, or Area" required />
+                  <input type="text" name="location" id="locationInput" class="form-control"
+                    placeholder="City, Hotel, or Area" autocomplete="off" required />
+                  <!-- Suggestion box -->
+                  <div id="suggestionsBox" class="list-group position-absolute"
+                    style="z-index: 1000; width:100%; display:none;"></div>
                 </div>
+
                 <div class="col-md-6 col-lg-2 mb-3 mb-lg-0">
                   <label for="checkin">Check-in</label>
                   <input type="date" name="checkin" id="checkin" class="form-control" required />
@@ -683,6 +688,49 @@
         buttons.forEach((b) => b.classList.remove("active"));
         btn.classList.add("active");
         userTypeInput.value = btn.getAttribute("data-user-type");
+      });
+    });
+    document.addEventListener("DOMContentLoaded", () => {
+      const input = document.getElementById("locationInput");
+      const suggestionsBox = document.getElementById("suggestionsBox");
+
+      input.addEventListener("keyup", function () {
+        let query = this.value.trim();
+
+        if (query.length < 2) {
+          suggestionsBox.style.display = "none";
+          return;
+        }
+
+        fetch("getSuggestions.php?q=" + encodeURIComponent(query))
+          .then(res => res.json())
+          .then(data => {
+            suggestionsBox.innerHTML = "";
+            if (data.length > 0) {
+              data.forEach(item => {
+                let option = document.createElement("a");
+                option.classList.add("list-group-item", "list-group-item-action");
+                option.textContent = item;
+                option.href = "#";
+                option.addEventListener("click", function (e) {
+                  e.preventDefault();
+                  input.value = item;
+                  suggestionsBox.style.display = "none";
+                });
+                suggestionsBox.appendChild(option);
+              });
+              suggestionsBox.style.display = "block";
+            } else {
+              suggestionsBox.style.display = "none";
+            }
+          })
+          .catch(err => console.error(err));
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!suggestionsBox.contains(e.target) && e.target !== input) {
+          suggestionsBox.style.display = "none";
+        }
       });
     });
   </script>

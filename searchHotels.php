@@ -21,8 +21,6 @@ if (empty($checkout)) {
 }
 
 $searchTerm = "%$location%";
-
-// Main query with unique parameter names
 $sql = "SELECT
     p.id,
     p.name,
@@ -42,8 +40,6 @@ $stmt->bindValue(':search2', $searchTerm, PDO::PARAM_STR);
 $stmt->bindValue(':search3', $searchTerm, PDO::PARAM_STR);
 $stmt->execute();
 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// Count query
 $countSql = "SELECT COUNT(*) as total
              FROM properties
              WHERE (city LIKE :search1 OR name LIKE :search2 OR description LIKE :search3)

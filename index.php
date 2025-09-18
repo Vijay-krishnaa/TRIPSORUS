@@ -12,104 +12,104 @@
   <link rel="icon" href="images/favicon.ico" type="image/png" />
   <link rel="stylesheet" href="styles/style.css" />
   <style>
+  .search-section {
+    background: linear-gradient(135deg, #0a55ff 0%, #182848 100%);
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    color: white;
+  }
+
+  .search-section h5 {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+
+  .search-section .form-control {
+    background-color: rgba(255, 255, 255, 0.9);
+    border: none;
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+  }
+
+  .search-section .form-control:focus {
+    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.25);
+  }
+
+  .search-btn-main {
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    width: 110%;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .search-btn-main:hover {
+    background-color: #ff5252;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+  }
+
+  .search-section label {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+    margin-bottom: 5px;
+    display: block;
+  }
+
+  .hotel-card-compact {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hotel-card-compact:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .hotel-img-compact {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+  }
+
+  .section-title-boxed {
+    position: relative;
+    padding-bottom: 10px;
+    margin-bottom: 25px;
+    font-weight: 600;
+  }
+
+  .section-title-boxed:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 50px;
+    height: 3px;
+    background: linear-gradient(to right, #4b6cb7, #182848);
+  }
+
+  @media (max-width: 767.98px) {
     .search-section {
-      background: linear-gradient(135deg, #0a55ff 0%, #182848 100%);
-      border-radius: 10px;
-      padding: 25px;
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-      color: white;
-    }
-
-    .search-section h5 {
-      color: white;
-      font-weight: 600;
-      margin-bottom: 20px;
-    }
-
-    .search-section .form-control {
-      background-color: rgba(255, 255, 255, 0.9);
-      border: none;
-      padding: 12px 15px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-    }
-
-    .search-section .form-control:focus {
-      box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.25);
-    }
-
-    .search-btn-main {
-      background-color: #ff6b6b;
-      color: white;
-      border: none;
-      padding: 12px;
-      margin-bottom: 15px;
-      border-radius: 8px;
-      width: 110%;
-      font-weight: 600;
-      transition: all 0.3s ease;
-    }
-
-    .search-btn-main:hover {
-      background-color: #ff5252;
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
-    }
-
-    .search-section label {
-      color: rgba(255, 255, 255, 0.9);
-      font-weight: 500;
-      margin-bottom: 5px;
-      display: block;
-    }
-
-    .hotel-card-compact {
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .hotel-card-compact:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      margin-bottom: 30px;
     }
 
     .hotel-img-compact {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
+      height: 150px;
     }
-
-    .section-title-boxed {
-      position: relative;
-      padding-bottom: 10px;
-      margin-bottom: 25px;
-      font-weight: 600;
-    }
-
-    .section-title-boxed:after {
-      content: "";
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      width: 50px;
-      height: 3px;
-      background: linear-gradient(to right, #4b6cb7, #182848);
-    }
-
-    @media (max-width: 767.98px) {
-      .search-section {
-        margin-bottom: 30px;
-      }
-
-      .hotel-img-compact {
-        height: 150px;
-      }
-    }
+  }
   </style>
 </head>
 
@@ -129,7 +129,7 @@
                     placeholder="City, Hotel, or Area" autocomplete="off" required />
                   <!-- Suggestion box -->
                   <div id="suggestionsBox" class="list-group position-absolute"
-                    style="z-index: 1000; width:100%; display:none;"></div>
+                    style="z-index: 1000; width:259px; display:none;"></div>
                 </div>
 
                 <div class="col-md-6 col-lg-2 mb-3 mb-lg-0">
@@ -197,118 +197,118 @@
             </form>
 
             <style>
-              .counter-item {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 20px;
-              }
+            .counter-item {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 20px;
+            }
 
-              .counter-control {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-              }
+            .counter-control {
+              display: flex;
+              align-items: center;
+              gap: 10px;
+            }
 
-              .counter-btn {
-                width: 30px;
-                height: 30px;
-                border-radius: 50%;
-                border: 1px solid #ddd;
-                background: white;
-                font-size: 16px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-                padding: 0;
-              }
+            .counter-btn {
+              width: 30px;
+              height: 30px;
+              border-radius: 50%;
+              border: 1px solid #ddd;
+              background: white;
+              font-size: 16px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              cursor: pointer;
+              padding: 0;
+            }
 
-              .counter-btn:hover {
-                background-color: #f8f9fa;
-              }
+            .counter-btn:hover {
+              background-color: #f8f9fa;
+            }
 
-              .counter-value {
-                min-width: 20px;
-                text-align: center;
-                font-weight: 500;
-              }
+            .counter-value {
+              min-width: 20px;
+              text-align: center;
+              font-weight: 500;
+            }
             </style>
 
             <script>
-              document.addEventListener("DOMContentLoaded", function () {
-                // Date handling functionality
-                const today = new Date();
-                const tomorrow = new Date(today);
-                tomorrow.setDate(tomorrow.getDate() + 1);
-                const formatDate = (date) => {
-                  const year = date.getFullYear();
-                  const month = String(date.getMonth() + 1).padStart(2, '0');
-                  const day = String(date.getDate()).padStart(2, '0');
-                  return `${year}-${month}-${day}`;
-                };
-                const checkinInput = document.getElementById('checkin');
-                const checkoutInput = document.getElementById('checkout');
-                const todayFormatted = formatDate(today);
-                checkinInput.setAttribute('min', todayFormatted);
-                checkoutInput.setAttribute('min', formatDate(tomorrow));
-                checkinInput.value = todayFormatted;
-                checkoutInput.value = formatDate(tomorrow);
-                checkinInput.addEventListener('change', function () {
-                  const checkinDate = new Date(this.value);
-                  const newMinCheckout = new Date(checkinDate);
-                  newMinCheckout.setDate(newMinCheckout.getDate() + 1);
-                  checkoutInput.setAttribute('min', formatDate(newMinCheckout));
-                  const checkoutDate = new Date(checkoutInput.value);
-                  if (checkoutDate <= checkinDate) {
-                    checkoutInput.value = formatDate(newMinCheckout);
-                  }
-                });
-                const guestSelector = document.getElementById("guest-selector");
-                const counters = {
-                  adults: {
-                    value: 2,
-                    min: 1,
-                    element: document.querySelector(".counter-item:nth-child(1) .counter-value")
-                  },
-                  children: {
-                    value: 0,
-                    min: 0,
-                    element: document.querySelector(".counter-item:nth-child(2) .counter-value")
-                  },
-                  rooms: {
-                    value: 1,
-                    min: 1,
-                    element: document.querySelector(".counter-item:nth-child(3) .counter-value")
-                  },
-                };
-                document.querySelectorAll(".counter-btn").forEach(btn => {
-                  btn.addEventListener("click", function () {
-                    const isIncrement = this.textContent === "+";
-                    const counterItem = this.closest(".counter-item");
-                    const label = counterItem.querySelector("label").textContent.toLowerCase();
-                    const counter = counters[label];
-
-                    if (isIncrement) counter.value++;
-                    else if (counter.value > counter.min) counter.value--;
-
-                    counter.element.textContent = counter.value;
-                    updateGuestText();
-                  });
-                });
-
-                function updateGuestText() {
-                  const text = `${counters.adults.value} Adult${counters.adults.value !== 1 ? "s" : ""}, ` +
-                    `${counters.children.value} Child${counters.children.value !== 1 ? "ren" : ""}, ` +
-                    `${counters.rooms.value} Room${counters.rooms.value !== 1 ? "s" : ""}`;
-                  guestSelector.value = text;
-                  document.getElementById('adults').value = counters.adults.value;
-                  document.getElementById('children').value = counters.children.value;
-                  document.getElementById('rooms').value = counters.rooms.value;
+            document.addEventListener("DOMContentLoaded", function() {
+              // Date handling functionality
+              const today = new Date();
+              const tomorrow = new Date(today);
+              tomorrow.setDate(tomorrow.getDate() + 1);
+              const formatDate = (date) => {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+              };
+              const checkinInput = document.getElementById('checkin');
+              const checkoutInput = document.getElementById('checkout');
+              const todayFormatted = formatDate(today);
+              checkinInput.setAttribute('min', todayFormatted);
+              checkoutInput.setAttribute('min', formatDate(tomorrow));
+              checkinInput.value = todayFormatted;
+              checkoutInput.value = formatDate(tomorrow);
+              checkinInput.addEventListener('change', function() {
+                const checkinDate = new Date(this.value);
+                const newMinCheckout = new Date(checkinDate);
+                newMinCheckout.setDate(newMinCheckout.getDate() + 1);
+                checkoutInput.setAttribute('min', formatDate(newMinCheckout));
+                const checkoutDate = new Date(checkoutInput.value);
+                if (checkoutDate <= checkinDate) {
+                  checkoutInput.value = formatDate(newMinCheckout);
                 }
-
-                document.getElementById("guestModal").addEventListener("hidden.bs.modal", updateGuestText);
               });
+              const guestSelector = document.getElementById("guest-selector");
+              const counters = {
+                adults: {
+                  value: 2,
+                  min: 1,
+                  element: document.querySelector(".counter-item:nth-child(1) .counter-value")
+                },
+                children: {
+                  value: 0,
+                  min: 0,
+                  element: document.querySelector(".counter-item:nth-child(2) .counter-value")
+                },
+                rooms: {
+                  value: 1,
+                  min: 1,
+                  element: document.querySelector(".counter-item:nth-child(3) .counter-value")
+                },
+              };
+              document.querySelectorAll(".counter-btn").forEach(btn => {
+                btn.addEventListener("click", function() {
+                  const isIncrement = this.textContent === "+";
+                  const counterItem = this.closest(".counter-item");
+                  const label = counterItem.querySelector("label").textContent.toLowerCase();
+                  const counter = counters[label];
+
+                  if (isIncrement) counter.value++;
+                  else if (counter.value > counter.min) counter.value--;
+
+                  counter.element.textContent = counter.value;
+                  updateGuestText();
+                });
+              });
+
+              function updateGuestText() {
+                const text = `${counters.adults.value} Adult${counters.adults.value !== 1 ? "s" : ""}, ` +
+                  `${counters.children.value} Child${counters.children.value !== 1 ? "ren" : ""}, ` +
+                  `${counters.rooms.value} Room${counters.rooms.value !== 1 ? "s" : ""}`;
+                guestSelector.value = text;
+                document.getElementById('adults').value = counters.adults.value;
+                document.getElementById('children').value = counters.children.value;
+                document.getElementById('rooms').value = counters.rooms.value;
+              }
+
+              document.getElementById("guestModal").addEventListener("hidden.bs.modal", updateGuestText);
+            });
             </script>
           </div>
         </div>
@@ -512,17 +512,17 @@
         <div class="row">
           <?php foreach ($destinations as $destination =>
             $image): ?>
-            <div class="col-6 col-md-4 col-lg-2 mb-3">
-              <a href="searchHotels.php?location=<?= urlencode($destination) ?>" class="text-decoration-none text-dark">
-                <div class="destination-card-compact">
-                  <img src="images/<?= htmlspecialchars($image) ?>" class="destination-img-compact"
-                    alt="<?= htmlspecialchars($destination) ?>" />
-                  <div class="destination-name-compact">
-                    <?= htmlspecialchars($destination) ?>
-                  </div>
+          <div class="col-6 col-md-4 col-lg-2 mb-3">
+            <a href="searchHotels.php?location=<?= urlencode($destination) ?>" class="text-decoration-none text-dark">
+              <div class="destination-card-compact">
+                <img src="images/<?= htmlspecialchars($image) ?>" class="destination-img-compact"
+                  alt="<?= htmlspecialchars($destination) ?>" />
+                <div class="destination-name-compact">
+                  <?= htmlspecialchars($destination) ?>
                 </div>
-              </a>
-            </div>
+              </div>
+            </a>
+          </div>
           <?php endforeach; ?>
         </div>
       </div>
@@ -656,12 +656,12 @@
   <?php include 'footer.php'; ?>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    document.getElementById('forgotPasswordForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-      let form = this;
-      let email = form.resetEmail.value;
+  document.getElementById('forgotPasswordForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    let form = this;
+    let email = form.resetEmail.value;
 
-      fetch('forgot-password.php', {
+    fetch('forgot-password.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
@@ -670,69 +670,69 @@
           email: email
         })
       })
+      .then(res => res.json())
+      .then(data => {
+        let messageDiv = document.getElementById('fpMessage');
+        messageDiv.innerHTML =
+          `<div class="alert alert-${data.status === 'success' ? 'success' : 'danger'}">${data.message}</div>`;
+      })
+      .catch(err => {
+        console.error(err);
+      });
+  });
+  const buttons = document.querySelectorAll(".user-type-btn");
+  const userTypeInput = document.getElementById("userType");
+
+  buttons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      buttons.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      userTypeInput.value = btn.getAttribute("data-user-type");
+    });
+  });
+  document.addEventListener("DOMContentLoaded", () => {
+    const input = document.getElementById("locationInput");
+    const suggestionsBox = document.getElementById("suggestionsBox");
+
+    input.addEventListener("keyup", function() {
+      let query = this.value.trim();
+
+      if (query.length < 2) {
+        suggestionsBox.style.display = "none";
+        return;
+      }
+
+      fetch("getSuggestions.php?q=" + encodeURIComponent(query))
         .then(res => res.json())
         .then(data => {
-          let messageDiv = document.getElementById('fpMessage');
-          messageDiv.innerHTML =
-            `<div class="alert alert-${data.status === 'success' ? 'success' : 'danger'}">${data.message}</div>`;
-        })
-        .catch(err => {
-          console.error(err);
-        });
-    });
-    const buttons = document.querySelectorAll(".user-type-btn");
-    const userTypeInput = document.getElementById("userType");
-
-    buttons.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        buttons.forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        userTypeInput.value = btn.getAttribute("data-user-type");
-      });
-    });
-    document.addEventListener("DOMContentLoaded", () => {
-      const input = document.getElementById("locationInput");
-      const suggestionsBox = document.getElementById("suggestionsBox");
-
-      input.addEventListener("keyup", function () {
-        let query = this.value.trim();
-
-        if (query.length < 2) {
-          suggestionsBox.style.display = "none";
-          return;
-        }
-
-        fetch("getSuggestions.php?q=" + encodeURIComponent(query))
-          .then(res => res.json())
-          .then(data => {
-            suggestionsBox.innerHTML = "";
-            if (data.length > 0) {
-              data.forEach(item => {
-                let option = document.createElement("a");
-                option.classList.add("list-group-item", "list-group-item-action");
-                option.textContent = item;
-                option.href = "#";
-                option.addEventListener("click", function (e) {
-                  e.preventDefault();
-                  input.value = item;
-                  suggestionsBox.style.display = "none";
-                });
-                suggestionsBox.appendChild(option);
+          suggestionsBox.innerHTML = "";
+          if (data.length > 0) {
+            data.forEach(item => {
+              let option = document.createElement("a");
+              option.classList.add("list-group-item", "list-group-item-action");
+              option.textContent = item;
+              option.href = "#";
+              option.addEventListener("click", function(e) {
+                e.preventDefault();
+                input.value = item;
+                suggestionsBox.style.display = "none";
               });
-              suggestionsBox.style.display = "block";
-            } else {
-              suggestionsBox.style.display = "none";
-            }
-          })
-          .catch(err => console.error(err));
-      });
-
-      document.addEventListener("click", (e) => {
-        if (!suggestionsBox.contains(e.target) && e.target !== input) {
-          suggestionsBox.style.display = "none";
-        }
-      });
+              suggestionsBox.appendChild(option);
+            });
+            suggestionsBox.style.display = "block";
+          } else {
+            suggestionsBox.style.display = "none";
+          }
+        })
+        .catch(err => console.error(err));
     });
+
+    document.addEventListener("click", (e) => {
+      if (!suggestionsBox.contains(e.target) && e.target !== input) {
+        suggestionsBox.style.display = "none";
+      }
+    });
+  });
   </script>
 </body>
 

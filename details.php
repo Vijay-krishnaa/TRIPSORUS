@@ -272,635 +272,635 @@ function getRoomImages($pdo, $roomTypeId)
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="styles/style.css">
   <style>
+  .property-info-section {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  }
+
+
+  .section-title {
+    font-size: 24px;
+    color: #2b6cb0;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e2e8f0;
+  }
+
+  .property-description {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #555;
+    margin-bottom: 15px;
+  }
+
+  .read-more-btn {
+    color: #1a73e8;
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 14px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .read-more-btn:hover {
+    text-decoration: underline;
+  }
+
+  .hotel-rules-container {
+    background: white;
+    width: 117%;
+    border-radius: 8px;
+    padding: 10px;
+
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .hotel-name {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: -4px;
+  }
+
+  .check-in-out {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 3px;
+  }
+
+  .rule-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: -14px;
+  }
+
+  .rule-text {
+    font-size: 15px;
+    color: #333;
+    line-height: 0.5rem;
+  }
+
+  .rules-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .category-link {
+    font-size: 14px;
+    text-decoration: none;
+    padding: 0 5px;
+  }
+
+  .category-link:hover {
+    text-decoration: underline;
+  }
+
+  .view-all-btn {
+    display: block;
+    width: 100%;
+    background: transparent;
+    color: #1a73e8;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    padding: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    margin-top: 15px;
+  }
+
+  .view-all-btn:hover {
+    background-color: #f8f9fa;
+  }
+
+  .divider {
+    height: 16px;
+    width: 1px;
+    background-color: #dadce0;
+    margin: 0 5px;
+  }
+
+  .amenities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+    margin-top: 15px;
+  }
+
+
+  .amenity-item .material-icons {
+    font-size: 18px;
+    color: #0a55ff;
+    margin-right: 10px;
+  }
+
+  .amenity-text {
+    font-size: 14px;
+    color: #444;
+  }
+
+  .amenities-toggle-btn {
+    background: transparent;
+    color: #1a73e8;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    padding: 8px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    margin-top: 15px;
+  }
+
+  .amenities-toggle-btn:hover {
+    background-color: #f8f9fa;
+  }
+
+  /* Popup Styles */
+  .popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+  }
+
+  .popup-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .popup-content {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 30px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  }
+
+  .popup-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+  }
+
+  .popup-close:hover {
+    color: #333;
+  }
+
+  .popup-title {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .rules-category {
+    margin-bottom: 25px;
+  }
+
+  .rules-category-title {
+    font-size: 18px;
+    color: black;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .rules-list {
+    padding-left: 20px;
+  }
+
+  .rules-list li {
+    margin-bottom: 8px;
+    line-height: 1.5;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
     .property-info-section {
-      max-width: 1000px;
-      margin: 0 auto;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      padding: 20px;
     }
 
-
-    .section-title {
-      font-size: 24px;
-      color: #2b6cb0;
-      margin-bottom: 20px;
-      padding-bottom: 10px;
-      border-bottom: 2px solid #e2e8f0;
+    .room-header {
+      min-width: -webkit-fill-available;
     }
 
-    .property-description {
-      font-size: 15px;
-      line-height: 1.6;
-      color: #555;
+    .room-card {
+      display: flow-root;
+      gap: 35px;
+      border: 1px solid #e6e6e6;
+      border-radius: 3px;
+      padding: 15px;
       margin-bottom: 15px;
-    }
-
-    .read-more-btn {
-      color: #1a73e8;
-      background: none;
-      border: none;
-      padding: 0;
-      font-size: 14px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-    }
-
-    .read-more-btn:hover {
-      text-decoration: underline;
+      transition: box-shadow 0.3s;
     }
 
     .hotel-rules-container {
       background: white;
-      width: 117%;
+      width: 100%;
       border-radius: 8px;
       padding: 10px;
-
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
 
-    .hotel-name {
-      font-size: 20px;
-      font-weight: bold;
-      color: #333;
-      margin-bottom: -4px;
-    }
-
-    .check-in-out {
-      font-size: 14px;
-      color: #666;
-      margin-bottom: 3px;
-    }
-
-    .rule-item {
-      display: flex;
-      align-items: flex-start;
-      margin-bottom: -14px;
-    }
-
-    .rule-text {
-      font-size: 15px;
-      color: #333;
-      line-height: 0.5rem;
+    .amenities-grid {
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 10px;
     }
 
     .rules-categories {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-    }
-
-    .category-link {
-      font-size: 14px;
-      text-decoration: none;
-      padding: 0 5px;
-    }
-
-    .category-link:hover {
-      text-decoration: underline;
-    }
-
-    .view-all-btn {
-      display: block;
-      width: 100%;
-      background: transparent;
-      color: #1a73e8;
-      border: 1px solid #dadce0;
-      border-radius: 4px;
-      padding: 10px;
-      font-size: 14px;
-      cursor: pointer;
-      text-align: center;
-      margin-top: 15px;
-    }
-
-    .view-all-btn:hover {
-      background-color: #f8f9fa;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
     }
 
     .divider {
-      height: 16px;
-      width: 1px;
-      background-color: #dadce0;
-      margin: 0 5px;
-    }
-
-    .amenities-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 12px;
-      margin-top: 15px;
-    }
-
-
-    .amenity-item .material-icons {
-      font-size: 18px;
-      color: #0a55ff;
-      margin-right: 10px;
-    }
-
-    .amenity-text {
-      font-size: 14px;
-      color: #444;
-    }
-
-    .amenities-toggle-btn {
-      background: transparent;
-      color: #1a73e8;
-      border: 1px solid #dadce0;
-      border-radius: 4px;
-      padding: 8px 15px;
-      font-size: 14px;
-      cursor: pointer;
-      text-align: center;
-      display: inline-flex;
-      align-items: center;
-      margin-top: 15px;
-    }
-
-    .amenities-toggle-btn:hover {
-      background-color: #f8f9fa;
-    }
-
-    /* Popup Styles */
-    .popup-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.7);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.3s, visibility 0.3s;
-    }
-
-    .popup-overlay.active {
-      opacity: 1;
-      visibility: visible;
+      display: none;
     }
 
     .popup-content {
-      background: white;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 800px;
-      max-height: 90vh;
-      overflow-y: auto;
-      padding: 30px;
-      position: relative;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      padding: 20px;
     }
-
-    .popup-close {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      background: none;
-      border: none;
-      font-size: 24px;
-      cursor: pointer;
-      color: #666;
-    }
-
-    .popup-close:hover {
-      color: #333;
-    }
-
-    .popup-title {
-      font-size: 24px;
-      color: #333;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    .rules-category {
-      margin-bottom: 25px;
-    }
-
-    .rules-category-title {
-      font-size: 18px;
-      color: black;
-      margin-bottom: 10px;
-      padding-bottom: 5px;
-      border-bottom: 1px solid #e2e8f0;
-    }
-
-    .rules-list {
-      padding-left: 20px;
-    }
-
-    .rules-list li {
-      margin-bottom: 8px;
-      line-height: 1.5;
-    }
-
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-      .property-info-section {
-        padding: 20px;
-      }
-
-      .room-header {
-        min-width: -webkit-fill-available;
-      }
-
-      .room-card {
-        display: flow-root;
-        gap: 35px;
-        border: 1px solid #e6e6e6;
-        border-radius: 3px;
-        padding: 15px;
-        margin-bottom: 15px;
-        transition: box-shadow 0.3s;
-      }
-
-      .hotel-rules-container {
-        background: white;
-        width: 100%;
-        border-radius: 8px;
-        padding: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      }
-
-      .amenities-grid {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-        gap: 10px;
-      }
-
-      .rules-categories {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-      }
-
-      .divider {
-        display: none;
-      }
-
-      .popup-content {
-        padding: 20px;
-      }
-    }
+  }
 
 
-    .room-options-container {
-      display: flex;
+  .room-options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 15px;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .room-option:hover {
+    border-color: #007bff;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px) scale(1.02);
+    cursor: pointer;
+  }
+
+  .room-option.highlighted {
+    border: 2px solid #0a55ff;
+    background-color: #f8fff8;
+    position: relative;
+  }
+
+  .room-option.highlighted::before {
+    content: "MOST POPULAR";
+    position: absolute;
+    top: -10px;
+    right: 15px;
+    background-color: #0a55ff;
+    color: white;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: bold;
+  }
+
+  .option-header {
+    margin-bottom: 12px;
+    flex: 1 1 65%;
+  }
+
+  .option-header h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    color: #333;
+  }
+
+  .free-cancellation {
+    font-size: 12px;
+    color: #0a55ff;
+    font-weight: 500;
+    margin-top: 5px;
+  }
+
+  .option-benefits {
+    margin: 15px 0;
+    padding-left: 0;
+    list-style: none;
+  }
+
+  .option-benefits li {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .option-benefits i {
+    color: #0a55ff;
+    font-size: 14px;
+    margin-top: 2px;
+  }
+
+  .room-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    gap: 20px;
+  }
+
+  .option-price-container {
+    flex: 0 0 30%;
+    margin-top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .price-display {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 5px;
+  }
+
+  .original-price {
+    font-size: 14px;
+    color: #999;
+    text-decoration: line-through;
+  }
+
+  .discounted-price {
+    font-size: 20px;
+    font-weight: 700;
+    color: #333;
+  }
+
+  .taxes {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 15px;
+    text-align: right;
+  }
+
+
+  .select-btn:hover {
+    background-color: #005999;
+  }
+
+  .bank-offer {
+    font-size: 12px;
+    color: #d23b38;
+    margin-top: 10px;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .room-availability {
+    font-size: 12px;
+    color: #d23b38;
+    margin-top: 10px;
+    text-align: center;
+    font-weight: 500;
+  }
+
+  .single-room-image {
+    height: 168px;
+    width: 250px;
+    border-radius: 15px;
+    object-fit: cover;
+    transition: transform 0.5s ease, box-shadow 0.5s ease, filter 0.5s ease;
+    will-change: transform, box-shadow;
+  }
+
+  .single-room-image:hover {
+    transform: rotateX(2deg) rotateY(2deg);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+    filter: brightness(1.08) saturate(1.05);
+    cursor: pointer;
+  }
+
+
+  @media (max-width: 900px) {
+    .room-option {
       flex-direction: column;
-      gap: 15px;
-      margin-top: 15px;
-      width: 100%;
       max-width: 100%;
-    }
-
-    .room-option:hover {
-      border-color: #007bff;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-      transform: translateY(-5px) scale(1.02);
-      cursor: pointer;
-    }
-
-    .room-option.highlighted {
-      border: 2px solid #0a55ff;
-      background-color: #f8fff8;
-      position: relative;
-    }
-
-    .room-option.highlighted::before {
-      content: "MOST POPULAR";
-      position: absolute;
-      top: -10px;
-      right: 15px;
-      background-color: #0a55ff;
-      color: white;
-      padding: 3px 10px;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: bold;
-    }
-
-    .option-header {
-      margin-bottom: 12px;
-      flex: 1 1 65%;
-    }
-
-    .option-header h4 {
-      font-size: 16px;
-      font-weight: 600;
-      margin: 0;
-      color: #333;
-    }
-
-    .free-cancellation {
-      font-size: 12px;
-      color: #0a55ff;
-      font-weight: 500;
-      margin-top: 5px;
-    }
-
-    .option-benefits {
-      margin: 15px 0;
-      padding-left: 0;
-      list-style: none;
-    }
-
-    .option-benefits li {
-      font-size: 13px;
-      color: #555;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-    }
-
-    .option-benefits i {
-      color: #0a55ff;
-      font-size: 14px;
-      margin-top: 2px;
+      padding: 20px;
     }
 
     .room-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      width: 100%;
-      gap: 20px;
+      flex-direction: column;
+      gap: 15px;
     }
 
     .option-price-container {
-      flex: 0 0 30%;
-      margin-top: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-    }
-
-    .price-display {
-      display: flex;
-      align-items: baseline;
-      gap: 10px;
-      margin-bottom: 5px;
-    }
-
-    .original-price {
-      font-size: 14px;
-      color: #999;
-      text-decoration: line-through;
-    }
-
-    .discounted-price {
-      font-size: 20px;
-      font-weight: 700;
-      color: #333;
+      align-items: flex-start;
+      width: 100%;
+      margin-top: 15px;
     }
 
     .taxes {
-      font-size: 12px;
-      color: #666;
-      margin-bottom: 15px;
-      text-align: right;
+      text-align: left;
     }
 
-
-    .select-btn:hover {
-      background-color: #005999;
+    .select-btn {
+      width: 100%;
     }
 
-    .bank-offer {
-      font-size: 12px;
-      color: #d23b38;
-      margin-top: 10px;
-      font-weight: 500;
-      text-align: center;
+    .room-option.highlighted::before {
+      right: auto;
+      left: 15px;
     }
+  }
 
-    .room-availability {
-      font-size: 12px;
-      color: #d23b38;
-      margin-top: 10px;
-      text-align: center;
-      font-weight: 500;
+  @media (max-width: 500px) {
+    .price-display {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 5px;
     }
 
     .single-room-image {
-      height: 168px;
-      width: 250px;
-      border-radius: 15px;
+      width: 278px;
+      max-height: 200px;
       object-fit: cover;
-      transition: transform 0.5s ease, box-shadow 0.5s ease, filter 0.5s ease;
-      will-change: transform, box-shadow;
-    }
-
-    .single-room-image:hover {
-      transform: rotateX(2deg) rotateY(2deg);
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
-      filter: brightness(1.08) saturate(1.05);
-      cursor: pointer;
-    }
-
-
-    @media (max-width: 900px) {
-      .room-option {
-        flex-direction: column;
-        max-width: 100%;
-        padding: 20px;
-      }
-
-      .room-content {
-        flex-direction: column;
-        gap: 15px;
-      }
-
-      .option-price-container {
-        align-items: flex-start;
-        width: 100%;
-        margin-top: 15px;
-      }
-
-      .taxes {
-        text-align: left;
-      }
-
-      .select-btn {
-        width: 100%;
-      }
-
-      .room-option.highlighted::before {
-        right: auto;
-        left: 15px;
-      }
-    }
-
-    @media (max-width: 500px) {
-      .price-display {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 5px;
-      }
-
-      .single-room-image {
-        width: 278px;
-        max-height: 200px;
-        object-fit: cover;
-
-      }
-    }
-
-    .guest-modal {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      padding: 15px;
-      z-index: 1000;
-      width: 250px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      margin-top: 5px;
-    }
-
-    .counter-group {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-
-    .counter-group span:first-child {
-      font-size: 14px;
-      color: #333;
-    }
-
-    .counter-btn {
-      background: #f2f2f2;
-      border: 1px solid #ddd;
-      border-radius: 3px;
-      width: 25px;
-      height: 25px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .counter-btn:hover {
-      background: #e6e6e6;
-    }
-
-    #adultsCounter,
-    #childrenCounter,
-    #roomsCounter {
-      margin: 0 10px;
-      font-weight: 600;
-      min-width: 20px;
-      text-align: center;
-    }
-
-    .room-header {
-      margin: 10px;
-      padding: 1px;
-      max-width: min-content;
 
     }
+  }
 
-    .material-icons.small-icon {
-      font-size: 14px;
-      vertical-align: middle;
-    }
+  .guest-modal {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    z-index: 1000;
+    width: 250px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 5px;
+  }
 
-    .property-info-section {
-      margin: 30px 0;
+  .counter-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+
+  .counter-group span:first-child {
+    font-size: 14px;
+    color: #333;
+  }
+
+  .counter-btn {
+    background: #f2f2f2;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  .counter-btn:hover {
+    background: #e6e6e6;
+  }
+
+  #adultsCounter,
+  #childrenCounter,
+  #roomsCounter {
+    margin: 0 10px;
+    font-weight: 600;
+    min-width: 20px;
+    text-align: center;
+  }
+
+  .room-header {
+    margin: 10px;
+    padding: 1px;
+    max-width: min-content;
+
+  }
+
+  .material-icons.small-icon {
+    font-size: 14px;
+    vertical-align: middle;
+  }
+
+  .property-info-section {
+    margin: 30px 0;
+  }
+
+  .info-row {
+    margin-bottom: -2px;
+    width: 120%;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .section-title {
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: #333;
+  }
+
+  .info-row p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #555;
+    margin-bottom: -18px;
+  }
+
+  .view-all-btn,
+  .read-more-btn {
+    display: contents;
+    align-items: center;
+    padding: 4px 8px;
+    font-size: 13px;
+    margin-left: 8px;
+    border: none;
+    background: none;
+    color: #0a55ff;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+
+  .amenities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+  }
+
+  .amenity-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+    background: #f8f9fa;
+    border-radius: 6px;
+  }
+
+
+
+
+  @media (max-width: 768px) {
+    .amenities-grid {
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 10px;
     }
 
     .info-row {
-      margin-bottom: -2px;
-      width: 120%;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      width: 110%;
     }
+  }
 
-    .section-title {
-      font-size: 20px;
-      font-weight: 500;
-      margin-bottom: 4px;
-      color: #333;
-    }
-
-    .info-row p {
-      font-size: 15px;
-      line-height: 1.6;
-      color: #555;
-      margin-bottom: -18px;
-    }
-
-    .view-all-btn,
-    .read-more-btn {
-      display: contents;
-      align-items: center;
-      padding: 4px 8px;
-      font-size: 13px;
-      margin-left: 8px;
-      border: none;
-      background: none;
-      color: #0a55ff;
-      cursor: pointer;
-      font-weight: 500;
-    }
-
-
+  @media (max-width: 480px) {
     .amenities-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(2, 1fr);
     }
 
-    .amenity-item {
-      display: flex;
-      align-items: center;
-      padding: 8px 10px;
-      background: #f8f9fa;
-      border-radius: 6px;
+    .gallery-grid {
+      display: block;
     }
 
-
-
-
-    @media (max-width: 768px) {
-      .amenities-grid {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-        gap: 10px;
-      }
-
-      .info-row {
-        width: 110%;
-      }
+    .gallery-grid .gallery-main {
+      width: 100%;
+      margin-bottom: 0;
     }
 
-    @media (max-width: 480px) {
-      .amenities-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .gallery-grid {
-        display: block;
-      }
-
-      .gallery-grid .gallery-main {
-        width: 100%;
-        margin-bottom: 0;
-      }
-
-      .gallery-grid .rest-img {
-        display: none !important;
-      }
-
+    .gallery-grid .rest-img {
+      display: none !important;
     }
+
+  }
   </style>
 </head>
 
@@ -911,9 +911,9 @@ function getRoomImages($pdo, $roomTypeId)
     <!-- Hero Section -->
     <section class="hero">
       <?php if ($propertyName): ?>
-        <h1 class="hotel-title">
-          <?= htmlspecialchars($propertyName) ?>
-        </h1>
+      <h1 class="hotel-title">
+        <?= htmlspecialchars($propertyName) ?>
+      </h1>
       <?php endif; ?>
 
       <div class="hotel-location">
@@ -932,10 +932,10 @@ function getRoomImages($pdo, $roomTypeId)
       <div class="gallery-grid">
         <div class="gallery-item gallery-main">
           <?php if (!empty($propertyImages[0]['image_path'])): ?>
-            <img src="tripsorus-admin/<?php echo htmlspecialchars($propertyImages[0]['image_path']); ?>"
-              class="img-fluid hotel-img" alt="<?php echo htmlspecialchars($propertyName); ?>">
+          <img src="tripsorus-admin/<?php echo htmlspecialchars($propertyImages[0]['image_path']); ?>"
+            class="img-fluid hotel-img" alt="<?php echo htmlspecialchars($propertyName); ?>">
           <?php else: ?>
-            <img src="images/river3.jpg" alt="Hotel exterior" class="img-fluid hotel-img">
+          <img src="images/river3.jpg" alt="Hotel exterior" class="img-fluid hotel-img">
           <?php endif; ?>
           <!-- View All Photos Link -->
           <a href="#" class="view-all-photos" data-bs-toggle="modal" data-bs-target="#photosModal">
@@ -953,10 +953,10 @@ function getRoomImages($pdo, $roomTypeId)
                 <div class="modal-body">
                   <div class="row g-3">
                     <?php foreach ($propertyImages as $img): ?>
-                      <div class="col-md-4 col-sm-6">
-                        <img src="tripsorus-admin/<?php echo htmlspecialchars($img['image_path']); ?>"
-                          class="img-fluid rounded shadow-sm" alt="Property Photo">
-                      </div>
+                    <div class="col-md-4 col-sm-6">
+                      <img src="tripsorus-admin/<?php echo htmlspecialchars($img['image_path']); ?>"
+                        class="img-fluid rounded shadow-sm" alt="Property Photo">
+                    </div>
                     <?php endforeach; ?>
 
                   </div>
@@ -966,12 +966,12 @@ function getRoomImages($pdo, $roomTypeId)
           </div>
         </div>
         <?php for ($i = 1; $i < 5; $i++): ?>
-          <?php if (isset($propertyImages[$i])): ?>
-            <div class="gallery-item rest-img">
-              <img src="tripsorus-admin/<?php echo htmlspecialchars($propertyImages[$i]['image_path']); ?>"
-                alt="<?php echo htmlspecialchars($propertyName . ' - Image ' . ($i + 1)); ?>">
-            </div>
-          <?php endif; ?>
+        <?php if (isset($propertyImages[$i])): ?>
+        <div class="gallery-item rest-img">
+          <img src="tripsorus-admin/<?php echo htmlspecialchars($propertyImages[$i]['image_path']); ?>"
+            alt="<?php echo htmlspecialchars($propertyName . ' - Image ' . ($i + 1)); ?>">
+        </div>
+        <?php endif; ?>
         <?php endfor; ?>
       </div>
     </section>
@@ -991,9 +991,9 @@ function getRoomImages($pdo, $roomTypeId)
               echo nl2br(htmlspecialchars($shortDesc));
               ?>
               <?php if (strlen($desc) > 120): ?>
-                <button class="btn read-more-btn" data-bs-toggle="modal" data-bs-target="#descriptionModal">
-                  Read More <span class="material-icons" style="font-size:16px;vertical-align:middle">chevron_right</span>
-                </button>
+              <button class="btn read-more-btn" data-bs-toggle="modal" data-bs-target="#descriptionModal">
+                Read More <span class="material-icons" style="font-size:16px;vertical-align:middle">chevron_right</span>
+              </button>
               <?php endif; ?>
             </p>
           </div>
@@ -1056,14 +1056,14 @@ function getRoomImages($pdo, $roomTypeId)
               ?>
             </div>
             <?php if (count($amenities) > 6): ?>
-              <div class="text-center mt-3">
-                <button id="viewAllBtn" class="btn view-all-btn">
-                  View All <span class="material-icons" style="font-size:16px;vertical-align:middle">expand_more</span>
-                </button>
-                <button id="viewLessBtn" style="display: none;" class="btn btn-outline-primary view-all-btn">
-                  View Less <span class="material-icons" style="font-size:16px;vertical-align:middle">expand_less</span>
-                </button>
-              </div>
+            <div class="text-center mt-3">
+              <button id="viewAllBtn" class="btn view-all-btn">
+                View All <span class="material-icons" style="font-size:16px;vertical-align:middle">expand_more</span>
+              </button>
+              <button id="viewLessBtn" style="display: none;" class="btn btn-outline-primary view-all-btn">
+                View Less <span class="material-icons" style="font-size:16px;vertical-align:middle">expand_less</span>
+              </button>
+            </div>
             <?php endif; ?>
           </div>
         </div>
@@ -1090,27 +1090,27 @@ function getRoomImages($pdo, $roomTypeId)
       </div>
     </div>
     <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        const viewAllBtn = document.getElementById('viewAllBtn');
-        const viewLessBtn = document.getElementById('viewLessBtn');
-        const moreAmenities = document.getElementById('moreAmenities');
+    document.addEventListener('DOMContentLoaded', function() {
+      const viewAllBtn = document.getElementById('viewAllBtn');
+      const viewLessBtn = document.getElementById('viewLessBtn');
+      const moreAmenities = document.getElementById('moreAmenities');
 
-        if (viewAllBtn) {
-          viewAllBtn.addEventListener('click', function () {
-            moreAmenities.style.display = 'grid';
-            viewAllBtn.style.display = 'none';
-            if (viewLessBtn) viewLessBtn.style.display = 'inline-block';
-          });
-        }
+      if (viewAllBtn) {
+        viewAllBtn.addEventListener('click', function() {
+          moreAmenities.style.display = 'grid';
+          viewAllBtn.style.display = 'none';
+          if (viewLessBtn) viewLessBtn.style.display = 'inline-block';
+        });
+      }
 
-        if (viewLessBtn) {
-          viewLessBtn.addEventListener('click', function () {
-            moreAmenities.style.display = 'none';
-            viewLessBtn.style.display = 'none';
-            if (viewAllBtn) viewAllBtn.style.display = 'inline-block';
-          });
-        }
-      });
+      if (viewLessBtn) {
+        viewLessBtn.addEventListener('click', function() {
+          moreAmenities.style.display = 'none';
+          viewLessBtn.style.display = 'none';
+          if (viewAllBtn) viewAllBtn.style.display = 'inline-block';
+        });
+      }
+    });
     </script>
     <!-- Booking Widget -->
     <section class="booking-widget">
@@ -1180,59 +1180,59 @@ function getRoomImages($pdo, $roomTypeId)
         $roomTypeDescription = $roomType['description'];
         $roomAmenities = $roomType['amenities'];
         ?>
-        <div class="room-card">
-          <div class="room-header">
-            <div id="availabil-room">
-              <div class="mt-2 mb-2 position-relative d-inline-block">
-                <a href="#" data-bs-toggle="modal" data-bs-target="#photosModal<?php echo $roomTypeId; ?>">
-                  <img src="tripsorus-admin/<?php echo htmlspecialchars($roomType['image']); ?>"
-                    alt="<?php echo htmlspecialchars($roomTypeName); ?>" class="single-room-image">
-                  <span class="position-absolute bottom-0 end-0 m-2 text-dark fw-semibold ">
-                    more photos >
-                  </span>
-                </a>
-              </div>
-              <h3 class="room-title fst-italic">
-                <?php echo htmlspecialchars($roomTypeName); ?>
-              </h3>
-              <?php
+      <div class="room-card">
+        <div class="room-header">
+          <div id="availabil-room">
+            <div class="mt-2 mb-2 position-relative d-inline-block">
+              <a href="#" data-bs-toggle="modal" data-bs-target="#photosModal<?php echo $roomTypeId; ?>">
+                <img src="tripsorus-admin/<?php echo htmlspecialchars($roomType['image']); ?>"
+                  alt="<?php echo htmlspecialchars($roomTypeName); ?>" class="single-room-image">
+                <span class="position-absolute bottom-0 end-0 m-2 text-dark fw-semibold ">
+                  more photos >
+                </span>
+              </a>
+            </div>
+            <h3 class="room-title fst-italic">
+              <?php echo htmlspecialchars($roomTypeName); ?>
+            </h3>
+            <?php
               $words = explode(" ", strip_tags($roomTypeDescription));
               $wordCount = count($words);
               $shortDescription = $wordCount > 4 ? implode(" ", array_slice($words, 0, 4)) . "..." : $roomTypeDescription;
               ?>
-              <div class="fst-italic">
-                <?php echo nl2br(htmlspecialchars($shortDescription)); ?>
-                <?php if ($wordCount > 4): ?>
-                  <button type="button" class="btn p-0 ms-2 text-primary" data-bs-toggle="modal"
-                    data-bs-target="#descModal<?php echo $roomTypeId; ?>">
-                    Read More
-                  </button>
-                <?php endif; ?>
-              </div>
-
+            <div class="fst-italic">
+              <?php echo nl2br(htmlspecialchars($shortDescription)); ?>
               <?php if ($wordCount > 4): ?>
-                <div class="modal fade" id="descModal<?php echo $roomTypeId; ?>" tabindex="-1" aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title">Room Description</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
-                      <div class="modal-body">
-                        <?php echo nl2br(htmlspecialchars($roomTypeDescription)); ?>
-                      </div>
-                    </div>
+              <button type="button" class="btn p-0 ms-2 text-primary" data-bs-toggle="modal"
+                data-bs-target="#descModal<?php echo $roomTypeId; ?>">
+                Read More
+              </button>
+              <?php endif; ?>
+            </div>
+
+            <?php if ($wordCount > 4): ?>
+            <div class="modal fade" id="descModal<?php echo $roomTypeId; ?>" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Room Description</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <?php echo nl2br(htmlspecialchars($roomTypeDescription)); ?>
                   </div>
                 </div>
-              <?php endif; ?>
-              <?php if (!empty($roomAmenities)): ?>
-                <?php
+              </div>
+            </div>
+            <?php endif; ?>
+            <?php if (!empty($roomAmenities)): ?>
+            <?php
                 $amenities = explode(',', $roomAmenities);
                 $totalAmenities = count($amenities);
                 ?>
-                <div class="room-amenities d-flex align-items-center flex-wrap gap-3">
-                  <ul class="d-flex align-items-center flex-wrap gap-3 mb-0" style="list-style-type: none; padding: 0;">
-                    <?php
+            <div class="room-amenities d-flex align-items-center flex-wrap gap-3">
+              <ul class="d-flex align-items-center flex-wrap gap-3 mb-0" style="list-style-type: none; padding: 0;">
+                <?php
                     $shownAmenities = ($totalAmenities > 2) ? array_slice($amenities, 0, 2) : $amenities;
                     foreach ($shownAmenities as $amenity):
                       $amenity = trim($amenity);
@@ -1240,91 +1240,91 @@ function getRoomImages($pdo, $roomTypeId)
                         $key = strtolower($amenity);
                         $iconClass = $amenityIcons[$key] ?? $amenityIcons['default'];
                         ?>
-                        <li class="d-flex align-items-center">
-                          <i class="fas <?php echo $iconClass; ?> me-1"></i>
-                          <?php echo htmlspecialchars($amenity); ?>
-                        </li>
-                        <?php
+                <li class="d-flex align-items-center">
+                  <i class="fas <?php echo $iconClass; ?> me-1"></i>
+                  <?php echo htmlspecialchars($amenity); ?>
+                </li>
+                <?php
                       endif;
                     endforeach;
                     ?>
-                  </ul>
+              </ul>
 
-                  <?php if ($totalAmenities > 2): ?>
-                    <!-- View all button -->
-                    <a href="#" class="btn text-primary" style="padding: 0;" data-bs-toggle="modal"
-                      data-bs-target="#amenitiesModal<?php echo $roomTypeId; ?>">
-                      View all
-                    </a>
+              <?php if ($totalAmenities > 2): ?>
+              <!-- View all button -->
+              <a href="#" class="btn text-primary" style="padding: 0;" data-bs-toggle="modal"
+                data-bs-target="#amenitiesModal<?php echo $roomTypeId; ?>">
+                View all
+              </a>
 
-                    <!-- Modal -->
-                    <div class="modal fade" id="amenitiesModal<?php echo $roomTypeId; ?>" tabindex="-1" aria-hidden="true">
-                      <div class="modal-dialog modal-dialog-centered modal-lg">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h5 class="modal-title">All Amenities</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                          </div>
-                          <div class="modal-body">
-                            <ul class="d-flex flex-wrap gap-3" style="list-style-type: none; padding: 0;">
-                              <?php
+              <!-- Modal -->
+              <div class="modal fade" id="amenitiesModal<?php echo $roomTypeId; ?>" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title">All Amenities</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <ul class="d-flex flex-wrap gap-3" style="list-style-type: none; padding: 0;">
+                        <?php
                               foreach ($amenities as $amenity):
                                 $amenity = trim($amenity);
                                 if (!empty($amenity)):
                                   $key = strtolower($amenity);
                                   $iconClass = $amenityIcons[$key] ?? $amenityIcons['default'];
                                   ?>
-                                  <li class="d-flex align-items-center">
-                                    <i class="fas <?php echo $iconClass; ?> me-1"></i>
-                                    <?php echo htmlspecialchars($amenity); ?>
-                                  </li>
-                                  <?php
+                        <li class="d-flex align-items-center">
+                          <i class="fas <?php echo $iconClass; ?> me-1"></i>
+                          <?php echo htmlspecialchars($amenity); ?>
+                        </li>
+                        <?php
                                 endif;
                               endforeach;
                               ?>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  <?php endif; ?>
-                </div>
-              <?php endif; ?>
-
-            </div>
-            <!-- Modal for all photos -->
-            <div class="modal fade" id="photosModal<?php echo $roomTypeId; ?>" tabindex="-1" aria-hidden="true">
-              <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title">All Photos</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    <div class="row">
-                      <?php
-                      $roomImages = getRoomImages($pdo, $roomTypeId);
-                      ?>
-                      <?php if (!empty($roomImages)): ?>
-                        <?php foreach ($roomImages as $img): ?>
-                          <div class="col-md-4 mb-3">
-                            <img src="tripsorus-admin/<?php echo htmlspecialchars($img['image_path']); ?>"
-                              class="img-fluid rounded shadow-sm" alt="Room Image">
-                          </div>
-                        <?php endforeach; ?>
-                      <?php else: ?>
-                        <p>No additional photos available.</p>
-                      <?php endif; ?>
-
+                      </ul>
                     </div>
                   </div>
                 </div>
               </div>
+              <?php endif; ?>
             </div>
+            <?php endif; ?>
 
           </div>
-          <div class="room-options-container">
-            <?php
+          <!-- Modal for all photos -->
+          <div class="modal fade" id="photosModal<?php echo $roomTypeId; ?>" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">All Photos</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="row">
+                    <?php
+                      $roomImages = getRoomImages($pdo, $roomTypeId);
+                      ?>
+                    <?php if (!empty($roomImages)): ?>
+                    <?php foreach ($roomImages as $img): ?>
+                    <div class="col-md-4 mb-3">
+                      <img src="tripsorus-admin/<?php echo htmlspecialchars($img['image_path']); ?>"
+                        class="img-fluid rounded shadow-sm" alt="Room Image">
+                    </div>
+                    <?php endforeach; ?>
+                    <?php else: ?>
+                    <p>No additional photos available.</p>
+                    <?php endif; ?>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="room-options-container">
+          <?php
             foreach ($mealTypes as $mealName => $mealType) {
               $roomPriceData = getRoomPrice($pdo, $roomTypeId, $mealType, $checkin, $checkout, $promotions);
               $totalPrice = $roomPriceData['price'];
@@ -1336,40 +1336,40 @@ function getRoomImages($pdo, $roomTypeId)
 
                 $isHighlighted = $mealName === 'With Breakfast' ? 'highlighted' : '';
                 ?>
-                <div class="room-option <?php echo $isHighlighted; ?>">
-                  <div class="room-content">
-                    <div class="option-header">
-                      <h4><?php echo $mealName; ?></h4>
-                      <div class="free-cancellation">
-                        Free Cancellation before <?= $freeCancellation ?>
-                      </div>
-                      <ul class="option-benefits">
-                        <?php if ($mealType == 'room_only'): ?>
-                          <li><span class="material-icons small-icon">cancel</span> No meals included</li>
-                        <?php elseif ($mealType == 'with_breakfast'): ?>
-                          <li><span class="material-icons small-icon">free_breakfast</span> Breakfast included</li>
-                        <?php elseif ($mealType == 'breakfast_lunch_dinner'): ?>
-                          <li><span class="material-icons small-icon">restaurant</span> Breakfast, Lunch & Dinner included</li>
-                        <?php endif; ?>
-                        <?php if (!empty($appliedPromotions)): ?>
-                          <?php foreach ($appliedPromotions as $promoName): ?>
-                            <li><span class="material-icons small-icon">local_offer</span> Promotion Applied:
-                              <?= htmlspecialchars($promoName) ?>
-                            </li>
-                          <?php endforeach; ?>
-                        <?php endif; ?>
-                        <li><span class="material-icons small-icon">currency_rupee</span> Book with ₹0 payment</li>
-                        <li><span class="material-icons small-icon">account_balance_wallet</span> Pay at property</li>
-                      </ul>
-                    </div>
+          <div class="room-option <?php echo $isHighlighted; ?>">
+            <div class="room-content">
+              <div class="option-header">
+                <h4><?php echo $mealName; ?></h4>
+                <div class="free-cancellation">
+                  Free Cancellation before <?= $freeCancellation ?>
+                </div>
+                <ul class="option-benefits">
+                  <?php if ($mealType == 'room_only'): ?>
+                  <li><span class="material-icons small-icon">cancel</span> No meals included</li>
+                  <?php elseif ($mealType == 'with_breakfast'): ?>
+                  <li><span class="material-icons small-icon">free_breakfast</span> Breakfast included</li>
+                  <?php elseif ($mealType == 'breakfast_lunch_dinner'): ?>
+                  <li><span class="material-icons small-icon">restaurant</span> Breakfast, Lunch & Dinner included</li>
+                  <?php endif; ?>
+                  <?php if (!empty($appliedPromotions)): ?>
+                  <?php foreach ($appliedPromotions as $promoName): ?>
+                  <li><span class="material-icons small-icon">local_offer</span> Promotion Applied:
+                    <?= htmlspecialchars($promoName) ?>
+                  </li>
+                  <?php endforeach; ?>
+                  <?php endif; ?>
+                  <li><span class="material-icons small-icon">currency_rupee</span> Book with ₹0 payment</li>
+                  <li><span class="material-icons small-icon">account_balance_wallet</span> Pay at property</li>
+                </ul>
+              </div>
 
-                    <div class="option-price-container">
+              <div class="option-price-container">
 
-                      <span class="original-price">₹<?php echo number_format($totalPrice + 200, 2); ?></span>
-                      <span class="discounted-price">₹<?php echo number_format($discountedPrice, 2); ?></span>
-                      <div class="taxes">+ ₹<?php echo number_format($taxAmount, 2); ?> Taxes & Fees per night</div>
+                <span class="original-price">₹<?php echo number_format($totalPrice + 200, 2); ?></span>
+                <span class="discounted-price">₹<?php echo number_format($discountedPrice, 2); ?></span>
+                <div class="taxes">+ ₹<?php echo number_format($taxAmount, 2); ?> Taxes & Fees per night</div>
 
-                      <a href="cart.php?
+                <a href="cart.php?
               property_id=<?= urlencode($propertyId) ?>&
               property_name=<?= urlencode($propertyName) ?>&
               address=<?= urlencode($propertyAddress) ?>&
@@ -1385,20 +1385,20 @@ function getRoomImages($pdo, $roomTypeId)
               adults=<?= urlencode($adults) ?>&
               children=<?= urlencode($children) ?>&
               rooms=<?= urlencode($rooms) ?>" class="btn btn-primary">
-                        SELECT ROOM
-                      </a>
-                      <div class="room-availability">Only 2 rooms left at this price!</div>
-                    </div>
-                  </div>
-                </div>
-                <?php
+                  SELECT ROOM
+                </a>
+                <div class="room-availability">Only 2 rooms left at this price!</div>
+              </div>
+            </div>
+          </div>
+          <?php
               }
             }
             ?>
-          </div>
-
         </div>
-        <?php
+
+      </div>
+      <?php
       }
       ?>
     </section>
@@ -1487,17 +1487,17 @@ function getRoomImages($pdo, $roomTypeId)
       </p>
       <div class="map-container">
         <?php if (!empty($propertyMapLink)): ?>
-          <iframe id="property-map" src="<?php echo htmlspecialchars($propertyMapLink); ?>" allowfullscreen loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade">
-          </iframe>
+        <iframe id="property-map" src="<?php echo htmlspecialchars($propertyMapLink); ?>" allowfullscreen loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
         <?php else: ?>
-          <div
-            style="height: 100%; display: flex; align-items: center; justify-content: center; background: #f8f9fa; color: #6c757d;">
-            <div style="text-align: center;">
-              <i class="fas fa-map-marked-alt" style="font-size: 48px; margin-bottom: 16px;"></i>
-              <p style="margin: 0;">Map not available for this property</p>
-            </div>
+        <div
+          style="height: 100%; display: flex; align-items: center; justify-content: center; background: #f8f9fa; color: #6c757d;">
+          <div style="text-align: center;">
+            <i class="fas fa-map-marked-alt" style="font-size: 48px; margin-bottom: 16px;"></i>
+            <p style="margin: 0;">Map not available for this property</p>
           </div>
+        </div>
         <?php endif; ?>
       </div>
       <h3 class="detail-title">What's nearby</h3>
@@ -1515,154 +1515,154 @@ function getRoomImages($pdo, $roomTypeId)
   <?php include 'footer.php'; ?>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const checkinInput = document.getElementById('checkin');
-      const checkoutInput = document.getElementById('checkout');
-      const today = new Date();
-      const tomorrow = new Date(today);
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      const formatDate = (date) => {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-      };
-      const todayFormatted = formatDate(today);
-      checkinInput.setAttribute('min', todayFormatted);
-      checkoutInput.setAttribute('min', formatDate(tomorrow));
-      if (!checkinInput.value) {
-        checkinInput.value = todayFormatted;
+  document.addEventListener('DOMContentLoaded', function() {
+    const checkinInput = document.getElementById('checkin');
+    const checkoutInput = document.getElementById('checkout');
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const formatDate = (date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+    const todayFormatted = formatDate(today);
+    checkinInput.setAttribute('min', todayFormatted);
+    checkoutInput.setAttribute('min', formatDate(tomorrow));
+    if (!checkinInput.value) {
+      checkinInput.value = todayFormatted;
+    }
+    if (!checkoutInput.value) {
+      const tomorrowFormatted = formatDate(tomorrow);
+      checkoutInput.value = tomorrowFormatted;
+    }
+    checkinInput.addEventListener('change', function() {
+      const checkinDate = new Date(this.value);
+      const newMinCheckout = new Date(checkinDate);
+      newMinCheckout.setDate(newMinCheckout.getDate() + 1);
+      checkoutInput.setAttribute('min', formatDate(newMinCheckout));
+      const checkoutDate = new Date(checkoutInput.value);
+      if (checkoutDate <= checkinDate) {
+        checkoutInput.value = formatDate(newMinCheckout);
       }
-      if (!checkoutInput.value) {
-        const tomorrowFormatted = formatDate(tomorrow);
-        checkoutInput.value = tomorrowFormatted;
+    });
+  });
+
+  const discountedPriceEl = document.querySelector('.discounted-price');
+  const taxesEl = document.querySelector('.taxes');
+  if (discountedPriceEl && taxesEl) {
+    let discountedPrice = parseFloat(discountedPriceEl.textContent.replace(/[₹,]/g, ''));
+    let tax = (discountedPrice * 0.12).toFixed(2);
+    taxesEl.textContent = '+ ₹' + tax + ' Taxes & Fees per night';
+  }
+  document.addEventListener("DOMContentLoaded", function() {
+    const counters = {
+      adults: {
+        value: <?php echo (int) $adults; ?>,
+        min: 1,
+        element: document.getElementById("adultsCounter"),
+        input: document.getElementById("adultsInput")
+      },
+      children: {
+        value: <?php echo (int) $children; ?>,
+        min: 0,
+        element: document.getElementById("childrenCounter"),
+        input: document.getElementById("childrenInput")
+      },
+      rooms: {
+        value: <?php echo (int) $rooms; ?>,
+        min: 1,
+        element: document.getElementById("roomsCounter"),
+        input: document.getElementById("roomsInput")
       }
-      checkinInput.addEventListener('change', function () {
-        const checkinDate = new Date(this.value);
-        const newMinCheckout = new Date(checkinDate);
-        newMinCheckout.setDate(newMinCheckout.getDate() + 1);
-        checkoutInput.setAttribute('min', formatDate(newMinCheckout));
-        const checkoutDate = new Date(checkoutInput.value);
-        if (checkoutDate <= checkinDate) {
-          checkoutInput.value = formatDate(newMinCheckout);
-        }
+    };
+
+    const guestSelector = document.getElementById("guest-selector");
+    const guestModal = document.getElementById("guestModal");
+
+    function updateGuestText() {
+      guestSelector.value = `${counters.adults.value} Adult${counters.adults.value !== 1 ? "s" : ""}, ` +
+        `${counters.children.value} Child${counters.children.value !== 1 ? "ren" : ""}, ` +
+        `${counters.rooms.value} Room${counters.rooms.value !== 1 ? "s" : ""}`;
+    }
+    updateGuestText();
+    guestSelector.addEventListener("click", () => {
+      guestModal.style.display = guestModal.style.display === "none" ? "block" : "none";
+    });
+    document.querySelectorAll(".counter-btn").forEach(btn => {
+      btn.addEventListener("click", function() {
+        const type = this.getAttribute("data-counter");
+        const counter = counters[type];
+        const increment = this.getAttribute("data-direction") === "+";
+        if (increment) counter.value++;
+        else if (counter.value > counter.min) counter.value--;
+        counter.element.textContent = counter.value;
+        counter.input.value = counter.value;
+        updateGuestText();
       });
     });
-
-    const discountedPriceEl = document.querySelector('.discounted-price');
-    const taxesEl = document.querySelector('.taxes');
-    if (discountedPriceEl && taxesEl) {
-      let discountedPrice = parseFloat(discountedPriceEl.textContent.replace(/[₹,]/g, ''));
-      let tax = (discountedPrice * 0.12).toFixed(2);
-      taxesEl.textContent = '+ ₹' + tax + ' Taxes & Fees per night';
-    }
-    document.addEventListener("DOMContentLoaded", function () {
-      const counters = {
-        adults: {
-          value: <?php echo (int) $adults; ?>,
-          min: 1,
-          element: document.getElementById("adultsCounter"),
-          input: document.getElementById("adultsInput")
-        },
-        children: {
-          value: <?php echo (int) $children; ?>,
-          min: 0,
-          element: document.getElementById("childrenCounter"),
-          input: document.getElementById("childrenInput")
-        },
-        rooms: {
-          value: <?php echo (int) $rooms; ?>,
-          min: 1,
-          element: document.getElementById("roomsCounter"),
-          input: document.getElementById("roomsInput")
-        }
-      };
-
-      const guestSelector = document.getElementById("guest-selector");
-      const guestModal = document.getElementById("guestModal");
-
-      function updateGuestText() {
-        guestSelector.value = `${counters.adults.value} Adult${counters.adults.value !== 1 ? "s" : ""}, ` +
-          `${counters.children.value} Child${counters.children.value !== 1 ? "ren" : ""}, ` +
-          `${counters.rooms.value} Room${counters.rooms.value !== 1 ? "s" : ""}`;
+    document.addEventListener("click", (e) => {
+      if (!guestSelector.contains(e.target) && !guestModal.contains(e.target)) {
+        guestModal.style.display = "none";
       }
-      updateGuestText();
-      guestSelector.addEventListener("click", () => {
-        guestModal.style.display = guestModal.style.display === "none" ? "block" : "none";
-      });
-      document.querySelectorAll(".counter-btn").forEach(btn => {
-        btn.addEventListener("click", function () {
-          const type = this.getAttribute("data-counter");
-          const counter = counters[type];
-          const increment = this.getAttribute("data-direction") === "+";
-          if (increment) counter.value++;
-          else if (counter.value > counter.min) counter.value--;
-          counter.element.textContent = counter.value;
-          counter.input.value = counter.value;
-          updateGuestText();
+    });
+  });
+  const ruleCategories = <?php echo json_encode($ruleCategories); ?>;
+
+  function populateRulesPopup(categoryId = null) {
+    const rulesContent = document.getElementById('rulesContent');
+    rulesContent.innerHTML = '';
+
+    const categories = categoryId ?
+      ruleCategories.filter(c => c.id == categoryId) :
+      ruleCategories;
+    categories.forEach(category => {
+      const categoryElement = document.createElement('div');
+      categoryElement.className = 'rules-category';
+      const titleElement = document.createElement('h3');
+      titleElement.className = 'rules-category-title';
+      titleElement.textContent = category.name.toUpperCase();
+      categoryElement.appendChild(titleElement);
+      category.rules.forEach(rule => {
+        const listElement = document.createElement('ul');
+        listElement.className = 'rules-list';
+        rule.items.forEach(item => {
+          const listItem = document.createElement('li');
+          listItem.textContent = item;
+          listElement.appendChild(listItem);
         });
+        categoryElement.appendChild(listElement);
       });
-      document.addEventListener("click", (e) => {
-        if (!guestSelector.contains(e.target) && !guestModal.contains(e.target)) {
-          guestModal.style.display = "none";
-        }
-      });
+      rulesContent.appendChild(categoryElement);
     });
-    const ruleCategories = <?php echo json_encode($ruleCategories); ?>;
+  }
 
-    function populateRulesPopup(categoryId = null) {
-      const rulesContent = document.getElementById('rulesContent');
-      rulesContent.innerHTML = '';
+  function showRulesPopup(categoryId = null) {
+    populateRulesPopup(categoryId);
+    document.getElementById('rulesPopup').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
 
-      const categories = categoryId ?
-        ruleCategories.filter(c => c.id == categoryId) :
-        ruleCategories;
-      categories.forEach(category => {
-        const categoryElement = document.createElement('div');
-        categoryElement.className = 'rules-category';
-        const titleElement = document.createElement('h3');
-        titleElement.className = 'rules-category-title';
-        titleElement.textContent = category.name.toUpperCase();
-        categoryElement.appendChild(titleElement);
-        category.rules.forEach(rule => {
-          const listElement = document.createElement('ul');
-          listElement.className = 'rules-list';
-          rule.items.forEach(item => {
-            const listItem = document.createElement('li');
-            listItem.textContent = item;
-            listElement.appendChild(listItem);
-          });
-          categoryElement.appendChild(listElement);
-        });
-        rulesContent.appendChild(categoryElement);
-      });
-    }
-
-    function showRulesPopup(categoryId = null) {
-      populateRulesPopup(categoryId);
-      document.getElementById('rulesPopup').classList.add('active');
-      document.body.style.overflow = 'hidden';
-    }
-
-    function hideRulesPopup() {
-      document.getElementById('rulesPopup').classList.remove('active');
-      document.body.style.overflow = '';
-    }
-    document.getElementById('viewAllRulesBtn').addEventListener('click', () => showRulesPopup());
-    document.getElementById('closePopup').addEventListener('click', hideRulesPopup);
-    document.getElementById('rulesPopup').addEventListener('click', function (e) {
-      if (e.target === this) hideRulesPopup();
+  function hideRulesPopup() {
+    document.getElementById('rulesPopup').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('viewAllRulesBtn').addEventListener('click', () => showRulesPopup());
+  document.getElementById('closePopup').addEventListener('click', hideRulesPopup);
+  document.getElementById('rulesPopup').addEventListener('click', function(e) {
+    if (e.target === this) hideRulesPopup();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') hideRulesPopup();
+  });
+  document.querySelectorAll('.category-link').forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const catId = this.getAttribute('data-id');
+      showRulesPopup(catId);
     });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') hideRulesPopup();
-    });
-    document.querySelectorAll('.category-link').forEach(link => {
-      link.addEventListener('click', function (e) {
-        e.preventDefault();
-        const catId = this.getAttribute('data-id');
-        showRulesPopup(catId);
-      });
-    });
+  });
   </script>
 </body>
 
